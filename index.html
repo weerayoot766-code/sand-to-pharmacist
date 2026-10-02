@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="วางแผนติวสอบปลายภาคอัตโนมัติจากตารางเรียนและตารางสอบ">
+<meta name="theme-color" content="#1d6b55">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sand2Pharm">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Sand To Pharmacist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: one narrow column like a student's planner — date strip, then a single day timeline; other tabs are tables. */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --line:#dde3e0; --fg:#17211d; --muted:#5c6b65;
+  --accent:#1d6b55; --accent-soft:#e1efe9; --warn:#b4541c; --warn-soft:#fbeadf; --exam:#a8243b; --exam-soft:#f9e3e7;
+  --s-512101:#2f7d4a; --s-512102:#6a9a2c; --s-511103:#3653b0; --s-513108:#b0602a;
+  --s-550151:#8a3fa0; --s-SU101:#b03a6b; --s-SU115:#a38415; --s-SU301:#1f7f8f;
+  --display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111715; --surface:#1a2320; --line:#2c3833; --fg:#e6ece9; --muted:#97a69f;
+  --accent:#5cc49f; --accent-soft:#1d3a30; --warn:#f0965e; --warn-soft:#3a2518; --exam:#f27b91; --exam-soft:#3d1c24;
+  --s-512101:#6cc48a; --s-512102:#a6cc5c; --s-511103:#8ea4f2; --s-513108:#eba06a;
+  --s-550151:#cf8de2; --s-SU101:#ee84b0; --s-SU115:#e0c454; --s-SU301:#5fc6d6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111715; --surface:#1a2320; --line:#2c3833; --fg:#e6ece9; --muted:#97a69f;
+  --accent:#5cc49f; --accent-soft:#1d3a30; --warn:#f0965e; --warn-soft:#3a2518; --exam:#f27b91; --exam-soft:#3d1c24;
+  --s-512101:#6cc48a; --s-512102:#a6cc5c; --s-511103:#8ea4f2; --s-513108:#eba06a;
+  --s-550151:#cf8de2; --s-SU101:#ee84b0; --s-SU115:#e0c454; --s-SU301:#5fc6d6; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:1.7rem;font-weight:700}
+h2{font-size:1.15rem;font-weight:600}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:12px;flex:0 0 auto}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.count{display:flex;align-items:baseline;gap:8px}
+.count b{font-family:var(--display);font-size:2.4rem;color:var(--exam);line-height:1}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{font:500 .95rem var(--body);background:none;border:0;color:var(--muted);padding:8px 12px;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+button{font-family:var(--body)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.9rem}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:10px;background:var(--warn-soft);color:var(--fg)}
+.banner.info{background:var(--accent-soft)}
+.strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.day{flex:0 0 auto;width:52px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 0;text-align:center;cursor:pointer;color:var(--fg)}
+.day .dw{font-size:.75rem;color:var(--muted)}
+.day .dn{font-family:var(--display);font-weight:600;font-size:1.1rem}
+.day .dots{display:flex;justify-content:center;gap:2px;height:6px;margin-top:2px}
+.day .dots i{width:5px;height:5px;border-radius:50%;background:var(--muted)}
+.day.exam{border-color:var(--exam)}
+.day.exam .dn{color:var(--exam)}
+.day[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.day[aria-pressed="true"] .dw{color:var(--bg)}
+.day[aria-pressed="true"] .dn{color:var(--bg)}
+.timeline{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.row .t{font-family:var(--mono);font-size:.85rem;color:var(--muted);padding-top:2px}
+.row .main{min-width:0}
+.row.cls{opacity:.6}
+.row.cls .title{font-weight:400}
+.row.cls.off{opacity:.45}.row.cls.off .title{text-decoration:line-through}
+.btn.sm{padding:3px 10px;font-size:.8rem}
+.step{display:inline-flex;align-items:center;gap:6px;font-size:.88rem}
+.step button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;font-size:1rem}
+.step b{font-family:var(--mono);min-width:1.5em;text-align:center}
+.edit{margin-top:6px;font-size:.85rem}
+.edit summary{cursor:pointer;color:var(--muted);width:max-content}
+.daytools{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.capgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px}
+.capgrid label{display:flex;flex-direction:column;gap:4px;font-size:.85rem}
+.capgrid input{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;width:100%}
+.addbox{border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
+.addbox summary{cursor:pointer;color:var(--accent);font-weight:500}
+.form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.form select,.form input,.krow select,.krow input{font:inherit;font-size:.88rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;min-width:0}
+.klist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.krow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.krow .grow{flex:1 1 160px}
+.dayhead{font-family:var(--display);font-weight:600;padding-top:12px;padding-bottom:2px}
+.row.examrow{background:var(--exam-soft);padding-inline:10px;border-radius:8px;border-bottom:0;margin-block:4px}
+.row.examrow .title{color:var(--exam)}
+.row.done .title{text-decoration:line-through;color:var(--muted)}
+.row.missed .t{color:var(--warn)}
+.title{font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-family:var(--mono);color:var(--muted)}
+.sw{width:10px;height:10px;border-radius:3px;flex:0 0 auto;display:inline-block}
+.kind{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:6px}
+.kind.eve{border-color:var(--exam);color:var(--exam)}
+.tip{font-size:.85rem;color:var(--muted);margin-top:2px}
+.check{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:var(--surface);cursor:pointer;color:var(--bg);font-size:1rem;display:grid;place-items:center}
+.check[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.rate{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.rate button{font-size:.8rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.rate button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.recall{display:flex;flex-direction:column;gap:6px}
+.recall label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.recall input{margin-top:5px;accent-color:var(--accent)}
+.section{display:flex;flex-direction:column;gap:10px}
+.empty{padding:16px 0;color:var(--muted)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-weight:500;color:var(--muted);font-size:.78rem;letter-spacing:.02em;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td input,td select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+td input[type=number]{width:56px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.ok{color:var(--accent)} .bad{color:var(--warn);font-weight:600}
+.planday{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);align-items:center}
+.planday .chips{display:flex;flex-wrap:wrap;gap:6px}
+.pchip{display:inline-flex;align-items:center;gap:5px;font-size:.8rem;padding:2px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--line)}
+.pchip.ex{border-color:var(--exam);color:var(--exam);background:var(--exam-soft)}
+.week{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.wcol{display:flex;flex-direction:column;gap:6px}
+.wcol h3{font-size:.95rem}
+.wc{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);font-size:.8rem}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 16px}
+.settings label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.9rem}
+.settings input{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;width:112px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.82rem}
+@media (max-width:480px){.row{grid-template-columns:70px 1fr auto;gap:8px}.planday{grid-template-columns:72px 1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22785f"/><stop offset="1" stop-color="#155343"/></linearGradient><clipPath id="lcap"><rect x="196" y="330" width="120" height="40" rx="20"/></clipPath></defs><rect width="512" height="512" fill="url(#lg)"/><path d="M196 160 L316 160 C310 200 274 222 256 244 C238 222 202 200 196 160 Z" fill="#f0c873"/><line x1="256" y1="246" x2="256" y2="322" stroke="#f0c873" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 14"/><g clip-path="url(#lcap)"><rect x="196" y="330" width="60" height="40" fill="#f0c873"/><rect x="256" y="330" width="60" height="40" fill="#ffffff"/></g><path d="M176 128 C176 196 230 222 244 256 C230 290 176 316 176 384 L336 384 C336 316 282 290 268 256 C282 222 336 196 336 128 Z" fill="none" stroke="#ffffff" stroke-width="14" stroke-linejoin="round"/><rect x="146" y="102" width="220" height="30" rx="15" fill="#ffffff"/><rect x="146" y="380" width="220" height="30" rx="15" fill="#ffffff"/></svg><div>
+      <div class="muted small">ติวเข้มก่อนสอบปลายภาค · 8 วิชา</div>
+      <h1>Sand To Pharmacist</h1>
+    </div></div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><button class="btn primary" id="installBtn" hidden>ติดตั้งแอป</button><div class="count" id="count"></div></div>
+  </header>
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-tab="day" aria-selected="true">แผนรายวัน</button>
+    <button role="tab" data-tab="plan" aria-selected="false">ภาพรวมแผน</button>
+    <button role="tab" data-tab="subj" aria-selected="false">วิชาและวันสอบ</button>
+    <button role="tab" data-tab="sched" aria-selected="false">ตารางเรียนและตั้งค่า</button>
+  </nav>
+  <div id="banner"></div>
+  <main id="view"></main>
+</div>
+
+<script>
+const CLASSES=[
+ {d:1,s:'08:30',e:'10:15',c:'512101'},{d:1,s:'13:00',e:'13:50',c:'511103'},{d:1,s:'13:55',e:'14:45',c:'511103'},{d:1,s:'16:40',e:'19:20',c:'SU101'},
+ {d:2,s:'08:30',e:'10:15',c:'513108'},{d:2,s:'11:15',e:'12:05',c:'550151'},{d:2,s:'13:00',e:'15:40',c:'SU115'},
+ {d:3,s:'10:20',e:'12:05',c:'511103'},{d:3,s:'13:00',e:'13:50',c:'513108'},
+ {d:4,s:'11:15',e:'12:05',c:'513108'},{d:4,s:'13:00',e:'15:40',c:'SU301'},
+ {d:5,s:'09:25',e:'10:15',c:'512101'},{d:5,s:'13:00',e:'15:40',c:'512102'}];
+const SUBJ=[
+ {c:'512101',th:'ชีววิทยาทั่วไป',sh:'ชีวะ',cr:3,exam:'2026-10-26',et:'09:00',ee:'12:00',real:true,topics:9,conf:3},
+ {c:'512102',th:'ปฏิบัติการชีววิทยาทั่วไป',sh:'แล็บชีวะ',cr:1,exam:'2026-10-26',et:'13:30',ee:'16:30',real:true,topics:5,conf:3},
+ {c:'511103',th:'แคลคูลัสสำหรับนักวิทยาศาสตร์ชีวภาพ',sh:'แคลคูลัส',cr:3,exam:'2026-10-27',et:'09:00',ee:'12:00',real:false,topics:8,conf:2},
+ {c:'550151',th:'บทนำสู่วิชาชีพเภสัชกรรม',sh:'วิชาชีพเภสัชฯ',cr:1,exam:'2026-10-28',et:'09:00',ee:'11:00',real:false,topics:4,conf:4},
+ {c:'513108',th:'เคมีทั่วไปสำหรับนักศึกษาเภสัชศาสตร์',sh:'เคมี',cr:4,exam:'2026-10-29',et:'09:00',ee:'12:00',real:true,topics:10,conf:2},
+ {c:'SU101',th:'ศิลปากร',sh:'ศิลปากร',cr:3,exam:'2026-10-30',et:'09:00',ee:'11:00',real:false,topics:5,conf:4},
+ {c:'SU301',th:'พลเมืองตื่นรู้',sh:'พลเมืองตื่นรู้',cr:3,exam:'2026-10-31',et:'09:00',ee:'11:00',real:false,topics:5,conf:4},
+ {c:'SU115',th:'อาหารเพื่อสุขภาพ',sh:'อาหารเพื่อสุขภาพ',cr:3,exam:'2026-11-03',et:'13:00',ee:'15:00',real:true,topics:5,conf:4}];
+const META=Object.fromEntries(SUBJ.map(s=>[s.c,s]));
+const DW=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+const DWL=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const KEY='tiw20-v2';
+
+const pad=n=>String(n).padStart(2,'0');
+const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
+const hm=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+const ds=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pd=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addD=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d)};
+const dIdx=s=>{const[y,m,d]=s.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/864e5)};
+const thDate=s=>{const d=pd(s);return `${DW[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`};
+const nowInfo=()=>{const n=new Date();return {date:ds(n),min:n.getHours()*60+n.getMinutes()}};
+const col=c=>`var(--s-${c})`;
+
+function defaults(){
+  return {
+    subjects:Object.fromEntries(SUBJ.map(s=>[s.c,{exam:s.exam,et:s.et,ee:s.ee,real:s.real,topics:s.topics,conf:s.conf,on:true}])),
+    settings:{wdStart:'07:30',wdEnd:'22:30',weStart:'09:00',weEnd:'22:00',capDays:[6,4,4,4,4,4,6],slot:50,brk:10,classEnd:'2026-10-23'},
+    plan:[],recall:{},
+    classes:CLASSES.map((k,i)=>({...k,id:'k'+i})),exceptions:[]
+  };
+}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
+if(!S||!S.subjects)S=defaults();
+if(!S.classes)S.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));
+if(!S.exceptions)S.exceptions=[];
+if(!S.settings.capDays)S.settings.capDays=[S.settings.weCap??6,...Array(5).fill(S.settings.wdCap??4),S.settings.weCap??6];
+if(!S.dayCap)S.dayCap={};
+const capFor=d=>S.dayCap[d]??S.settings.capDays[pd(d).getDay()];
+function nextKind(code,exceptId){
+  const r=required(code),c={learn:0,practice:0,mock:0},{date:today}=nowInfo();
+  S.plan.forEach(x=>{if(x.code===code&&x.id!==exceptId&&(x.done||x.date>=today))c[x.kind]++});
+  const kind=c.learn<r.learn?'learn':c.practice<r.practice?'practice':'mock';
+  return {kind,topic:kind==='learn'?c.learn+1:null};
+}
+const uid=()=>'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const clsName=k=>k.c&&META[k.c]?META[k.c].sh:(k.label||'นัด/กิจกรรม');
+const clsCol=k=>k.c&&META[k.c]?col(k.c):'var(--muted)';
+const subjOpts=v=>SUBJ.map(s=>`<option value="${s.c}" ${v===s.c?'selected':''}>${s.sh} (${s.c})</option>`).join('')+`<option value="" ${!v?'selected':''}>อื่น ๆ / นัดพิเศษ</option>`;
+function classesOn(date,all){
+  const wd=pd(date).getDay(),out=[];
+  if(date<=S.settings.classEnd)S.classes.filter(k=>k.d===wd).forEach(k=>{
+    const cx=S.exceptions.some(x=>x.type==='cancel'&&x.ref===k.id&&x.date===date);
+    if(!cx||all)out.push({...k,cancelled:cx});
+  });
+  S.exceptions.filter(x=>x.type==='extra'&&x.date===date).forEach(x=>out.push({...x,extra:true}));
+  return out;
+}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+const active=()=>SUBJ.filter(s=>S.subjects[s.c].on);
+const examAbs=c=>{const x=S.subjects[c];return dIdx(x.exam)*1440+toMin(x.et)};
+function required(c){
+  const x=S.subjects[c],m=META[c];
+  const learn=+x.topics, practice=Math.ceil(learn*(5-x.conf)/4)+1, mock=m.cr>=3?2:1;
+  return {learn,practice,mock,total:learn+practice+mock};
+}
+function freeSlots(date,fromMin){
+  const st=S.settings,wd=pd(date).getDay(),we=wd===0||wd===6;
+  const ws=toMin(we?st.weStart:st.wdStart),wE=toMin(we?st.weEnd:st.wdEnd);
+  const b=[[12*60,13*60],[18*60,19*60]];
+  classesOn(date).forEach(k=>b.push([toMin(k.s)-15,toMin(k.e)+15]));
+  active().forEach(s=>{const x=S.subjects[s.c];if(x.exam===date)b.push([toMin(x.et)-30,toMin(x.ee)+30])});
+  if(fromMin!=null)b.push([0,Math.ceil(fromMin/5)*5]);
+  b.sort((p,q)=>p[0]-q[0]);
+  const out=[];let t=ws;
+  const fill=(a,z)=>{let u=a;while(u+st.slot<=z){out.push([u,u+st.slot]);u+=st.slot+st.brk}};
+  for(const[a,z]of b){if(a>t)fill(t,Math.min(a,wE));t=Math.max(t,z)}
+  if(t<wE)fill(t,wE);
+  return out;
+}
+const lastExam=()=>active().reduce((m,s)=>S.subjects[s.c].exam>m?S.subjects[s.c].exam:m,'0');
+
+function generate(){
+  const {date:today,min:nowMin}=nowInfo();
+  const keep=S.plan.filter(x=>x.date<today||(x.date===today&&(x.done||x.s<nowMin))||(x.pinned&&S.subjects[x.code]?.on));
+  const live=x=>x.done||(x.pinned&&(x.date>today||(x.date===today&&x.e>=nowMin)));
+  const used={};active().forEach(s=>used[s.c]={learn:0,practice:0,mock:0});
+  keep.forEach(x=>{if(live(x)&&used[x.code])used[x.code][x.kind]++});
+  const reviewLoad={};
+  const addReviews=(x)=>[1,3,7].forEach(k=>{const d=addD(x.date,k);if(d<=S.subjects[x.code].exam)reviewLoad[d]=(reviewLoad[d]||0)+1});
+  keep.forEach(x=>{if(x.kind==='learn'&&live(x))addReviews(x)});
+  const fresh=[],end=lastExam();
+  for(let d=today;d<=end;d=addD(d,1)){
+    const wd=pd(d).getDay(),we=wd===0||wd===6;
+    const keptToday=keep.filter(x=>x.date===d);
+    let slots=freeSlots(d,d===today?nowMin:null).filter(([a,z])=>!keptToday.some(k=>a<k.e&&z>k.s));
+    const cap=Math.max(0,capFor(d)-keptToday.length);
+    slots=slots.slice(0,cap);
+    let prev=null;
+    for(const[a,z]of slots){
+      const at=dIdx(d)*1440+a;let best=null,bs=0;
+      for(const s of active()){
+        const x=S.subjects[s.c],ex=examAbs(s.c);
+        if(at+S.settings.slot+60>ex)continue;
+        const r=required(s.c),u=used[s.c],rem=r.total-u.learn-u.practice-u.mock;
+        if(rem<=0)continue;
+        const left=Math.max(.3,(ex-at)/1440);
+        let sc=(s.cr+1)*(6-x.conf)*rem/left;
+        if(left<=1.3)sc*=5;
+        if(prev===s.c)sc*=.35;
+        if(sc>bs){bs=sc;best=s.c}
+      }
+      if(!best)continue;
+      const r=required(best),u=used[best],left=(examAbs(best)-at)/1440,eve=left<=1.3;
+      let kind;
+      if(eve)kind=u.mock<r.mock?'mock':u.practice<r.practice?'practice':'learn';
+      else kind=u.learn<r.learn?'learn':u.practice<r.practice?'practice':'mock';
+      u[kind]++;
+      const x={id:d+'-'+a,date:d,s:a,e:z,code:best,kind,eve,topic:kind==='learn'?u.learn:null,done:false};
+      if(kind==='learn')addReviews(x);
+      fresh.push(x);prev=best;
+    }
+  }
+  S.plan=[...keep,...fresh].sort((p,q)=>p.date<q.date?-1:p.date>q.date?1:p.s-q.s);
+  save();
+}
+function recallFor(date){
+  const {date:today}=nowInfo(),out=[];
+  S.plan.forEach(x=>{
+    if(x.kind!=='learn'||!S.subjects[x.code]?.on)return;
+    if(!x.done&&x.date<today)return;
+    [1,3,7].forEach(k=>{const d=addD(x.date,k);if(d===date&&d<=S.subjects[x.code].exam)out.push({id:`${x.code}-${x.topic}-${d}`,code:x.code,topic:x.topic,k})});
+  });
+  return out;
+}
+const KIND={learn:'อ่านเนื้อหา',practice:'ทำโจทย์',mock:'ข้อสอบเก่า'};
+const TIP={learn:'อ่าน 40 นาที แล้วปิดชีท เขียนสรุปจากความจำ 10 นาที',practice:'เริ่มจากโจทย์แนวที่เคยผิด จดข้อผิดลงสมุดรวมจุดพลาด',mock:'จับเวลาเหมือนสอบจริง ตรวจคำตอบ แล้วทบทวนเฉพาะข้อที่ผิด'};
+const slotTitle=x=>x.kind==='learn'?`บทที่ ${x.topic}`:x.kind==='practice'?'แบบฝึกหัด / โจทย์':'ข้อสอบเก่าเต็มชุด';
+
+let tab='day',sel=nowInfo().date,confirmReset=false;
+const $=id=>document.getElementById(id);
+
+function header(){
+  const {date:today}=nowInfo();
+  const up=active().map(s=>({s,d:S.subjects[s.c].exam})).filter(o=>o.d>=today).sort((a,b)=>a.d<b.d?-1:1)[0];
+  $('count').innerHTML=up?`<b class="mono">${dIdx(up.d)-dIdx(today)}</b><span class="muted small">วันถึงสอบวิชาแรก<br>${up.s.sh} · ${thDate(up.d)}</span>`:'<span class="muted">สอบครบทุกวิชาแล้ว</span>';
+  const {min}=nowInfo();
+  const missed=S.plan.filter(x=>!x.done&&(x.date<today||(x.date===today&&x.e<min))&&x.date>=addD(today,-3)).length;
+  let h='';
+  const ex=SUBJ.filter(s=>S.subjects[s.c].on&&!S.subjects[s.c].real);
+  if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>s.sh).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><button class="btn" data-go="subj">ใส่วันสอบ</button></div>`;
+  if(missed)h+=`<div class="banner"><span class="small">มี ${missed} ช่วงอ่านที่ผ่านไปแล้วแต่ยังไม่ได้ติ๊ก งานที่ค้างจะถูกยกไปวันถัดไป</span><button class="btn primary" data-act="replan">จัดแผนใหม่</button></div>`;
+  $('banner').innerHTML=h;$('banner').style.display=h?'flex':'none';$('banner').style.flexDirection='column';$('banner').style.gap='8px';
+}
+
+function viewDay(){
+  const {date:today,min}=nowInfo(),end=lastExam();
+  const start=S.plan.length&&S.plan[0].date<today?(S.plan[0].date>addD(today,-3)?S.plan[0].date:addD(today,-3)):today;
+  let strip='';
+  for(let d=start;d<=end;d=addD(d,1)){
+    const dt=pd(d),n=S.plan.filter(x=>x.date===d).length,ex=active().some(s=>S.subjects[s.c].exam===d);
+    strip+=`<button class="day${ex?' exam':''}" data-day="${d}" aria-pressed="${d===sel}"><div class="dw">${DW[dt.getDay()]}</div><div class="dn">${dt.getDate()}</div><div class="dots">${'<i></i>'.repeat(Math.min(n,6))}</div></button>`;
+  }
+  const dt=pd(sel),wd=dt.getDay(),items=[];
+  classesOn(sel,true).forEach(k=>items.push({t:'cls',s:toMin(k.s),e:toMin(k.e),k}));
+  active().forEach(s=>{const x=S.subjects[s.c];if(x.exam===sel)items.push({t:'exam',s:toMin(x.et),e:toMin(x.ee),c:s.c,real:x.real})});
+  S.plan.filter(x=>x.date===sel&&S.subjects[x.code]?.on).forEach(x=>items.push({t:'study',s:x.s,e:x.e,x}));
+  items.sort((a,b)=>a.s-b.s);
+  const studyN=items.filter(i=>i.t==='study').length,doneN=items.filter(i=>i.t==='study'&&i.x.done).length;
+  const rows=items.map(i=>{
+    const tm=`<div class="t">${hm(i.s)}–${hm(i.e)}</div>`;
+    if(i.t==='cls'){const k=i.k;return `<div class="row cls${k.cancelled?' off':''}">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${clsCol(k)}"></span>${k.c||''}${k.extra?'<span class="kind">เฉพาะวันนี้</span>':''}</div><div class="title">${k.cancelled?'งดคาบ':k.c?'คาบเรียน':''} ${clsName(k)}</div></div><div>${k.extra?`<button class="btn sm" data-delex="${k.id}">ลบ</button>`:k.cancelled?`<button class="btn sm" data-uncancel="${k.id}">เรียนตามปกติ</button>`:`<button class="btn sm" data-cancel="${k.id}">งดคาบนี้</button>`}</div></div>`}
+    if(i.t==='exam')return `<div class="row examrow">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${col(i.c)}"></span>${i.c}</div><div class="title">สอบ ${META[i.c].th}${i.real?'':' <span class="kind">วันตัวอย่าง</span>'}</div><div class="tip">นอนให้พอ เตรียมบัตรนักศึกษาและอุปกรณ์ตั้งแต่คืนก่อน</div></div><div></div></div>`;
+    const x=i.x,missed=!x.done&&(x.date<today||(x.date===today&&x.e<min));
+    const rate=x.done?`<div class="rate"><span class="small muted">รอบนี้รู้สึกว่า</span>${[['easy','ง่าย'],['ok','พอได้'],['hard','ยาก']].map(([k,l])=>`<button data-rate="${k}" data-id="${x.id}" aria-pressed="${x.rating===k}">${l}</button>`).join('')}</div>`:'';
+    return `<div class="row${x.done?' done':''}${missed?' missed':''}">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${x.code} · ${META[x.code].sh}<span class="kind${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${s.c}" ${s.c===x.code?'selected':''}>${s.sh}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="ทำเสร็จแล้ว">${x.done?'✓':''}</button></div>`;
+  }).join('');
+  const rc=recallFor(sel);
+  const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${META[r.code].sh} บทที่ ${r.topic} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
+  return `<div class="section"><div class="strip" id="strip">${strip}</div></div>
+  <div class="section"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2>วัน${DWL[wd]}ที่ ${dt.getDate()} ${MON[dt.getMonth()]}${sel===today?' · วันนี้':''}</h2><span class="muted small mono">${doneN}/${studyN} ช่วงอ่าน · ${studyN*S.settings.slot/60} ชม.</span></div>
+  <div class="daytools"><div class="step"><span>อ่านวันนี้</span><button data-cap="-1" aria-label="ลดหนึ่งช่วง">−</button><b>${capFor(sel)}</b><button data-cap="1" aria-label="เพิ่มหนึ่งช่วง">+</button><span>ช่วง</span>${S.dayCap[sel]!=null?'<button class="btn sm" data-act="capreset" style="width:auto;height:auto">ใช้ค่าปกติ</button>':''}</div>
+  <span class="small muted">${studyN<capFor(sel)&&sel>=today?`วันนี้มีเวลาว่างพอแค่ ${studyN} ช่วง`:`ค่าปกติวัน${DWL[wd]} ${S.settings.capDays[wd]} ช่วง`}</span></div>
+  <div class="timeline">${rows||'<div class="empty">ไม่มีช่วงอ่านในวันนี้</div>'}</div>
+  <details class="addbox"><summary>เพิ่มช่วงอ่านเองตามเวลาที่ต้องการ</summary><div class="form">
+  <select id="o-c" aria-label="วิชา">${active().map(s=>`<option value="${s.c}">${s.sh}</option>`).join('')}</select>
+  <input type="time" id="o-s" value="20:00" aria-label="เวลาเริ่ม"><span class="small muted">ยาว ${S.settings.slot} นาที</span>
+  <button class="btn primary" data-act="addown">เพิ่มช่วงอ่าน</button></div></details>
+  <details class="addbox"><summary>เพิ่มคาบชดเชยหรือนัดพิเศษเฉพาะวันนี้</summary><div class="form">
+  <select id="x-c" aria-label="วิชา">${subjOpts(SUBJ[0].c)}</select><input id="x-label" placeholder="ชื่อ (ถ้าเลือกอื่น ๆ)" aria-label="ชื่อ">
+  <input type="time" id="x-s" value="13:00" aria-label="เริ่ม"><span>–</span><input type="time" id="x-e" value="15:00" aria-label="จบ">
+  <button class="btn primary" data-act="addextra">เพิ่ม</button></div></details></div>${recall}`;
+}
+
+function viewPlan(){
+  const {date:today}=nowInfo();
+  const cov=active().map(s=>{
+    const r=required(s.c),pl=S.plan.filter(x=>x.code===s.c&&(x.done||x.date>=today)).length,dn=S.plan.filter(x=>x.code===s.c&&x.done).length;
+    const gap=r.total-pl;
+    return `<tr><td><span class="sw" style="background:${col(s.c)}"></span> ${s.sh}</td><td class="mono">${thDate(S.subjects[s.c].exam)}</td><td class="mono">${r.total}</td><td class="mono">${pl}</td><td class="mono">${dn}</td><td>${gap>0?`<span class="bad">ขาด ${gap} ช่วง</span>`:'<span class="ok">ครบ</span>'}</td></tr>`;
+  }).join('');
+  let days='';
+  for(let d=today;d<=lastExam();d=addD(d,1)){
+    const sl=S.plan.filter(x=>x.date===d&&S.subjects[x.code]?.on),cnt={};
+    sl.forEach(x=>cnt[x.code]=(cnt[x.code]||0)+1);
+    const ex=active().filter(s=>S.subjects[s.c].exam===d).map(s=>`<span class="pchip ex">สอบ ${s.sh}</span>`).join('');
+    days+=`<div class="planday"><div class="small mono">${thDate(d)}</div><div class="chips">${ex}${Object.entries(cnt).map(([c,n])=>`<span class="pchip"><span class="sw" style="background:${col(c)}"></span>${META[c].sh} ×${n}</span>`).join('')||(ex?'':'<span class="muted small">พัก</span>')}</div></div>`;
+  }
+  const total=S.plan.filter(x=>x.date>=today).length;
+  return `<div class="section"><h2>ความครอบคลุมแต่ละวิชา</h2><p class="small muted" style="margin:0">จำนวนช่วง (ช่วงละ ${S.settings.slot} นาที) ที่ควรใช้ คำนวณจากจำนวนบท ความมั่นใจ และหน่วยกิต ถ้าขาด ให้เพิ่มชั่วโมงอ่านต่อวันในแท็บตั้งค่า</p>
+  <div class="tablebox"><table><thead><tr><th>วิชา</th><th>วันสอบ</th><th>ควรใช้</th><th>จัดไว้</th><th>ทำแล้ว</th><th>สถานะ</th></tr></thead><tbody>${cov}</tbody></table></div></div>
+  <div class="section"><h2>รายวัน <span class="muted small">รวม ${total} ช่วง · ${Math.round(total*S.settings.slot/60)} ชม.</span></h2><div>${days}</div></div>
+  <div class="section small muted"><b style="color:var(--fg)">วิธีจัด:</b> ทุกช่วงว่าง ระบบเลือกวิชาที่ได้คะแนนสูงสุดจาก (หน่วยกิต+1) × (6 − ความมั่นใจ) × งานที่เหลือ ÷ วันที่เหลือก่อนสอบ วิชาที่สอบใกล้ ไม่มั่นใจ และเหลือเยอะจะขึ้นก่อน ไม่ให้วิชาเดียวกันติดกันถ้าเลี่ยงได้ และวันก่อนสอบจะเน้นข้อสอบเก่าของวิชานั้น</div>`;
+}
+
+function viewSubj(){
+  const rows=SUBJ.map(s=>{
+    const x=S.subjects[s.c],r=required(s.c),dn=S.plan.filter(p=>p.code===s.c&&p.done).length,pct=Math.min(100,Math.round(dn/r.total*100));
+    return `<tr><td><input type="checkbox" id="on-${s.c}" data-f="on" data-c="${s.c}" ${x.on?'checked':''} aria-label="รวมในแผน"></td>
+    <td><div class="chip"><span class="sw" style="background:${col(s.c)}"></span>${s.c} (${s.cr})</div><div>${s.th}</div></td>
+    <td><input type="date" id="ex-${s.c}" data-f="exam" data-c="${s.c}" value="${x.exam}">${x.real?'':`<div class="small" style="color:var(--warn)">วันตัวอย่าง <button class="btn small" data-confirm="${s.c}" style="padding:1px 8px">วันนี้ถูกแล้ว</button></div>`}</td>
+    <td><input type="time" id="et-${s.c}" data-f="et" data-c="${s.c}" value="${x.et}"> – <input type="time" id="ee-${s.c}" data-f="ee" data-c="${s.c}" value="${x.ee}"></td>
+    <td><input type="number" id="tp-${s.c}" min="1" max="30" data-f="topics" data-c="${s.c}" value="${x.topics}"></td>
+    <td><select id="cf-${s.c}" data-f="conf" data-c="${s.c}">${[1,2,3,4,5].map(v=>`<option value="${v}" ${Math.round(x.conf)===v?'selected':''}>${v}${v===1?' ไม่รู้เรื่อง':v===5?' มั่นใจมาก':''}</option>`).join('')}</select></td>
+    <td><div class="bar"><i style="width:${pct}%"></i></div><div class="small mono muted">${dn}/${r.total}</div></td></tr>`;
+  }).join('');
+  return `<div class="section"><h2>วิชาและวันสอบ</h2><p class="small muted" style="margin:0">วันสอบจริงจากตารางสอบ: ชีวะ 26 ต.ค. 09:00, แล็บชีวะ 26 ต.ค. 13:30, เคมี 29 ต.ค. 09:00, อาหารเพื่อสุขภาพ 3 พ.ย. 13:00 วิชาที่ยังไม่มีวันให้ใส่เพิ่ม จำนวนบท/หัวข้อที่ออกสอบ และความมั่นใจ (1–5) ค่าความมั่นใจจะปรับเองเมื่อกด “ง่าย” หรือ “ยาก” หลังอ่านแต่ละช่วง</p>
+  <div class="tablebox"><table><thead><tr><th>ใช้</th><th>วิชา</th><th>วันสอบ</th><th>เวลาสอบ</th><th>บท</th><th>ความมั่นใจ</th><th>ความคืบหน้า</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${confirmReset?'<span class="small">ลบความคืบหน้าทั้งหมดและเริ่มใหม่?</span><button class="btn" data-act="reset-yes">ลบและเริ่มใหม่</button><button class="btn" data-act="reset-no">ยกเลิก</button>':'<button class="btn" data-act="reset">เริ่มใหม่ทั้งหมด</button>'}</div></div>`;
+}
+
+function viewSched(){
+  const {date:today}=nowInfo();
+  const order=[1,2,3,4,5,6,0];
+  const krow=k=>`<div class="krow"><select data-k="${k.id}" data-kf="d" aria-label="วัน">${order.map(d=>`<option value="${d}" ${k.d===d?'selected':''}>${DWL[d]}</option>`).join('')}</select>
+    <input type="time" data-k="${k.id}" data-kf="s" value="${k.s}" aria-label="เริ่ม"><span>–</span><input type="time" data-k="${k.id}" data-kf="e" value="${k.e}" aria-label="จบ">
+    <select class="grow" data-k="${k.id}" data-kf="c" aria-label="วิชา">${subjOpts(k.c)}</select>${k.c?'':`<input class="grow" data-k="${k.id}" data-kf="label" value="${k.label||''}" placeholder="ชื่อคาบ/กิจกรรม">`}
+    <button class="btn sm" data-delk="${k.id}">ลบ</button></div>`;
+  const week=order.map(d=>{const ks=S.classes.filter(k=>k.d===d).sort((p,q)=>toMin(p.s)-toMin(q.s));return ks.length?`<div class="dayhead">${DWL[d]}</div>${ks.map(krow).join('')}`:''}).join('');
+  const exs=S.exceptions.filter(x=>x.date>=today).sort((p,q)=>p.date<q.date?-1:1).map(x=>{
+    const ref=x.type==='cancel'?S.classes.find(k=>k.id===x.ref):null;
+    return `<div class="krow"><span class="mono small" style="min-width:96px">${thDate(x.date)}</span><span class="grow">${x.type==='cancel'?`งดคาบ ${ref?clsName(ref)+' '+ref.s:''}`:`เพิ่ม ${clsName(x)} ${x.s}–${x.e}`}</span><button class="btn sm" data-delex="${x.id}">ยกเลิก</button></div>`}).join('');
+  const st=S.settings,f=(k,l,t,extra='')=>`<label for="st-${k}">${l}<input id="st-${k}" type="${t}" data-s="${k}" value="${st[k]}" ${extra}></label>`;
+  return `<div class="section"><h2>ตารางเรียนประจำสัปดาห์</h2><p class="small muted" style="margin:0">แก้วัน เวลา หรือวิชาได้เลย แผนอ่านจะจัดใหม่ทันที ระบบเว้นเวลาก่อนและหลังคาบ 15 นาทีไว้เดินทาง ถ้าเปลี่ยนแค่บางวัน (งดคาบ/เรียนชดเชย) ให้ทำที่แท็บแผนรายวันของวันนั้น</p>
+  <div class="klist">${week||'<div class="empty">ยังไม่มีคาบเรียน</div>'}</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="addk">เพิ่มคาบเรียน</button><button class="btn" data-act="restorek">ใช้ตารางเดิม (28 ก.ย.–4 ต.ค.)</button></div></div>
+  ${exs?`<div class="section"><h2>เปลี่ยนเฉพาะวัน</h2><div class="klist">${exs}</div></div>`:''}
+  <div class="section"><h2>เวลาอ่านหนังสือ</h2><div class="settings">
+  ${f('wdStart','วันเรียน เริ่มได้','time')}${f('wdEnd','วันเรียน หยุดอ่าน','time')}
+  ${f('weStart','เสาร์-อาทิตย์ เริ่มได้','time')}${f('weEnd','เสาร์-อาทิตย์ หยุดอ่าน','time')}
+  ${f('slot','ความยาว 1 ช่วง (นาที)','number','min="25" max="90" step="5"')}${f('brk','พักระหว่างช่วง (นาที)','number','min="5" max="30" step="5"')}
+  ${f('classEnd','มีคาบเรียนถึงวันที่','date')}
+  </div>
+  <h3 style="margin-top:6px">จำนวนช่วงอ่านต่อวัน</h3><div class="capgrid">${[1,2,3,4,5,6,0].map(d=>`<label for="cap-${d}">${DWL[d]}<input id="cap-${d}" type="number" min="0" max="14" data-capday="${d}" value="${st.capDays[d]}"></label>`).join('')}</div>
+  <p class="small muted" style="margin:0">ช่วงละ ${st.slot} นาที ถ้าอยากเปลี่ยนเฉพาะวันไหน ให้กด − / + ที่หน้าแผนรายวันของวันนั้น เว้นพักกลางวัน 12:00–13:00 และมื้อเย็น 18:00–19:00 ให้เสมอ</p></div>`;
+}
+
+function render(){
+  header();
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
+  $('view').innerHTML=tab==='day'?viewDay():tab==='plan'?viewPlan():tab==='subj'?viewSubj():viewSched();
+  const a=document.querySelector('.day[aria-pressed="true"]');if(a)a.scrollIntoView({block:'nearest',inline:'center'});
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.tab){tab=t.dataset.tab;render();return}
+  if(t.dataset.go){tab=t.dataset.go;render();return}
+  if(t.dataset.day){sel=t.dataset.day;render();return}
+  if(t.dataset.tick){const x=S.plan.find(p=>p.id===t.dataset.tick);x.done=!x.done;if(!x.done)x.rating=null;save();render();return}
+  if(t.dataset.rate){
+    const x=S.plan.find(p=>p.id===t.dataset.id),sub=S.subjects[x.code],old=x.rating;
+    const delta={easy:.25,ok:0,hard:-.5};
+    if(old)sub.conf-=delta[old];
+    x.rating=old===t.dataset.rate?null:t.dataset.rate;
+    if(x.rating)sub.conf+=delta[x.rating];
+    sub.conf=Math.max(1,Math.min(5,sub.conf));
+    generate();render();return}
+  if(t.dataset.cancel){S.exceptions.push({id:uid(),type:'cancel',ref:t.dataset.cancel,date:sel});generate();render();return}
+  if(t.dataset.uncancel){S.exceptions=S.exceptions.filter(x=>!(x.type==='cancel'&&x.ref===t.dataset.uncancel&&x.date===sel));generate();render();return}
+  if(t.dataset.delex){S.exceptions=S.exceptions.filter(x=>x.id!==t.dataset.delex);generate();render();return}
+  if(t.dataset.delk){S.classes=S.classes.filter(k=>k.id!==t.dataset.delk);S.exceptions=S.exceptions.filter(x=>x.ref!==t.dataset.delk);generate();render();return}
+  if(t.dataset.cap){S.dayCap[sel]=Math.max(0,Math.min(14,capFor(sel)+ +t.dataset.cap));generate();render();return}
+  if(t.dataset.delslot){const n=S.plan.filter(x=>x.date===sel).length;S.plan=S.plan.filter(x=>x.id!==t.dataset.delslot);S.dayCap[sel]=Math.max(0,Math.min(capFor(sel),n-1));generate();render();return}
+  const act=t.dataset.act;
+  if(act==='capreset'){delete S.dayCap[sel];generate();render();return}
+  if(act==='addown'){const c=$('o-c').value,st=$('o-s').value;if(!c||!st)return;const a=toMin(st),{kind,topic}=nextKind(c);
+    const n=S.plan.filter(x=>x.date===sel).length;
+    S.plan.push({id:uid(),date:sel,s:a,e:a+S.settings.slot,code:c,kind,topic,eve:false,done:false,pinned:true});
+    S.dayCap[sel]=Math.max(capFor(sel),n+1);generate();render();return}
+  if(act==='addk'){S.classes.push({id:uid(),d:1,s:'08:00',e:'09:00',c:SUBJ[0].c});save();render();return}
+  if(act==='restorek'){S.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));S.exceptions=S.exceptions.filter(x=>x.type==='extra');generate();render();return}
+  if(act==='addextra'){const c=$('x-c').value,st=$('x-s').value,en=$('x-e').value;if(!st||!en||en<=st)return;
+    S.exceptions.push({id:uid(),type:'extra',date:sel,s:st,e:en,c,label:c?'':($('x-label').value.trim()||'นัดพิเศษ')});generate();render();return}
+  if(act==='replan'){generate();render()}
+  if(t.dataset.confirm){S.subjects[t.dataset.confirm].real=true;save();render();return}
+  if(act==='reset'){confirmReset=true;render()}
+  if(act==='reset-no'){confirmReset=false;render()}
+  if(act==='reset-yes'){confirmReset=false;S=defaults();generate();sel=nowInfo().date;render()}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.stime||t.dataset.ssubj){const x=S.plan.find(p=>p.id===(t.dataset.stime||t.dataset.ssubj));if(!x||!t.value)return;
+    if(t.dataset.stime){const a=toMin(t.value);x.s=a;x.e=a+S.settings.slot}
+    else{x.code=t.value;Object.assign(x,nextKind(x.code,x.id));x.eve=false}
+    x.id=uid();x.pinned=true;S.dayCap[x.date]=Math.max(capFor(x.date),S.plan.filter(p=>p.date===x.date).length);generate();render();return}
+  if(t.dataset.capday){S.settings.capDays[+t.dataset.capday]=Math.max(0,Math.min(14,+t.value||0));generate();render();return}
+  if(t.dataset.k){const k=S.classes.find(x=>x.id===t.dataset.k),f=t.dataset.kf;
+    if(f==='d')k.d=+t.value;else if(f==='label')k.label=t.value;else if(f==='c')k.c=t.value;else if(t.value)k[f]=t.value;
+    generate();render();return}
+  if(t.dataset.recall){S.recall[t.dataset.recall]=t.checked;save();return}
+  if(t.dataset.f){
+    const x=S.subjects[t.dataset.c],f=t.dataset.f;
+    if(f==='on')x.on=t.checked;else if(f==='topics')x.topics=Math.max(1,+t.value||1);else if(f==='conf')x.conf=+t.value;else if(t.value)x[f]=t.value;
+    if(f==='exam')x.real=true;
+    generate();render();return}
+  if(t.dataset.s){
+    const k=t.dataset.s;if(!t.value)return;
+    S.settings[k]=t.type==='number'?Math.max(0,+t.value):t.value;
+    generate();render()}
+});
+
+if(!S.plan.length)generate();
+render();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+let deferredPrompt=null;const ib=document.getElementById('installBtn');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;ib.hidden=false});
+ib.addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;ib.hidden=true});
+window.addEventListener('appinstalled',()=>{ib.hidden=true});
+</script>
+</body>
+</html>
