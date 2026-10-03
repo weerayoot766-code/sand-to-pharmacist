@@ -77,11 +77,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .day[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .day[aria-pressed="true"] .dw{color:var(--bg)}
 .day[aria-pressed="true"] .dn{color:var(--bg)}
-.timeline{display:flex;flex-direction:column;border-top:1px solid var(--line)}
-.row{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.timeline{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:start;padding:12px 14px;border-radius:12px}
 .row .t{font-family:var(--mono);font-size:.85rem;color:var(--muted);padding-top:2px}
 .row .main{min-width:0}
-.row.cls{opacity:.6}
+.row.cls{opacity:.7;padding-block:8px;border:1px dashed var(--line)}
 .row.cls .title{font-weight:400}
 .row.cls.off{opacity:.45}.row.cls.off .title{text-decoration:line-through}
 .btn.sm{padding:3px 10px;font-size:.8rem}
@@ -102,18 +102,34 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .krow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .krow .grow{flex:1 1 160px}
 .dayhead{font-family:var(--display);font-weight:600;padding-top:12px;padding-bottom:2px}
-.row.examrow{background:var(--exam-soft);padding-inline:10px;border-radius:8px;border-bottom:0;margin-block:4px}
+.row.examrow{background:var(--exam-soft);border:2px solid var(--exam)}
 .row.examrow .title{color:var(--exam)}
-.row.done .title{text-decoration:line-through;color:var(--muted)}
-.row.missed .t{color:var(--warn)}
+.row.study{--sc:var(--muted);background:color-mix(in srgb,var(--sc) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--sc) 35%,var(--line))}
+.row.study .t{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0;color:var(--fg)}
+.row.study .t b{font-size:1.05rem;font-weight:600;padding:3px 8px;border-radius:7px;background:var(--sc);color:var(--surface)}
+.row.study .t span{font-size:.78rem;color:var(--muted);padding-left:8px}
+.row.study .title{font-size:1.05rem}
+.row.study .chip{color:var(--fg);font-weight:500}
+.kind.learn{background:var(--surface);color:var(--fg)}
+.kind.practice{background:var(--fg);color:var(--surface);border-color:var(--fg)}
+.kind.mock{background:var(--exam);color:var(--surface);border-color:var(--exam)}
+.row.study.done{background:var(--accent-soft);border:2px solid var(--accent)}
+.row.study.done .t b{background:var(--accent)}
+.row.study.done .title{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
+.row.study.done .chip .sw{background:var(--accent)!important}
+.donebadge{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;font-weight:600;color:var(--accent);margin-top:4px}
+.row.study.missed{border:2px dashed var(--warn)}
+.row.missed .t span{color:var(--warn)}
 .title{font-weight:600}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-family:var(--mono);color:var(--muted)}
 .sw{width:10px;height:10px;border-radius:3px;flex:0 0 auto;display:inline-block}
 .kind{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:6px}
 .kind.eve{border-color:var(--exam);color:var(--exam)}
 .tip{font-size:.85rem;color:var(--muted);margin-top:2px}
-.check{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:var(--surface);cursor:pointer;color:var(--bg);font-size:1rem;display:grid;place-items:center}
-.check[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.check{width:46px;height:46px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--sc,var(--muted)) 55%,var(--line));background:var(--surface);cursor:pointer;color:color-mix(in srgb,var(--muted) 40%,transparent);display:grid;place-items:center;transition:transform .15s}
+.check svg{width:24px;height:24px}
+.check:hover{transform:scale(1.06)}
+.check[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 25%,transparent)}
 .rate{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
 .rate button{font-size:.8rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
 .rate button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
@@ -144,7 +160,7 @@ td input[type=number]{width:56px}
 .settings label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.9rem}
 .settings input{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;width:112px}
 .legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.82rem}
-@media (max-width:480px){.row{grid-template-columns:70px 1fr auto;gap:8px}.planday{grid-template-columns:72px 1fr}}
+@media (max-width:480px){.row{grid-template-columns:70px 1fr auto;gap:8px;padding-inline:10px}.row.study .t b{font-size:.95rem;padding:2px 6px}.planday{grid-template-columns:72px 1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -354,7 +370,7 @@ function viewDay(){
     if(i.t==='exam')return `<div class="row examrow">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${col(i.c)}"></span>${i.c}</div><div class="title">สอบ ${META[i.c].th}${i.real?'':' <span class="kind">วันตัวอย่าง</span>'}</div><div class="tip">นอนให้พอ เตรียมบัตรนักศึกษาและอุปกรณ์ตั้งแต่คืนก่อน</div></div><div></div></div>`;
     const x=i.x,missed=!x.done&&(x.date<today||(x.date===today&&x.e<min));
     const rate=x.done?`<div class="rate"><span class="small muted">รอบนี้รู้สึกว่า</span>${[['easy','ง่าย'],['ok','พอได้'],['hard','ยาก']].map(([k,l])=>`<button data-rate="${k}" data-id="${x.id}" aria-pressed="${x.rating===k}">${l}</button>`).join('')}</div>`:'';
-    return `<div class="row${x.done?' done':''}${missed?' missed':''}">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${x.code} · ${META[x.code].sh}<span class="kind${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${s.c}" ${s.c===x.code?'selected':''}>${s.sh}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="ทำเสร็จแล้ว">${x.done?'✓':''}</button></div>`;
+    return `<div class="row study${x.done?' done':''}${missed?' missed':''}" style="--sc:${col(x.code)}"><div class="t"><b>${hm(x.s)}</b><span>ถึง ${hm(x.e)}</span></div><div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${x.code} · ${META[x.code].sh}<span class="kind ${x.kind}${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${x.done?'<div class="donebadge">✓ อ่านเสร็จแล้ว</div>':''}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${s.c}" ${s.c===x.code?'selected':''}>${s.sh}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="${x.done?'ยกเลิกติ๊ก':'ติ๊กว่าอ่านเสร็จ'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>`;
   }).join('');
   const rc=recallFor(sel);
   const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${META[r.code].sh} บทที่ ${r.topic} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
