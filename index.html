@@ -24,8 +24,7 @@ img{max-width:100%}
 :root{
   --bg:#f3f5f4; --surface:#ffffff; --line:#dde3e0; --fg:#17211d; --muted:#5c6b65;
   --accent:#1d6b55; --accent-soft:#e1efe9; --warn:#b4541c; --warn-soft:#fbeadf; --exam:#a8243b; --exam-soft:#f9e3e7; --olive:#5f6b1f;
-  --s-512101:#2f7d4a; --s-512102:#6a9a2c; --s-511103:#3653b0; --s-513108:#b0602a;
-  --s-550151:#8a3fa0; --s-SU101:#b03a6b; --s-SU115:#a38415; --s-SU301:#1f7f8f;
+  --c0:#2f7d4a; --c1:#6a9a2c; --c2:#3653b0; --c3:#8a3fa0; --c4:#b0602a; --c5:#b03a6b; --c6:#1f7f8f; --c7:#a38415; --c8:#7a5a2e; --c9:#5b6abf; --c10:#2a8f6f; --c11:#9c4a3a;
   --display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
   --body:"IBM Plex Sans Thai",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
@@ -33,13 +32,11 @@ img{max-width:100%}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#111715; --surface:#1a2320; --line:#2c3833; --fg:#e6ece9; --muted:#97a69f;
   --accent:#5cc49f; --accent-soft:#1d3a30; --warn:#f0965e; --warn-soft:#3a2518; --exam:#f27b91; --exam-soft:#3d1c24; --olive:#b9c46a;
-  --s-512101:#6cc48a; --s-512102:#a6cc5c; --s-511103:#8ea4f2; --s-513108:#eba06a;
-  --s-550151:#cf8de2; --s-SU101:#ee84b0; --s-SU115:#e0c454; --s-SU301:#5fc6d6; color-scheme:dark}}
+  --c0:#6cc48a; --c1:#a6cc5c; --c2:#8ea4f2; --c3:#cf8de2; --c4:#eba06a; --c5:#ee84b0; --c6:#5fc6d6; --c7:#e0c454; --c8:#d1ab78; --c9:#a9b3f0; --c10:#66d1ac; --c11:#ee9a86; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111715; --surface:#1a2320; --line:#2c3833; --fg:#e6ece9; --muted:#97a69f;
   --accent:#5cc49f; --accent-soft:#1d3a30; --warn:#f0965e; --warn-soft:#3a2518; --exam:#f27b91; --exam-soft:#3d1c24; --olive:#b9c46a;
-  --s-512101:#6cc48a; --s-512102:#a6cc5c; --s-511103:#8ea4f2; --s-513108:#eba06a;
-  --s-550151:#cf8de2; --s-SU101:#ee84b0; --s-SU115:#e0c454; --s-SU301:#5fc6d6; color-scheme:dark}
+  --c0:#6cc48a; --c1:#a6cc5c; --c2:#8ea4f2; --c3:#cf8de2; --c4:#eba06a; --c5:#ee84b0; --c6:#5fc6d6; --c7:#e0c454; --c8:#d1ab78; --c9:#a9b3f0; --c10:#66d1ac; --c11:#ee9a86; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55}
 .wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
@@ -161,6 +158,19 @@ td input[type=number]{width:56px}
 .settings input{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;width:112px}
 .legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.82rem}
 @media (max-width:480px){.row{grid-template-columns:70px 1fr auto;gap:8px;padding-inline:10px}.row.study .t b{font-size:.95rem;padding:2px 6px}.planday{grid-template-columns:72px 1fr}}
+.welcome{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.welcome ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.addsub{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.addsub label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted)}
+.addsub input,.addsub select,.bk textarea{font:inherit;font-size:.9rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0;width:100%}
+.addsub .wide{grid-column:1/-1}
+.bk{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface)}
+.bk textarea{font-family:var(--mono);font-size:.75rem;height:84px;resize:vertical;word-break:break-all}
+.bk .row2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.msg{font-size:.85rem;padding:8px 10px;border-radius:8px;background:var(--accent-soft)}
+.msg.err{background:var(--warn-soft)}
+.confirmbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border-radius:8px;background:var(--warn-soft)}
+td .shin{width:110px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -169,7 +179,7 @@ td input[type=number]{width:56px}
 <div class="wrap">
   <header>
     <div class="brand"><svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="โลโก้ Sand To Pharmacist"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22785f"/><stop offset="1" stop-color="#155343"/></linearGradient><clipPath id="lcap"><rect x="196" y="330" width="120" height="40" rx="20"/></clipPath></defs><rect width="512" height="512" fill="url(#lg)"/><g transform="translate(256,178) scale(0.68) translate(-256,-256)"><path d="M196 160 L316 160 C310 200 274 222 256 244 C238 222 202 200 196 160 Z" fill="#f0c873"/><line x1="256" y1="246" x2="256" y2="322" stroke="#f0c873" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 14"/><g clip-path="url(#lcap)"><rect x="196" y="330" width="60" height="40" fill="#f0c873"/><rect x="256" y="330" width="60" height="40" fill="#ffffff"/></g><path d="M176 128 C176 196 230 222 244 256 C230 290 176 316 176 384 L336 384 C336 316 282 290 268 256 C282 222 336 196 336 128 Z" fill="none" stroke="#ffffff" stroke-width="14" stroke-linejoin="round"/><rect x="146" y="102" width="220" height="30" rx="15" fill="#ffffff"/><rect x="146" y="380" width="220" height="30" rx="15" fill="#ffffff"/></g><path d="M175.88000000000002 345.0H181.32000000000002Q181.32000000000002 347.08 182.38000000000002 348.26Q183.44000000000003 349.44 185.32000000000002 349.44H189.76000000000002Q191.52 349.44 192.62 348.7Q193.72000000000003 347.96 193.72000000000003 346.72V345.36Q193.72000000000003 343.4 190.84 342.92L183.48000000000002 341.68Q179.88000000000002 341.08 178.02000000000004 339.38Q176.16000000000003 337.68 176.16000000000003 335.04V332.8Q176.16000000000003 330.68 177.3 329.06Q178.44000000000003 327.44 180.54000000000002 326.56Q182.64000000000001 325.68 185.4 325.68H189.92000000000002Q192.52 325.68 194.52 326.76Q196.52 327.84 197.62 329.78Q198.72000000000003 331.72 198.72000000000003 334.28H193.28000000000003Q193.28000000000003 332.6 192.36 331.58000000000004Q191.44000000000003 330.56 189.92000000000002 330.56H185.4Q183.72000000000003 330.56 182.70000000000002 331.28Q181.68 332.0 181.68 333.2V334.28Q181.68 336.28 184.44000000000003 336.76L191.76000000000002 338.04Q195.4 338.68 197.32 340.3Q199.24 341.92 199.24 344.48V347.12Q199.24 349.24 198.06 350.88Q196.88000000000002 352.52 194.76000000000002 353.41999999999996Q192.64000000000001 354.32 189.84 354.32H185.24Q180.84 354.32 178.36 351.86Q175.88000000000002 349.4 175.88000000000002 345.0Z M203.28000000000003 348.64V347.16Q203.28000000000003 344.64 205.28000000000003 343.1Q207.28000000000003 341.56 210.56000000000003 341.56H213.00000000000003Q214.04000000000002 341.56 215.24 341.84000000000003Q216.44000000000003 342.12 217.44000000000003 342.6V340.52Q217.44000000000003 339.52 216.78000000000003 338.9Q216.12000000000003 338.28 215.04000000000002 338.28H211.60000000000002Q210.48000000000002 338.28 209.8 338.79999999999995Q209.12000000000003 339.32 209.12000000000003 340.2H203.84000000000003Q203.84000000000003 337.28 205.98000000000002 335.5Q208.12000000000003 333.72 211.60000000000002 333.72H215.04000000000002Q218.56000000000003 333.72 220.72000000000003 335.58000000000004Q222.88000000000002 337.44 222.88000000000002 340.52V354.0H217.84000000000003V351.6Q216.88000000000002 352.84 215.48000000000002 353.58Q214.08 354.32 212.72000000000003 354.32H210.24Q207.12000000000003 354.32 205.20000000000005 352.76Q203.28000000000003 351.2 203.28000000000003 348.64ZM213.12000000000003 350.16Q214.60000000000002 350.16 215.76000000000002 349.4Q216.92000000000002 348.64 217.44000000000003 347.36V346.68Q216.8 346.2 215.66000000000003 345.91999999999996Q214.52 345.64 213.24 345.64H210.72000000000003Q209.76000000000002 345.64 209.16000000000003 346.12Q208.56000000000003 346.6 208.56000000000003 347.4V348.44Q208.56000000000003 349.2 209.22000000000003 349.68Q209.88000000000002 350.16 210.96000000000004 350.16Z M228.28000000000003 334.04H233.32000000000005V336.44Q234.20000000000005 335.2 235.60000000000002 334.46000000000004Q237.00000000000003 333.72 238.40000000000003 333.72H240.80000000000004Q244.00000000000003 333.72 245.94000000000005 335.72Q247.88000000000005 337.72 247.88000000000005 341.0V354.0H242.44000000000003V341.2Q242.44000000000003 339.96 241.78000000000003 339.2Q241.12000000000003 338.44 240.08000000000004 338.44H237.68000000000004Q236.28000000000003 338.44 235.18000000000004 339.46000000000004Q234.08000000000004 340.48 233.72000000000003 342.12V354.0H228.28000000000003Z M252.48000000000005 346.48V341.92Q252.48000000000005 339.48 253.52000000000004 337.62Q254.56000000000003 335.76 256.44000000000005 334.74Q258.32000000000005 333.72 260.8 333.72H263.00000000000006Q264.16 333.72 265.36 334.22Q266.56000000000006 334.72 267.36 335.56V326.0H272.8V354.0H267.76000000000005V351.36Q266.96000000000004 352.68 265.6 353.5Q264.24 354.32 262.76000000000005 354.32H260.40000000000003Q256.84000000000003 354.32 254.66000000000003 352.15999999999997Q252.48000000000005 350.0 252.48000000000005 346.48ZM263.36 349.64Q265.00000000000006 349.64 266.1 348.46Q267.20000000000005 347.28 267.36 345.32V341.84Q267.08000000000004 340.28 266.14000000000004 339.34Q265.20000000000005 338.4 263.92 338.4H261.48Q259.88000000000005 338.4 258.90000000000003 339.48Q257.92 340.56 257.92 342.32V346.08Q257.92 347.68 258.80000000000007 348.65999999999997Q259.68000000000006 349.64 261.08000000000004 349.64Z  M298.00000000000006 330.8H289.12000000000006V326.0H312.40000000000003V330.8H303.52000000000004V354.0H298.00000000000006Z M315.40000000000003 346.4V341.72Q315.40000000000003 339.36 316.48 337.54Q317.56000000000006 335.72 319.50000000000006 334.72Q321.44000000000005 333.72 323.96000000000004 333.72H327.56000000000006Q330.08000000000004 333.72 332.02000000000004 334.72Q333.96000000000004 335.72 335.0400000000001 337.54Q336.12000000000006 339.36 336.12000000000006 341.72V346.4Q336.12000000000006 348.76 335.0400000000001 350.56Q333.96000000000004 352.36 332.02000000000004 353.34000000000003Q330.08000000000004 354.32 327.52000000000004 354.32H323.9200000000001Q321.40000000000003 354.32 319.46000000000004 353.34000000000003Q317.52000000000004 352.36 316.46000000000004 350.56Q315.40000000000003 348.76 315.40000000000003 346.4ZM327.44000000000005 349.64Q328.9200000000001 349.64 329.80000000000007 348.62Q330.68000000000006 347.6 330.68000000000006 345.96V342.08Q330.68000000000006 340.44 329.80000000000007 339.41999999999996Q328.9200000000001 338.4 327.4800000000001 338.4H324.0400000000001Q322.6000000000001 338.4 321.72 339.41999999999996Q320.84000000000003 340.44 320.84000000000003 342.08V345.96Q320.84000000000003 347.6 321.72 348.62Q322.6000000000001 349.64 324.00000000000006 349.64Z" fill="#f0c873"/><path d="M128.77200000000002 371.8H145.746Q148.55200000000002 371.8 150.714 372.881Q152.876 373.962 154.072 375.96299999999997Q155.26800000000003 377.964 155.26800000000003 380.54V384.818Q155.26800000000003 387.486 154.026 389.533Q152.78400000000002 391.58 150.553 392.707Q148.322 393.834 145.37800000000001 393.834H135.12V404.0H128.77200000000002ZM145.286 388.314Q146.89600000000002 388.314 147.90800000000002 387.279Q148.92000000000002 386.244 148.92000000000002 384.54200000000003V380.816Q148.92000000000002 379.206 148.02300000000002 378.26300000000003Q147.126 377.32 145.65400000000002 377.32H135.12V388.314Z M159.58 371.8H165.836V383.346Q166.848 382.15 168.34300000000002 381.414Q169.838 380.678 171.21800000000002 380.678H174.07Q177.75 380.678 179.981 382.978Q182.21200000000002 385.278 182.21200000000002 389.05V404.0H175.95600000000002V389.28Q175.95600000000002 387.854 175.197 386.98Q174.43800000000002 386.106 173.24200000000002 386.106H170.39000000000001Q168.78 386.106 167.515 387.279Q166.25 388.452 165.836 390.338V404.0H159.58Z M187.536 397.836V396.134Q187.536 393.236 189.836 391.46500000000003Q192.13600000000002 389.694 195.90800000000002 389.694H198.714Q199.91000000000003 389.694 201.29000000000002 390.016Q202.67000000000002 390.338 203.82000000000002 390.89V388.498Q203.82000000000002 387.348 203.06100000000004 386.635Q202.30200000000002 385.922 201.06 385.922H197.104Q195.816 385.922 195.034 386.52Q194.252 387.118 194.252 388.13H188.18Q188.18 384.772 190.64100000000002 382.725Q193.102 380.678 197.104 380.678H201.06Q205.108 380.678 207.592 382.817Q210.07600000000002 384.956 210.07600000000002 388.498V404.0H204.28V401.24Q203.17600000000002 402.666 201.56600000000003 403.517Q199.95600000000002 404.368 198.39200000000002 404.368H195.54000000000002Q191.95200000000003 404.368 189.74400000000003 402.57399999999996Q187.536 400.78 187.536 397.836ZM198.852 399.584Q200.554 399.584 201.888 398.71000000000004Q203.222 397.836 203.82000000000002 396.364V395.582Q203.084 395.03 201.77300000000002 394.70799999999997Q200.46200000000002 394.386 198.99 394.386H196.092Q194.988 394.386 194.298 394.938Q193.608 395.49 193.608 396.41V397.606Q193.608 398.48 194.36700000000002 399.03200000000004Q195.126 399.584 196.36800000000002 399.584Z M216.13600000000002 381.046H221.93200000000002V383.99Q222.806 382.656 224.43900000000002 381.805Q226.072 380.954 227.866 380.954H230.99400000000003V386.382H227.866Q225.42800000000003 386.382 223.91000000000003 387.85400000000004Q222.39200000000002 389.326 222.39200000000002 391.626V404.0H216.13600000000002Z M268.702 388.912V404.0H262.446V388.912Q262.446 387.624 261.848 386.865Q261.25 386.106 260.284 386.106H258.30600000000004Q257.01800000000003 386.106 256.052 387.049Q255.086 387.992 254.85600000000002 389.556V404.0H248.60000000000002V388.958Q248.60000000000002 387.67 248.002 386.88800000000003Q247.40400000000002 386.106 246.43800000000002 386.106H244.644Q243.31 386.106 242.298 387.302Q241.286 388.498 241.01000000000002 390.43V404.0H234.75400000000002V381.046H240.55V383.714Q241.37800000000001 382.334 242.68900000000002 381.506Q244.0 380.678 245.334 380.678H247.91000000000003Q249.566 380.678 250.923 381.552Q252.28 382.426 253.062 383.99Q254.074 382.426 255.477 381.552Q256.88 380.678 258.444 380.678H260.974Q264.47 380.678 266.586 382.955Q268.702 385.23199999999997 268.702 388.912Z M274.026 397.836V396.134Q274.026 393.236 276.326 391.46500000000003Q278.626 389.694 282.39799999999997 389.694H285.204Q286.4 389.694 287.78 390.016Q289.15999999999997 390.338 290.31 390.89V388.498Q290.31 387.348 289.551 386.635Q288.792 385.922 287.55 385.922H283.594Q282.306 385.922 281.524 386.52Q280.742 387.118 280.742 388.13H274.67Q274.67 384.772 277.131 382.725Q279.592 380.678 283.594 380.678H287.55Q291.598 380.678 294.082 382.817Q296.566 384.956 296.566 388.498V404.0H290.77V401.24Q289.666 402.666 288.056 403.517Q286.44599999999997 404.368 284.882 404.368H282.03Q278.442 404.368 276.23400000000004 402.57399999999996Q274.026 400.78 274.026 397.836ZM285.342 399.584Q287.044 399.584 288.378 398.71000000000004Q289.712 397.836 290.31 396.364V395.582Q289.574 395.03 288.26300000000003 394.70799999999997Q286.952 394.386 285.48 394.386H282.582Q281.478 394.386 280.788 394.938Q280.098 395.49 280.098 396.41V397.606Q280.098 398.48 280.85699999999997 399.03200000000004Q281.616 399.584 282.858 399.584Z M301.70599999999996 395.214V389.832Q301.70599999999996 387.118 302.92499999999995 385.048Q304.14399999999995 382.978 306.352 381.828Q308.55999999999995 380.678 311.45799999999997 380.678H315.092Q317.852 380.678 319.96799999999996 381.78200000000004Q322.08399999999995 382.886 323.2339999999999 384.887Q324.38399999999996 386.888 324.38399999999996 389.51H318.174Q318.174 387.946 317.323 387.00300000000004Q316.472 386.06 315.092 386.06H311.54999999999995Q309.93999999999994 386.06 308.95099999999996 387.233Q307.962 388.406 307.962 390.292V394.754Q307.962 396.64 308.974 397.813Q309.986 398.986 311.59599999999995 398.986H315.138Q316.60999999999996 398.986 317.50699999999995 397.928Q318.404 396.87 318.404 395.122H324.614Q324.614 399.308 322.015 401.83799999999997Q319.41599999999994 404.368 315.138 404.368H311.50399999999996Q308.606 404.368 306.375 403.21799999999996Q304.14399999999995 402.068 302.92499999999995 399.998Q301.70599999999996 397.928 301.70599999999996 395.214Z M329.38599999999997 375.112Q329.38599999999997 373.41 330.467 372.375Q331.54799999999994 371.34000000000003 333.342 371.34000000000003Q335.13599999999997 371.34000000000003 336.217 372.375Q337.29799999999994 373.41 337.29799999999994 375.112Q337.29799999999994 376.814 336.217 377.84900000000005Q335.13599999999997 378.884 333.342 378.884Q331.54799999999994 378.884 330.467 377.84900000000005Q329.38599999999997 376.814 329.38599999999997 375.112ZM330.21399999999994 381.046H336.46999999999997V404.0H330.21399999999994Z M342.53 396.364H348.69399999999996Q348.69399999999996 397.606 349.54499999999996 398.365Q350.39599999999996 399.124 351.77599999999995 399.124H355.91599999999994Q358.67599999999993 399.124 358.67599999999993 397.606V396.824Q358.67599999999993 396.364 358.21599999999995 395.97299999999996Q357.756 395.582 356.97399999999993 395.444L349.01599999999996 394.064Q346.2099999999999 393.604 344.57699999999994 392.063Q342.94399999999996 390.522 342.94399999999996 388.452V386.934Q342.94399999999996 383.99 345.3589999999999 382.334Q347.77399999999994 380.678 352.09799999999996 380.678H355.6859999999999Q359.54999999999995 380.678 361.919 382.725Q364.28799999999995 384.772 364.28799999999995 388.13H358.12399999999997Q358.12399999999997 387.118 357.457 386.52Q356.78999999999996 385.922 355.6859999999999 385.922H352.18999999999994Q349.19999999999993 385.922 349.19999999999993 387.302V388.038Q349.19999999999993 388.544 349.59099999999995 388.889Q349.98199999999997 389.234 350.71799999999996 389.372L359.09 390.89Q361.71199999999993 391.35 363.32199999999995 392.845Q364.93199999999996 394.34 364.93199999999996 396.226V397.882Q364.93199999999996 400.872 362.47099999999995 402.62Q360.00999999999993 404.368 355.91599999999994 404.368H351.77599999999995Q347.59 404.368 345.05999999999995 402.15999999999997Q342.53 399.952 342.53 396.364Z M372.09599999999995 396.456V386.382H368.04799999999994V381.046H372.28V374.1H378.352V381.046H384.332V386.382H378.352V396.18Q378.352 397.468 378.835 398.06600000000003Q379.318 398.664 380.376 398.664H384.332V404.0H379.916Q375.868 404.0 373.98199999999997 402.15999999999997Q372.09599999999995 400.32 372.09599999999995 396.456Z" fill="#ffffff"/></svg><div>
-      <div class="muted small">ติวเข้มก่อนสอบปลายภาค · 8 วิชา</div>
+      <div class="muted small" id="subtitle">ติวเข้มก่อนสอบปลายภาค</div>
       <h1>Sand To Pharmacist</h1>
     </div></div>
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><button class="btn primary" id="installBtn" hidden>ติดตั้งแอป</button><div class="count" id="count"></div></div>
@@ -200,7 +210,6 @@ const SUBJ=[
  {c:'SU101',th:'ศิลปากร',sh:'ศิลปากร',cr:3,exam:'2026-10-30',et:'09:00',ee:'11:00',real:false,topics:5,conf:4},
  {c:'SU301',th:'พลเมืองตื่นรู้',sh:'พลเมืองตื่นรู้',cr:3,exam:'2026-10-31',et:'09:00',ee:'11:00',real:false,topics:5,conf:4},
  {c:'SU115',th:'อาหารเพื่อสุขภาพ',sh:'อาหารเพื่อสุขภาพ',cr:3,exam:'2026-11-03',et:'13:00',ee:'15:00',real:true,topics:5,conf:4}];
-const META=Object.fromEntries(SUBJ.map(s=>[s.c,s]));
 const DW=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
 const DWL=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -215,23 +224,42 @@ const addD=(s,n)=>{const d=pd(s);d.setDate(d.getDate()+n);return ds(d)};
 const dIdx=s=>{const[y,m,d]=s.split('-').map(Number);return Math.round(Date.UTC(y,m-1,d)/864e5)};
 const thDate=s=>{const d=pd(s);return `${DW[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`};
 const nowInfo=()=>{const n=new Date();return {date:ds(n),min:n.getHours()*60+n.getMinutes()}};
-const col=c=>`var(--s-${c})`;
+const M=c=>S.subjList.find(x=>x.c===c)||{c,th:c,sh:c,cr:3,ci:0};
+const col=c=>`var(--c${M(c).ci%12})`;
+const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
-function defaults(){
+const sampleSubj=()=>SUBJ.map((s,i)=>({c:s.c,th:s.th,sh:s.sh,cr:s.cr,ci:i}));
+function blank(){
   return {
-    subjects:Object.fromEntries(SUBJ.map(s=>[s.c,{exam:s.exam,et:s.et,ee:s.ee,real:s.real,topics:s.topics,conf:s.conf,on:true}])),
-    settings:{wdStart:'07:30',wdEnd:'22:30',weStart:'09:00',weEnd:'22:00',capDays:[6,4,4,4,4,4,6],slot:50,brk:10,classEnd:'2026-10-23'},
-    plan:[],recall:{},
-    classes:CLASSES.map((k,i)=>({...k,id:'k'+i})),exceptions:[]
+    subjList:[],subjects:{},
+    settings:{wdStart:'07:30',wdEnd:'22:30',weStart:'09:00',weEnd:'22:00',capDays:[6,4,4,4,4,4,6],slot:50,brk:10,classEnd:''},
+    plan:[],recall:{},classes:[],exceptions:[],dayCap:{}
   };
+}
+function sample(){
+  const b=blank();
+  b.subjList=sampleSubj();
+  b.subjects=Object.fromEntries(SUBJ.map(s=>[s.c,{exam:s.exam,et:s.et,ee:s.ee,real:s.real,topics:s.topics,conf:s.conf,on:true}]));
+  b.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));b.settings.classEnd='2026-10-23';b.sample=true;
+  return b;
+}
+function normalize(x){
+  if(!x||typeof x!=='object'||!x.subjects)return null;
+  // ข้อมูลจากเวอร์ชันก่อน: ยังไม่มีรายชื่อวิชา ให้สร้างจากวิชาเดิม เก็บความคืบหน้าไว้ครบ
+  if(!Array.isArray(x.subjList))x.subjList=sampleSubj().filter(s=>x.subjects[s.c]);
+  if(!x.classes)x.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));
+  if(!x.exceptions)x.exceptions=[];
+  if(!x.plan)x.plan=[];
+  if(!x.recall)x.recall={};
+  if(!x.settings)x.settings=blank().settings;
+  if(!x.settings.capDays)x.settings.capDays=[x.settings.weCap??6,...Array(5).fill(x.settings.wdCap??4),x.settings.weCap??6];
+  if(!x.dayCap)x.dayCap={};
+  return x;
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
-if(!S||!S.subjects)S=defaults();
-if(!S.classes)S.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));
-if(!S.exceptions)S.exceptions=[];
-if(!S.settings.capDays)S.settings.capDays=[S.settings.weCap??6,...Array(5).fill(S.settings.wdCap??4),S.settings.weCap??6];
-if(!S.dayCap)S.dayCap={};
+S=normalize(S)||blank();
+if(!S.classes)S.classes=[];
 const capFor=d=>S.dayCap[d]??S.settings.capDays[pd(d).getDay()];
 function nextKind(code,exceptId){
   const r=required(code),c={learn:0,practice:0,mock:0},{date:today}=nowInfo();
@@ -240,12 +268,13 @@ function nextKind(code,exceptId){
   return {kind,topic:kind==='learn'?c.learn+1:null};
 }
 const uid=()=>'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-const clsName=k=>k.c&&META[k.c]?META[k.c].sh:(k.label||'นัด/กิจกรรม');
-const clsCol=k=>k.c&&META[k.c]?col(k.c):'var(--muted)';
-const subjOpts=v=>SUBJ.map(s=>`<option value="${s.c}" ${v===s.c?'selected':''}>${s.sh} (${s.c})</option>`).join('')+`<option value="" ${!v?'selected':''}>อื่น ๆ / นัดพิเศษ</option>`;
+const hasS=c=>S.subjList.some(x=>x.c===c);
+const clsName=k=>k.c&&hasS(k.c)?M(k.c).sh:(k.label||'นัด/กิจกรรม');
+const clsCol=k=>k.c&&hasS(k.c)?col(k.c):'var(--muted)';
+const subjOpts=v=>S.subjList.map(s=>`<option value="${esc(s.c)}" ${v===s.c?'selected':''}>${esc(s.sh)}</option>`).join('')+`<option value="" ${!v?'selected':''}>อื่น ๆ / นัดพิเศษ</option>`;
 function classesOn(date,all){
   const wd=pd(date).getDay(),out=[];
-  if(date<=S.settings.classEnd)S.classes.filter(k=>k.d===wd).forEach(k=>{
+  if(!S.settings.classEnd||date<=S.settings.classEnd)S.classes.filter(k=>k.d===wd).forEach(k=>{
     const cx=S.exceptions.some(x=>x.type==='cancel'&&x.ref===k.id&&x.date===date);
     if(!cx||all)out.push({...k,cancelled:cx});
   });
@@ -254,10 +283,10 @@ function classesOn(date,all){
 }
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 
-const active=()=>SUBJ.filter(s=>S.subjects[s.c].on);
+const active=()=>S.subjList.filter(s=>S.subjects[s.c]?.on);
 const examAbs=c=>{const x=S.subjects[c];return dIdx(x.exam)*1440+toMin(x.et)};
 function required(c){
-  const x=S.subjects[c],m=META[c];
+  const x=S.subjects[c],m=M(c);
   const learn=+x.topics, practice=Math.ceil(learn*(5-x.conf)/4)+1, mock=m.cr>=3?2:1;
   return {learn,practice,mock,total:learn+practice+mock};
 }
@@ -334,23 +363,31 @@ const KIND={learn:'อ่านเนื้อหา',practice:'ทำโจท�
 const TIP={learn:'อ่าน 40 นาที แล้วปิดชีท เขียนสรุปจากความจำ 10 นาที',practice:'เริ่มจากโจทย์แนวที่เคยผิด จดข้อผิดลงสมุดรวมจุดพลาด',mock:'จับเวลาเหมือนสอบจริง ตรวจคำตอบ แล้วทบทวนเฉพาะข้อที่ผิด'};
 const slotTitle=x=>x.kind==='learn'?`บทที่ ${x.topic}`:x.kind==='practice'?'แบบฝึกหัด / โจทย์':'ข้อสอบเก่าเต็มชุด';
 
-let tab='day',sel=nowInfo().date,confirmReset=false;
+let tab='day',sel=nowInfo().date,confirmReset=false,confirmDel=null,pendingImport=null,bkMsg=null,bkCode='',showAdd=false;
 const $=id=>document.getElementById(id);
 
 function header(){
   const {date:today}=nowInfo();
+  $('subtitle').textContent=S.subjList.length?`ติวเข้มก่อนสอบปลายภาค · ${S.subjList.length} วิชา`:'ติวเข้มก่อนสอบปลายภาค';
   const up=active().map(s=>({s,d:S.subjects[s.c].exam})).filter(o=>o.d>=today).sort((a,b)=>a.d<b.d?-1:1)[0];
-  $('count').innerHTML=up?`<b class="mono">${dIdx(up.d)-dIdx(today)}</b><span class="muted small">วันถึงสอบวิชาแรก<br>${up.s.sh} · ${thDate(up.d)}</span>`:'<span class="muted">สอบครบทุกวิชาแล้ว</span>';
+  $('count').innerHTML=up?`<b class="mono">${dIdx(up.d)-dIdx(today)}</b><span class="muted small">วันถึงสอบวิชาแรก<br>${esc(up.s.sh)} · ${thDate(up.d)}</span>`:S.subjList.length?'<span class="muted">สอบครบทุกวิชาแล้ว</span>':'';
   const {min}=nowInfo();
   const missed=S.plan.filter(x=>!x.done&&(x.date<today||(x.date===today&&x.e<min))&&x.date>=addD(today,-3)).length;
   let h='';
-  const ex=SUBJ.filter(s=>S.subjects[s.c].on&&!S.subjects[s.c].real);
-  if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>s.sh).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><button class="btn" data-go="subj">ใส่วันสอบ</button></div>`;
+  const ex=active().filter(s=>!S.subjects[s.c].real);
+  if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>esc(s.sh)).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><button class="btn" data-go="subj">ใส่วันสอบ</button></div>`;
+  if(S.sample)h+=`<div class="banner info"><span class="small">ตอนนี้เป็น<b>ข้อมูลตัวอย่าง</b> (เภสัชฯ ปี 1) ลองกดดูได้ พร้อมใช้จริงเมื่อไรให้ลบตัวอย่างแล้วเริ่มกรอกของตัวเอง</span><button class="btn" data-act="clearsample">ลบตัวอย่าง เริ่มของฉัน</button></div>`;
   if(missed)h+=`<div class="banner"><span class="small">มี ${missed} ช่วงอ่านที่ผ่านไปแล้วแต่ยังไม่ได้ติ๊ก งานที่ค้างจะถูกยกไปวันถัดไป</span><button class="btn primary" data-act="replan">จัดแผนใหม่</button></div>`;
   $('banner').innerHTML=h;$('banner').style.display=h?'flex':'none';$('banner').style.flexDirection='column';$('banner').style.gap='8px';
 }
 
+function welcome(){
+  return `<div class="welcome"><div><h2>เริ่มใช้ Sand To Pharmacist</h2><p class="muted small" style="margin:4px 0 0">ใส่ข้อมูลของคุณ 3 ขั้น แล้วแอปจะจัดเวลาอ่านหนังสือให้ทุกวันจนถึงวันสอบ</p></div>
+  <ol><li><b>เพิ่มวิชา</b> พร้อมวันและเวลาสอบ จำนวนบทที่ออกสอบ และความมั่นใจ</li><li><b>ใส่ตารางเรียน</b> แอปจะไม่จัดเวลาอ่านทับคาบเรียน</li><li><b>ตั้งจำนวนช่วงอ่านต่อวัน</b> ที่ทำได้จริง</li></ol>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="startadd">เพิ่มวิชาแรก</button><button class="btn" data-act="loadsample">ลองดูตัวอย่างก่อน</button><button class="btn" data-go="sched">มีไฟล์สำรอง? นำเข้าข้อมูล</button></div></div>`;
+}
 function viewDay(){
+  if(!S.subjList.length)return welcome();
   const {date:today,min}=nowInfo(),end=lastExam();
   const start=S.plan.length&&S.plan[0].date<today?(S.plan[0].date>addD(today,-3)?S.plan[0].date:addD(today,-3)):today;
   let strip='';
@@ -366,42 +403,43 @@ function viewDay(){
   const studyN=items.filter(i=>i.t==='study').length,doneN=items.filter(i=>i.t==='study'&&i.x.done).length;
   const rows=items.map(i=>{
     const tm=`<div class="t">${hm(i.s)}–${hm(i.e)}</div>`;
-    if(i.t==='cls'){const k=i.k;return `<div class="row cls${k.cancelled?' off':''}">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${clsCol(k)}"></span>${k.c||''}${k.extra?'<span class="kind">เฉพาะวันนี้</span>':''}</div><div class="title">${k.cancelled?'งดคาบ':k.c?'คาบเรียน':''} ${clsName(k)}</div></div><div>${k.extra?`<button class="btn sm" data-delex="${k.id}">ลบ</button>`:k.cancelled?`<button class="btn sm" data-uncancel="${k.id}">เรียนตามปกติ</button>`:`<button class="btn sm" data-cancel="${k.id}">งดคาบนี้</button>`}</div></div>`}
-    if(i.t==='exam')return `<div class="row examrow">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${col(i.c)}"></span>${i.c}</div><div class="title">สอบ ${META[i.c].th}${i.real?'':' <span class="kind">วันตัวอย่าง</span>'}</div><div class="tip">นอนให้พอ เตรียมบัตรนักศึกษาและอุปกรณ์ตั้งแต่คืนก่อน</div></div><div></div></div>`;
+    if(i.t==='cls'){const k=i.k;return `<div class="row cls${k.cancelled?' off':''}">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${clsCol(k)}"></span>${k.c&&hasS(k.c)?'':''}${k.extra?'<span class="kind">เฉพาะวันนี้</span>':''}</div><div class="title">${k.cancelled?'งดคาบ':k.c?'คาบเรียน':''} ${clsName(k)}</div></div><div>${k.extra?`<button class="btn sm" data-delex="${k.id}">ลบ</button>`:k.cancelled?`<button class="btn sm" data-uncancel="${k.id}">เรียนตามปกติ</button>`:`<button class="btn sm" data-cancel="${k.id}">งดคาบนี้</button>`}</div></div>`}
+    if(i.t==='exam')return `<div class="row examrow">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${col(i.c)}"></span>${i.c}</div><div class="title">สอบ ${esc(M(i.c).th)}${i.real?'':' <span class="kind">วันตัวอย่าง</span>'}</div><div class="tip">นอนให้พอ เตรียมบัตรนักศึกษาและอุปกรณ์ตั้งแต่คืนก่อน</div></div><div></div></div>`;
     const x=i.x,missed=!x.done&&(x.date<today||(x.date===today&&x.e<min));
     const rate=x.done?`<div class="rate"><span class="small muted">รอบนี้รู้สึกว่า</span>${[['easy','ง่าย'],['ok','พอได้'],['hard','ยาก']].map(([k,l])=>`<button data-rate="${k}" data-id="${x.id}" aria-pressed="${x.rating===k}">${l}</button>`).join('')}</div>`:'';
-    return `<div class="row study${x.done?' done':''}${missed?' missed':''}" style="--sc:${col(x.code)}"><div class="t"><b>${hm(x.s)}</b><span>ถึง ${hm(x.e)}</span></div><div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${x.code} · ${META[x.code].sh}<span class="kind ${x.kind}${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${x.done?'<div class="donebadge">✓ อ่านเสร็จแล้ว</div>':''}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${s.c}" ${s.c===x.code?'selected':''}>${s.sh}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="${x.done?'ยกเลิกติ๊ก':'ติ๊กว่าอ่านเสร็จ'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>`;
+    return `<div class="row study${x.done?' done':''}${missed?' missed':''}" style="--sc:${col(x.code)}"><div class="t"><b>${hm(x.s)}</b><span>ถึง ${hm(x.e)}</span></div><div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${esc(M(x.code).sh)}<span class="kind ${x.kind}${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${x.done?'<div class="donebadge">✓ อ่านเสร็จแล้ว</div>':''}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${esc(s.c)}" ${s.c===x.code?'selected':''}>${esc(s.sh)}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="${x.done?'ยกเลิกติ๊ก':'ติ๊กว่าอ่านเสร็จ'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>`;
   }).join('');
   const rc=recallFor(sel);
-  const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${META[r.code].sh} บทที่ ${r.topic} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
+  const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${esc(M(r.code).sh)} บทที่ ${r.topic} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
   return `<div class="section"><div class="strip" id="strip">${strip}</div></div>
   <div class="section"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2>วัน${DWL[wd]}ที่ ${dt.getDate()} ${MON[dt.getMonth()]}${sel===today?' · วันนี้':''}</h2><span class="muted small mono">${doneN}/${studyN} ช่วงอ่าน · ${studyN*S.settings.slot/60} ชม.</span></div>
   <div class="daytools"><div class="step"><span>อ่านวันนี้</span><button data-cap="-1" aria-label="ลดหนึ่งช่วง">−</button><b>${capFor(sel)}</b><button data-cap="1" aria-label="เพิ่มหนึ่งช่วง">+</button><span>ช่วง</span>${S.dayCap[sel]!=null?'<button class="btn sm" data-act="capreset" style="width:auto;height:auto">ใช้ค่าปกติ</button>':''}</div>
   <span class="small muted">${studyN<capFor(sel)&&sel>=today?`วันนี้มีเวลาว่างพอแค่ ${studyN} ช่วง`:`ค่าปกติวัน${DWL[wd]} ${S.settings.capDays[wd]} ช่วง`}</span></div>
   <div class="timeline">${rows||'<div class="empty">ไม่มีช่วงอ่านในวันนี้</div>'}</div>
   <details class="addbox"><summary>เพิ่มช่วงอ่านเองตามเวลาที่ต้องการ</summary><div class="form">
-  <select id="o-c" aria-label="วิชา">${active().map(s=>`<option value="${s.c}">${s.sh}</option>`).join('')}</select>
+  <select id="o-c" aria-label="วิชา">${active().map(s=>`<option value="${esc(s.c)}">${esc(s.sh)}</option>`).join('')}</select>
   <input type="time" id="o-s" value="20:00" aria-label="เวลาเริ่ม"><span class="small muted">ยาว ${S.settings.slot} นาที</span>
   <button class="btn primary" data-act="addown">เพิ่มช่วงอ่าน</button></div></details>
   <details class="addbox"><summary>เพิ่มคาบชดเชยหรือนัดพิเศษเฉพาะวันนี้</summary><div class="form">
-  <select id="x-c" aria-label="วิชา">${subjOpts(SUBJ[0].c)}</select><input id="x-label" placeholder="ชื่อ (ถ้าเลือกอื่น ๆ)" aria-label="ชื่อ">
+  <select id="x-c" aria-label="วิชา">${subjOpts(S.subjList[0]?.c)}</select><input id="x-label" placeholder="ชื่อ (ถ้าเลือกอื่น ๆ)" aria-label="ชื่อ">
   <input type="time" id="x-s" value="13:00" aria-label="เริ่ม"><span>–</span><input type="time" id="x-e" value="15:00" aria-label="จบ">
   <button class="btn primary" data-act="addextra">เพิ่ม</button></div></details></div>${recall}`;
 }
 
 function viewPlan(){
+  if(!S.subjList.length)return welcome();
   const {date:today}=nowInfo();
   const cov=active().map(s=>{
     const r=required(s.c),pl=S.plan.filter(x=>x.code===s.c&&(x.done||x.date>=today)).length,dn=S.plan.filter(x=>x.code===s.c&&x.done).length;
     const gap=r.total-pl;
-    return `<tr><td><span class="sw" style="background:${col(s.c)}"></span> ${s.sh}</td><td class="mono">${thDate(S.subjects[s.c].exam)}</td><td class="mono">${r.total}</td><td class="mono">${pl}</td><td class="mono">${dn}</td><td>${gap>0?`<span class="bad">ขาด ${gap} ช่วง</span>`:'<span class="ok">ครบ</span>'}</td></tr>`;
+    return `<tr><td><span class="sw" style="background:${col(s.c)}"></span> ${esc(s.sh)}</td><td class="mono">${thDate(S.subjects[s.c].exam)}</td><td class="mono">${r.total}</td><td class="mono">${pl}</td><td class="mono">${dn}</td><td>${gap>0?`<span class="bad">ขาด ${gap} ช่วง</span>`:'<span class="ok">ครบ</span>'}</td></tr>`;
   }).join('');
   let days='';
   for(let d=today;d<=lastExam();d=addD(d,1)){
     const sl=S.plan.filter(x=>x.date===d&&S.subjects[x.code]?.on),cnt={};
     sl.forEach(x=>cnt[x.code]=(cnt[x.code]||0)+1);
-    const ex=active().filter(s=>S.subjects[s.c].exam===d).map(s=>`<span class="pchip ex">สอบ ${s.sh}</span>`).join('');
-    days+=`<div class="planday"><div class="small mono">${thDate(d)}</div><div class="chips">${ex}${Object.entries(cnt).map(([c,n])=>`<span class="pchip"><span class="sw" style="background:${col(c)}"></span>${META[c].sh} ×${n}</span>`).join('')||(ex?'':'<span class="muted small">พัก</span>')}</div></div>`;
+    const ex=active().filter(s=>S.subjects[s.c].exam===d).map(s=>`<span class="pchip ex">สอบ ${esc(s.sh)}</span>`).join('');
+    days+=`<div class="planday"><div class="small mono">${thDate(d)}</div><div class="chips">${ex}${Object.entries(cnt).map(([c,n])=>`<span class="pchip"><span class="sw" style="background:${col(c)}"></span>${esc(M(c).sh)} ×${n}</span>`).join('')||(ex?'':'<span class="muted small">พัก</span>')}</div></div>`;
   }
   const total=S.plan.filter(x=>x.date>=today).length;
   return `<div class="section"><h2>ความครอบคลุมแต่ละวิชา</h2><p class="small muted" style="margin:0">จำนวนช่วง (ช่วงละ ${S.settings.slot} นาที) ที่ควรใช้ คำนวณจากจำนวนบท ความมั่นใจ และหน่วยกิต ถ้าขาด ให้เพิ่มชั่วโมงอ่านต่อวันในแท็บตั้งค่า</p>
@@ -411,19 +449,34 @@ function viewPlan(){
 }
 
 function viewSubj(){
-  const rows=SUBJ.map(s=>{
-    const x=S.subjects[s.c],r=required(s.c),dn=S.plan.filter(p=>p.code===s.c&&p.done).length,pct=Math.min(100,Math.round(dn/r.total*100));
-    return `<tr><td><input type="checkbox" id="on-${s.c}" data-f="on" data-c="${s.c}" ${x.on?'checked':''} aria-label="รวมในแผน"></td>
-    <td><div class="chip"><span class="sw" style="background:${col(s.c)}"></span>${s.c} (${s.cr})</div><div>${s.th}</div></td>
-    <td><input type="date" id="ex-${s.c}" data-f="exam" data-c="${s.c}" value="${x.exam}">${x.real?'':`<div class="small" style="color:var(--warn)">วันตัวอย่าง <button class="btn small" data-confirm="${s.c}" style="padding:1px 8px">วันนี้ถูกแล้ว</button></div>`}</td>
-    <td><input type="time" id="et-${s.c}" data-f="et" data-c="${s.c}" value="${x.et}"> – <input type="time" id="ee-${s.c}" data-f="ee" data-c="${s.c}" value="${x.ee}"></td>
-    <td><input type="number" id="tp-${s.c}" min="1" max="30" data-f="topics" data-c="${s.c}" value="${x.topics}"></td>
-    <td><select id="cf-${s.c}" data-f="conf" data-c="${s.c}">${[1,2,3,4,5].map(v=>`<option value="${v}" ${Math.round(x.conf)===v?'selected':''}>${v}${v===1?' ไม่รู้เรื่อง':v===5?' มั่นใจมาก':''}</option>`).join('')}</select></td>
-    <td><div class="bar"><i style="width:${pct}%"></i></div><div class="small mono muted">${dn}/${r.total}</div></td></tr>`;
+  const rows=S.subjList.map(s=>{
+    const x=S.subjects[s.c],r=required(s.c),dn=S.plan.filter(p=>p.code===s.c&&p.done).length,pct=Math.min(100,Math.round(dn/r.total*100)),id=esc(s.c);
+    const del=confirmDel===s.c?`<div class="confirmbox"><span class="small">ลบ ${esc(s.sh)} และความคืบหน้า ${dn} ช่วง?</span><button class="btn sm" data-delsubj="${id}">ลบวิชา</button><button class="btn sm" data-act="delno">ยกเลิก</button></div>`:`<button class="btn sm" data-askdel="${id}">ลบ</button>`;
+    return `<tr><td><input type="checkbox" id="on-${id}" data-f="on" data-c="${id}" ${x.on?'checked':''} aria-label="รวมในแผน"></td>
+    <td><div class="chip"><span class="sw" style="background:${col(s.c)}"></span>${s.auto?'':esc(s.c)+' · '}${s.cr} หน่วยกิต</div><div>${esc(s.th)}</div><input class="shin" id="sh-${id}" data-m="sh" data-c="${id}" value="${esc(s.sh)}" aria-label="ชื่อย่อ" title="ชื่อย่อที่แสดงในแผน"></td>
+    <td><input type="date" id="ex-${id}" data-f="exam" data-c="${id}" value="${x.exam}">${x.real?'':`<div class="small" style="color:var(--warn)">วันตัวอย่าง <button class="btn small" data-confirm="${id}" style="padding:1px 8px">วันนี้ถูกแล้ว</button></div>`}</td>
+    <td><input type="time" id="et-${id}" data-f="et" data-c="${id}" value="${x.et}"> – <input type="time" id="ee-${id}" data-f="ee" data-c="${id}" value="${x.ee}"></td>
+    <td><input type="number" id="tp-${id}" min="1" max="30" data-f="topics" data-c="${id}" value="${x.topics}"></td>
+    <td><select id="cf-${id}" data-f="conf" data-c="${id}">${[1,2,3,4,5].map(v=>`<option value="${v}" ${Math.round(x.conf)===v?'selected':''}>${v}${v===1?' ไม่รู้เรื่อง':v===5?' มั่นใจมาก':''}</option>`).join('')}</select></td>
+    <td><div class="bar"><i style="width:${pct}%"></i></div><div class="small mono muted">${dn}/${r.total}</div></td>
+    <td>${del}</td></tr>`;
   }).join('');
-  return `<div class="section"><h2>วิชาและวันสอบ</h2><p class="small muted" style="margin:0">วันสอบจริงจากตารางสอบ: ชีวะ 26 ต.ค. 09:00, แล็บชีวะ 26 ต.ค. 13:30, เคมี 29 ต.ค. 09:00, อาหารเพื่อสุขภาพ 3 พ.ย. 13:00 วิชาที่ยังไม่มีวันให้ใส่เพิ่ม จำนวนบท/หัวข้อที่ออกสอบ และความมั่นใจ (1–5) ค่าความมั่นใจจะปรับเองเมื่อกด “ง่าย” หรือ “ยาก” หลังอ่านแต่ละช่วง</p>
-  <div class="tablebox"><table><thead><tr><th>ใช้</th><th>วิชา</th><th>วันสอบ</th><th>เวลาสอบ</th><th>บท</th><th>ความมั่นใจ</th><th>ความคืบหน้า</th></tr></thead><tbody>${rows}</tbody></table></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${confirmReset?'<span class="small">ลบความคืบหน้าทั้งหมดและเริ่มใหม่?</span><button class="btn" data-act="reset-yes">ลบและเริ่มใหม่</button><button class="btn" data-act="reset-no">ยกเลิก</button>':'<button class="btn" data-act="reset">เริ่มใหม่ทั้งหมด</button>'}</div></div>`;
+  const d0=addD(nowInfo().date,21);
+  const form=`<details class="addbox" id="addsubbox" ${showAdd||!S.subjList.length?'open':''}><summary>เพิ่มวิชา</summary><div class="addsub">
+    <label class="wide">ชื่อวิชา *<input id="n-th" placeholder="เช่น ชีววิทยาทั่วไป"></label>
+    <label>ชื่อย่อ<input id="n-sh" placeholder="เช่น ชีวะ"></label>
+    <label>รหัสวิชา<input id="n-c" placeholder="เช่น 512101"></label>
+    <label>หน่วยกิต<select id="n-cr">${[1,2,3,4,5,6].map(v=>`<option ${v===3?'selected':''}>${v}</option>`).join('')}</select></label>
+    <label>วันสอบ *<input type="date" id="n-exam" value="${d0}"></label>
+    <label>เริ่มสอบ<input type="time" id="n-et" value="09:00"></label>
+    <label>สอบเสร็จ<input type="time" id="n-ee" value="12:00"></label>
+    <label>จำนวนบทที่ออกสอบ<input type="number" id="n-tp" min="1" max="30" value="6"></label>
+    <label>ความมั่นใจตอนนี้<select id="n-cf">${[1,2,3,4,5].map(v=>`<option value="${v}" ${v===3?'selected':''}>${v}${v===1?' ไม่รู้เรื่อง':v===5?' มั่นใจมาก':''}</option>`).join('')}</select></label>
+    <div class="wide" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn primary" data-act="addsubj">เพิ่มวิชานี้</button><span class="small" id="n-msg" style="color:var(--warn)"></span></div>
+  </div></details>`;
+  return `<div class="section"><h2>วิชาและวันสอบ</h2><p class="small muted" style="margin:0">ใส่วันและเวลาสอบ จำนวนบทหรือหัวข้อที่ออกสอบ และความมั่นใจ (1–5) ค่าความมั่นใจจะปรับเองเมื่อกด “ง่าย” หรือ “ยาก” หลังอ่านแต่ละช่วง เอาเครื่องหมายช่อง “ใช้” ออก ถ้าไม่ต้องการให้วิชานั้นอยู่ในแผนชั่วคราว</p>
+  ${S.subjList.length?`<div class="tablebox"><table><thead><tr><th>ใช้</th><th>วิชา / ชื่อย่อ</th><th>วันสอบ</th><th>เวลาสอบ</th><th>บท</th><th>ความมั่นใจ</th><th>ความคืบหน้า</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">ยังไม่มีวิชา เริ่มเพิ่มวิชาแรกได้เลย</div>'}
+  ${form}</div>`;
 }
 
 function viewSched(){
@@ -440,16 +493,48 @@ function viewSched(){
   const st=S.settings,f=(k,l,t,extra='')=>`<label for="st-${k}">${l}<input id="st-${k}" type="${t}" data-s="${k}" value="${st[k]}" ${extra}></label>`;
   return `<div class="section"><h2>ตารางเรียนประจำสัปดาห์</h2><p class="small muted" style="margin:0">แก้วัน เวลา หรือวิชาได้เลย แผนอ่านจะจัดใหม่ทันที ระบบเว้นเวลาก่อนและหลังคาบ 15 นาทีไว้เดินทาง ถ้าเปลี่ยนแค่บางวัน (งดคาบ/เรียนชดเชย) ให้ทำที่แท็บแผนรายวันของวันนั้น</p>
   <div class="klist">${week||'<div class="empty">ยังไม่มีคาบเรียน</div>'}</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="addk">เพิ่มคาบเรียน</button><button class="btn" data-act="restorek">ใช้ตารางเดิม (28 ก.ย.–4 ต.ค.)</button></div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="addk">เพิ่มคาบเรียน</button></div></div>
   ${exs?`<div class="section"><h2>เปลี่ยนเฉพาะวัน</h2><div class="klist">${exs}</div></div>`:''}
   <div class="section"><h2>เวลาอ่านหนังสือ</h2><div class="settings">
   ${f('wdStart','วันเรียน เริ่มได้','time')}${f('wdEnd','วันเรียน หยุดอ่าน','time')}
   ${f('weStart','เสาร์-อาทิตย์ เริ่มได้','time')}${f('weEnd','เสาร์-อาทิตย์ หยุดอ่าน','time')}
   ${f('slot','ความยาว 1 ช่วง (นาที)','number','min="25" max="90" step="5"')}${f('brk','พักระหว่างช่วง (นาที)','number','min="5" max="30" step="5"')}
-  ${f('classEnd','มีคาบเรียนถึงวันที่','date')}
+  ${f('classEnd','มีคาบเรียนถึงวันที่ (ว่างไว้ = ทุกสัปดาห์)','date')}
   </div>
   <h3 style="margin-top:6px">จำนวนช่วงอ่านต่อวัน</h3><div class="capgrid">${[1,2,3,4,5,6,0].map(d=>`<label for="cap-${d}">${DWL[d]}<input id="cap-${d}" type="number" min="0" max="14" data-capday="${d}" value="${st.capDays[d]}"></label>`).join('')}</div>
-  <p class="small muted" style="margin:0">ช่วงละ ${st.slot} นาที ถ้าอยากเปลี่ยนเฉพาะวันไหน ให้กด − / + ที่หน้าแผนรายวันของวันนั้น เว้นพักกลางวัน 12:00–13:00 และมื้อเย็น 18:00–19:00 ให้เสมอ</p></div>`;
+  <p class="small muted" style="margin:0">ช่วงละ ${st.slot} นาที ถ้าอยากเปลี่ยนเฉพาะวันไหน ให้กด − / + ที่หน้าแผนรายวันของวันนั้น เว้นพักกลางวัน 12:00–13:00 และมื้อเย็น 18:00–19:00 ให้เสมอ</p></div>
+  ${backupView()}`;
+}
+function stats(x){return {subj:(x.subjList||[]).length,done:(x.plan||[]).filter(p=>p.done).length}}
+function backupView(){
+  const st=stats(S);let prev=null;try{prev=localStorage.getItem(KEY+'-before-import')}catch(e){}
+  const msg=bkMsg?`<div class="msg${bkMsg.err?' err':''}">${esc(bkMsg.t)}</div>`:'';
+  const imp=pendingImport?`<div class="confirmbox"><span class="small">ข้อมูลสำรองมี ${pendingImport.st.subj} วิชา ติ๊กแล้ว ${pendingImport.st.done} ช่วง จะแทนที่ข้อมูลในเครื่องนี้ (${st.subj} วิชา ติ๊กแล้ว ${st.done} ช่วง)</span><button class="btn sm primary" data-act="impyes">แทนที่ด้วยข้อมูลสำรอง</button><button class="btn sm" data-act="impno">ยกเลิก</button></div>`:'';
+  return `<div class="section"><h2>สำรองและย้ายข้อมูล</h2>
+  <p class="small muted" style="margin:0">ข้อมูลทั้งหมดเก็บอยู่ในเบราว์เซอร์ของเครื่องนี้เท่านั้น ควรสำรองไว้เป็นระยะ ใช้ย้ายไปเครื่องใหม่ หรือส่งให้ผู้ปกครองดูความคืบหน้าก็ได้</p>
+  <div class="bk"><b>1. สำรองจากเครื่องนี้</b><span class="small muted">ตอนนี้มี ${st.subj} วิชา ติ๊กแล้ว ${st.done} ช่วง</span>
+  <div class="row2"><button class="btn primary" data-act="bkcopy">คัดลอกรหัสสำรอง</button><button class="btn" data-act="bkfile">บันทึกเป็นไฟล์</button></div>
+  ${bkCode?`<textarea id="bk-out" readonly aria-label="รหัสสำรอง">${esc(bkCode)}</textarea><span class="small muted">ส่งรหัสนี้ทาง LINE หรือเก็บไว้ในโน้ต รหัสยาว ให้คัดลอกให้ครบทั้งหมด</span>`:''}</div>
+  <div class="bk"><b>2. นำเข้าในเครื่องอื่น</b><textarea id="bk-in" placeholder="วางรหัสสำรองที่นี่" aria-label="วางรหัสสำรอง"></textarea>
+  <div class="row2"><button class="btn primary" data-act="bkcheck">นำเข้ารหัส</button><label class="btn" for="bk-file" style="cursor:pointer">เลือกไฟล์สำรอง</label><input type="file" id="bk-file" accept=".json,application/json,text/plain" hidden></div>
+  ${imp}${prev?'<div class="row2"><span class="small muted">นำเข้าผิด? ย้อนกลับเป็นข้อมูลก่อนนำเข้าได้</span><button class="btn sm" data-act="impundo">ย้อนกลับ</button></div>':''}</div>
+  ${msg}
+  <div class="row2" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${confirmReset?'<span class="small">ลบข้อมูลทั้งหมดในเครื่องนี้และเริ่มจากหน้าว่าง?</span><button class="btn" data-act="reset-yes">ลบทั้งหมด</button><button class="btn" data-act="reset-no">ยกเลิก</button>':'<button class="btn" data-act="reset">ลบข้อมูลทั้งหมด เริ่มใหม่</button>'}</div></div>`;
+}
+const encodeBk=()=>'S2P1:'+btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+function decodeBk(txt){
+  txt=(txt||'').trim();if(!txt)throw new Error('ยังไม่ได้วางรหัส');
+  let obj;
+  if(txt.startsWith('{'))obj=JSON.parse(txt);
+  else{const m=txt.replace(/\s+/g,'').match(/S2P1:([A-Za-z0-9+/=]+)/);if(!m)throw new Error('รหัสไม่ถูกต้อง ต้องขึ้นต้นด้วย S2P1:');
+    obj=JSON.parse(decodeURIComponent(escape(atob(m[1]))));}
+  const n=normalize(obj);if(!n)throw new Error('ไม่ใช่ข้อมูลของ Sand To Pharmacist');
+  return n;
+}
+function stageImport(txt){
+  try{const n=decodeBk(txt);pendingImport={data:n,st:stats(n)};bkMsg=null}
+  catch(e){pendingImport=null;bkMsg={t:'นำเข้าไม่ได้: '+(e.message||'รหัสไม่สมบูรณ์ ลองคัดลอกใหม่ให้ครบ'),err:true}}
+  render();
 }
 
 function render(){
@@ -485,15 +570,47 @@ document.addEventListener('click',e=>{
     const n=S.plan.filter(x=>x.date===sel).length;
     S.plan.push({id:uid(),date:sel,s:a,e:a+S.settings.slot,code:c,kind,topic,eve:false,done:false,pinned:true});
     S.dayCap[sel]=Math.max(capFor(sel),n+1);generate();render();return}
-  if(act==='addk'){S.classes.push({id:uid(),d:1,s:'08:00',e:'09:00',c:SUBJ[0].c});save();render();return}
-  if(act==='restorek'){S.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));S.exceptions=S.exceptions.filter(x=>x.type==='extra');generate();render();return}
+  if(act==='addk'){S.classes.push({id:uid(),d:1,s:'08:00',e:'09:00',c:S.subjList[0]?.c||''});save();render();return}
+  if(act==='startadd'){tab='subj';showAdd=true;render();setTimeout(()=>{const i=$('n-th');if(i)i.focus()},0);return}
+  if(act==='loadsample'){S=sample();sel=nowInfo().date;generate();render();return}
+  if(act==='clearsample'){S=blank();save();tab='subj';showAdd=true;render();return}
+  if(act==='delno'){confirmDel=null;render();return}
+  if(act==='addsubj'){
+    const th=$('n-th').value.trim(),sh=$('n-sh').value.trim(),exam=$('n-exam').value,et=$('n-et').value||'09:00',ee=$('n-ee').value||'12:00';
+    let c=$('n-c').value.trim();
+    if(!th){$('n-msg').textContent='ใส่ชื่อวิชาก่อน';return}
+    if(!exam){$('n-msg').textContent='ใส่วันสอบก่อน';return}
+    if(ee<=et){$('n-msg').textContent='เวลาสอบเสร็จต้องหลังเวลาเริ่ม';return}
+    if(!c)c='S'+uid().slice(1,7);
+    if(hasS(c)){$('n-msg').textContent='มีวิชารหัสนี้แล้ว';return}
+    const used=new Set(S.subjList.map(x=>x.ci));let ci=0;while(used.has(ci)&&ci<11)ci++;if(used.has(ci))ci=S.subjList.length%12;
+    S.subjList.push({c,th,sh:sh||(th.length>14?th.slice(0,14)+'…':th),cr:+$('n-cr').value||3,ci,auto:!$('n-c').value.trim()});
+    S.subjects[c]={exam,et,ee,real:true,topics:Math.max(1,+$('n-tp').value||1),conf:+$('n-cf').value||3,on:true};
+    S.sample=false;showAdd=true;generate();render();
+    const m=$('n-msg');if(m){m.style.color='var(--accent)';m.textContent=`เพิ่ม ${th} แล้ว เพิ่มวิชาต่อไปได้เลย`}
+    return}
+  if(act==='bkcopy'){bkCode=encodeBk();const done=()=>{bkMsg={t:'คัดลอกรหัสสำรองแล้ว นำไปวางใน LINE หรือโน้ตได้เลย'};render()};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(bkCode).then(done,()=>{bkMsg={t:'คัดลอกอัตโนมัติไม่ได้ กดค้างที่ช่องรหัสแล้วเลือกคัดลอก'};render();const o=$('bk-out');if(o){o.focus();o.select()}});
+    else{bkMsg={t:'กดค้างที่ช่องรหัสแล้วเลือกคัดลอก'};render();const o=$('bk-out');if(o){o.focus();o.select()}}
+    return}
+  if(act==='bkfile'){try{const b=new Blob([JSON.stringify(S)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');
+    a.href=u;a.download=`sand2pharm-${nowInfo().date}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
+    bkMsg={t:'บันทึกไฟล์แล้ว ดูได้ในโฟลเดอร์ดาวน์โหลด ถ้าไม่มีไฟล์ ให้ใช้ปุ่มคัดลอกรหัสสำรองแทน'}}catch(e){bkMsg={t:'บันทึกไฟล์ไม่ได้ ใช้ปุ่มคัดลอกรหัสสำรองแทน',err:true}}render();return}
+  if(act==='bkcheck'){stageImport($('bk-in').value);return}
+  if(act==='impno'){pendingImport=null;render();return}
+  if(act==='impyes'){try{localStorage.setItem(KEY+'-before-import',JSON.stringify(S))}catch(e){}
+    S=pendingImport.data;pendingImport=null;sel=nowInfo().date;generate();bkMsg={t:'นำเข้าข้อมูลแล้ว'};render();return}
+  if(act==='impundo'){let p=null;try{p=normalize(JSON.parse(localStorage.getItem(KEY+'-before-import')));localStorage.removeItem(KEY+'-before-import')}catch(e){}
+    if(p){S=p;generate();bkMsg={t:'ย้อนกลับเป็นข้อมูลเดิมแล้ว'}}render();return}
   if(act==='addextra'){const c=$('x-c').value,st=$('x-s').value,en=$('x-e').value;if(!st||!en||en<=st)return;
     S.exceptions.push({id:uid(),type:'extra',date:sel,s:st,e:en,c,label:c?'':($('x-label').value.trim()||'นัดพิเศษ')});generate();render();return}
   if(act==='replan'){generate();render()}
+  if(t.dataset.askdel){confirmDel=t.dataset.askdel;render();return}
+  if(t.dataset.delsubj){const c=t.dataset.delsubj;S.subjList=S.subjList.filter(x=>x.c!==c);delete S.subjects[c];S.plan=S.plan.filter(x=>x.code!==c);S.classes.forEach(k=>{if(k.c===c)k.c=''});confirmDel=null;generate();render();return}
   if(t.dataset.confirm){S.subjects[t.dataset.confirm].real=true;save();render();return}
   if(act==='reset'){confirmReset=true;render()}
   if(act==='reset-no'){confirmReset=false;render()}
-  if(act==='reset-yes'){confirmReset=false;S=defaults();generate();sel=nowInfo().date;render()}
+  if(act==='reset-yes'){confirmReset=false;S=blank();save();sel=nowInfo().date;tab='day';render()}
 });
 document.addEventListener('change',e=>{
   const t=e.target;
@@ -505,6 +622,8 @@ document.addEventListener('change',e=>{
   if(t.dataset.k){const k=S.classes.find(x=>x.id===t.dataset.k),f=t.dataset.kf;
     if(f==='d')k.d=+t.value;else if(f==='label')k.label=t.value;else if(f==='c')k.c=t.value;else if(t.value)k[f]=t.value;
     generate();render();return}
+  if(t.id==='bk-file'&&t.files&&t.files[0]){const r=new FileReader();r.onload=()=>stageImport(String(r.result));r.readAsText(t.files[0]);t.value='';return}
+  if(t.dataset.m==='sh'){const m=S.subjList.find(x=>x.c===t.dataset.c);if(m&&t.value.trim())m.sh=t.value.trim();save();render();return}
   if(t.dataset.recall){S.recall[t.dataset.recall]=t.checked;save();return}
   if(t.dataset.f){
     const x=S.subjects[t.dataset.c],f=t.dataset.f;
@@ -512,12 +631,12 @@ document.addEventListener('change',e=>{
     if(f==='exam')x.real=true;
     generate();render();return}
   if(t.dataset.s){
-    const k=t.dataset.s;if(!t.value)return;
+    const k=t.dataset.s;if(!t.value&&k!=='classEnd')return;
     S.settings[k]=t.type==='number'?Math.max(0,+t.value):t.value;
     generate();render()}
 });
 
-if(!S.plan.length)generate();
+if(S.subjList.length&&!S.plan.length)generate();
 render();
 </script>
 
