@@ -175,6 +175,30 @@ td input[type=number]{width:56px}
 .msg.err{background:var(--warn-soft)}
 .confirmbox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border-radius:8px;background:var(--warn-soft)}
 td .shin{width:110px}
+.dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile .lab{font-size:.78rem;color:var(--muted);letter-spacing:.02em}
+.tile .big{font-family:var(--display);font-weight:700;font-size:1.6rem;line-height:1.15}
+.tile .big small{font-size:.9rem;font-weight:500;color:var(--muted)}
+.tile .sub{font-size:.85rem;color:var(--muted)}
+.tile.risk{border-color:color-mix(in srgb,var(--sc,var(--warn)) 55%,var(--line));background:color-mix(in srgb,var(--sc,var(--warn)) 8%,var(--surface))}
+.tile.risk .big{font-size:1.3rem;color:var(--fg)}
+.pbar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}
+.pbar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.hardtag{display:inline-block;font-size:.72rem;padding:0 7px;border-radius:99px;background:var(--warn-soft);color:var(--warn);font-weight:600;margin-left:6px;vertical-align:1px}
+.tnames{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px 12px;margin-top:8px}
+.tnames label{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted)}
+.tnames input{flex:1;min-width:0;font:inherit;font-size:.88rem;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.tnames button{font-size:.72rem;padding:1px 7px;border-radius:99px;border:0;background:var(--warn-soft);color:var(--warn);cursor:pointer;white-space:nowrap}
+tr.tnrow td{padding-top:0;background:var(--bg)}
+.foot{display:flex;justify-content:center;padding-top:8px}
+.fbq{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface)}
+.fbq .opts{display:flex;flex-wrap:wrap;gap:6px}
+.fbq .opts label{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid var(--line);border-radius:99px;cursor:pointer;font-size:.9rem;background:var(--bg)}
+.fbq .opts input{accent-color:var(--accent)}
+.fbq .opts label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.fbq textarea{font:inherit;font-size:.9rem;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;min-height:80px;resize:vertical}
+a.btn{text-decoration:none;display:inline-block}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -197,6 +221,7 @@ td .shin{width:110px}
   </nav>
   <div id="banner"></div>
   <main id="view"></main>
+  <div class="foot"><button class="btn" data-tab="fb">💬 ส่งความเห็นเกี่ยวกับแอป</button></div>
 </div>
 
 <script>
@@ -238,7 +263,7 @@ function blank(){
   return {
     subjList:[],subjects:{},
     settings:{wdStart:'07:30',wdEnd:'22:30',weStart:'09:00',weEnd:'22:00',capDays:[6,4,4,4,4,4,6],slot:50,brk:10,classEnd:''},
-    plan:[],recall:{},classes:[],exceptions:[],dayCap:{}
+    plan:[],recall:{},classes:[],exceptions:[],dayCap:{},since:ds(new Date())
   };
 }
 function sample(){
@@ -259,18 +284,22 @@ function normalize(x){
   if(!x.settings)x.settings=blank().settings;
   if(!x.settings.capDays)x.settings.capDays=[x.settings.weCap??6,...Array(5).fill(x.settings.wdCap??4),x.settings.weCap??6];
   if(!x.dayCap)x.dayCap={};
+  if(!x.since)x.since=ds(new Date());
   return x;
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
 S=normalize(S)||blank();
+if(!S.since){S.since=ds(new Date());try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+// ใส่ลิงก์ Google Form ตรงนี้ถ้ามี เช่น 'https://forms.gle/xxxx' ถ้าว่างไว้ ผู้ใช้จะส่งความเห็นผ่าน LINE แทน
+const FEEDBACK_FORM='';
 if(!S.classes)S.classes=[];
 const capFor=d=>S.dayCap[d]??S.settings.capDays[pd(d).getDay()];
 function nextKind(code,exceptId){
   const r=required(code),c={learn:0,practice:0,mock:0},{date:today}=nowInfo();
   S.plan.forEach(x=>{if(x.code===code&&x.id!==exceptId&&(x.done||x.date>=today))c[x.kind]++});
   const kind=c.learn<r.learn?'learn':c.practice<r.practice?'practice':'mock';
-  return {kind,topic:kind==='learn'?c.learn+1:null};
+  return {kind,topic:kind==='learn'?c.learn+1:null,focus:kind==='practice'?focusFor(code,c.practice+1):null};
 }
 const uid=()=>'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const hasS=c=>S.subjList.some(x=>x.c===c);
@@ -290,9 +319,12 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 
 const active=()=>S.subjList.filter(s=>S.subjects[s.c]?.on);
 const examAbs=c=>{const x=S.subjects[c];return dIdx(x.exam)*1440+toMin(x.et)};
+const hardTopics=c=>Object.entries(S.subjects[c]?.topicRate||{}).filter(([n,v])=>v==='hard'&&+n<=+S.subjects[c].topics).map(([n])=>+n).sort((a,b)=>a-b);
+const tName=(c,n)=>(S.subjects[c]?.topicNames||[])[n-1]||'';
+const focusFor=(c,k)=>{const h=hardTopics(c);return h.length&&k<=h.length?h[k-1]:null};
 function required(c){
   const x=S.subjects[c],m=M(c);
-  const learn=+x.topics, practice=Math.ceil(learn*(5-x.conf)/4)+1, mock=m.cr>=3?2:1;
+  const learn=+x.topics, practice=Math.ceil(learn*(5-x.conf)/4)+1+hardTopics(c).length, mock=m.cr>=3?2:1;
   return {learn,practice,mock,total:learn+practice+mock};
 }
 function freeSlots(date,fromMin){
@@ -347,7 +379,7 @@ function generate(){
       if(eve)kind=u.mock<r.mock?'mock':u.practice<r.practice?'practice':'learn';
       else kind=u.learn<r.learn?'learn':u.practice<r.practice?'practice':'mock';
       u[kind]++;
-      const x={id:d+'-'+a,date:d,s:a,e:z,code:best,kind,eve,topic:kind==='learn'?u.learn:null,done:false};
+      const x={id:d+'-'+a,date:d,s:a,e:z,code:best,kind,eve,topic:kind==='learn'?u.learn:null,focus:kind==='practice'?focusFor(best,u.practice):null,done:false};
       if(kind==='learn')addReviews(x);
       fresh.push(x);prev=best;
     }
@@ -366,9 +398,13 @@ function recallFor(date){
 }
 const KIND={learn:'อ่านเนื้อหา',practice:'ทำโจทย์',mock:'ข้อสอบเก่า'};
 const TIP={learn:'อ่าน 40 นาที แล้วปิดชีท เขียนสรุปจากความจำ 10 นาที',practice:'เริ่มจากโจทย์แนวที่เคยผิด จดข้อผิดลงสมุดรวมจุดพลาด',mock:'จับเวลาเหมือนสอบจริง ตรวจคำตอบ แล้วทบทวนเฉพาะข้อที่ผิด'};
-const slotTitle=x=>x.kind==='learn'?`บทที่ ${x.topic}`:x.kind==='practice'?'แบบฝึกหัด / โจทย์':'ข้อสอบเก่าเต็มชุด';
+const slotTitle=x=>{
+  if(x.kind==='learn'){const n=tName(x.code,x.topic);return `บทที่ ${x.topic}${n?' · '+esc(n):''}`}
+  if(x.kind==='practice'){if(x.focus){const n=tName(x.code,x.focus);return `โจทย์บทที่ ${x.focus}${n?' · '+esc(n):''}<span class="hardtag">บทที่เคยกดยาก</span>`}return 'แบบฝึกหัด / โจทย์'}
+  return 'ข้อสอบเก่าเต็มชุด';
+};
 
-let tab='day',sel=nowInfo().date,confirmReset=false,confirmDel=null,pendingImport=null,bkMsg=null,bkCode='',showAdd=false;
+let openTN=null,tab='day',sel=nowInfo().date,confirmReset=false,confirmDel=null,pendingImport=null,bkMsg=null,bkCode='',showAdd=false;
 const $=id=>document.getElementById(id);
 
 function header(){
@@ -390,6 +426,37 @@ function welcome(){
   return `<div class="welcome"><div><h2>เริ่มใช้ Sand To Pharmacist</h2><p class="muted small" style="margin:4px 0 0">ใส่ข้อมูลของคุณ 3 ขั้น แล้วแอปจะจัดเวลาอ่านหนังสือให้ทุกวันจนถึงวันสอบ</p></div>
   <ol><li><b>เพิ่มวิชา</b> พร้อมวันและเวลาสอบ จำนวนบทที่ออกสอบ และความมั่นใจ</li><li><b>ใส่ตารางเรียน</b> แอปจะไม่จัดเวลาอ่านทับคาบเรียน</li><li><b>ตั้งจำนวนช่วงอ่านต่อวัน</b> ที่ทำได้จริง</li></ol>
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="startadd">เพิ่มวิชาแรก</button><button class="btn" data-act="loadsample">ลองดูตัวอย่างก่อน</button><button class="btn" data-go="sched">มีไฟล์สำรอง? นำเข้าข้อมูล</button></div></div>`;
+}
+function riskList(){
+  const {date:today,min}=nowInfo();
+  return active().filter(s=>S.subjects[s.c].exam>=today).map(s=>{
+    const x=S.subjects[s.c],r=required(s.c),done=S.plan.filter(p=>p.code===s.c&&p.done).length;
+    const fut=S.plan.filter(p=>p.code===s.c&&!p.done&&(p.date>today||(p.date===today&&p.e>=min))).length;
+    const rem=Math.max(0,r.total-done),gap=rem-fut,days=Math.max(1,dIdx(x.exam)-dIdx(today)),hard=hardTopics(s.c).length;
+    const score=(gap>0?1000+gap*10:0)+rem*(6-x.conf)/days+hard;
+    let why=gap>0?`แผนยังขาด ${gap} ช่วง ควรเพิ่มเวลาอ่าน`:`เหลือ ${rem} ช่วง · สอบอีก ${days} วัน · มั่นใจ ${Math.round(x.conf)}/5`;
+    if(hard)why+=` · บทที่ยาก ${hard} บท`;
+    return {s,score,why,gap};
+  }).sort((a,b)=>b.score-a.score);
+}
+function summary(){
+  const {date:today,min}=nowInfo();
+  const td=S.plan.filter(x=>x.date===today&&S.subjects[x.code]?.on);
+  const tdDone=td.filter(x=>x.done).length,left=td.filter(x=>!x.done&&x.e>=min);
+  const next=left[0];
+  const due=S.plan.filter(x=>S.subjects[x.code]&&(x.done||x.date<today||(x.date===today&&x.e<min)));
+  const pct=due.length?Math.round(due.filter(x=>x.done).length/due.length*100):null;
+  const totalReq=active().reduce((a,s)=>a+required(s.c).total,0),allDone=S.plan.filter(x=>x.done&&S.subjects[x.code]?.on).length;
+  const cov=totalReq?Math.min(100,Math.round(allDone/totalReq*100)):0;
+  const risk=riskList()[0];
+  const hrs=(td.length*S.settings.slot/60);
+  return `<div class="dash">
+  <div class="tile"><span class="lab">วันนี้ต้องอ่าน</span><span class="big">${+hrs.toFixed(1)} <small>ชม. · ${td.length} ช่วง</small></span>
+    <span class="sub">${td.length?(left.length?`เสร็จ ${tdDone} เหลือ ${left.length} · ถัดไป ${hm(next.s)} ${esc(M(next.code).sh)}`:`ครบแล้ว ${tdDone}/${td.length} ช่วง เยี่ยมมาก`):'วันนี้ไม่มีช่วงอ่าน'}</span></div>
+  ${risk?`<div class="tile risk" style="--sc:${risk.gap>0?'var(--warn)':col(risk.s.c)}"><span class="lab">วิชาที่เสี่ยงที่สุด</span><span class="big">${esc(risk.s.sh)}</span><span class="sub">${risk.why}</span></div>`:''}
+  <div class="tile"><span class="lab">ทำตามแผน</span><span class="big">${pct==null?'–':pct+'%'} <small>${pct==null?'ยังไม่ถึงเวลาอ่าน':'ของช่วงที่ถึงเวลาแล้ว'}</small></span>
+    <div class="pbar" title="ความคืบหน้ารวม"><i style="width:${cov}%"></i></div><span class="sub">อ่านไปแล้ว ${cov}% ของทั้งหมดก่อนสอบ</span></div>
+  </div>`;
 }
 function viewDay(){
   if(!S.subjList.length)return welcome();
@@ -415,9 +482,9 @@ function viewDay(){
     return `<div class="row study${x.done?' done':''}${missed?' missed':''}${moved?' moved':''}" style="--sc:${col(x.code)}"><div class="t"><b>${hm(x.s)}</b><span>ถึง ${hm(x.e)}</span></div><div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${esc(M(x.code).sh)}<span class="kind ${x.kind}${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${moved?'<div class="tip">ยกไปวันถัดไปแล้ว ถ้าทำไปแล้วกดติ๊กได้</div>':missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${x.done?'<div class="donebadge">✓ อ่านเสร็จแล้ว</div>':''}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${esc(s.c)}" ${s.c===x.code?'selected':''}>${esc(s.sh)}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="${x.done?'ยกเลิกติ๊ก':'ติ๊กว่าอ่านเสร็จ'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>`;
   }).join('');
   const rc=recallFor(sel);
-  const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${esc(M(r.code).sh)} บทที่ ${r.topic} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
-  return `<div class="section"><div class="strip" id="strip">${strip}</div></div>
-  <div class="section"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2>วัน${DWL[wd]}ที่ ${dt.getDate()} ${MON[dt.getMonth()]}${sel===today?' · วันนี้':''}</h2><span class="muted small mono">${doneN}/${studyN} ช่วงอ่าน · ${studyN*S.settings.slot/60} ชม.</span></div>
+  const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${esc(M(r.code).sh)} บทที่ ${r.topic}${tName(r.code,r.topic)?' · '+esc(tName(r.code,r.topic)):''}${hardTopics(r.code).includes(r.topic)?'<span class="hardtag">ยาก</span>':''} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
+  return `${summary()}<div class="section"><div class="strip" id="strip">${strip}</div></div>
+  <div class="section"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2>วัน${DWL[wd]}ที่ ${dt.getDate()} ${MON[dt.getMonth()]}${sel===today?' · วันนี้':''}</h2><span class="muted small mono">${doneN}/${studyN} ช่วงอ่าน · ${+(studyN*S.settings.slot/60).toFixed(1)} ชม.</span></div>
   <div class="daytools"><div class="step"><span>อ่านวันนี้</span><button data-cap="-1" aria-label="ลดหนึ่งช่วง">−</button><b>${capFor(sel)}</b><button data-cap="1" aria-label="เพิ่มหนึ่งช่วง">+</button><span>ช่วง</span>${S.dayCap[sel]!=null?'<button class="btn sm" data-act="capreset" style="width:auto;height:auto">ใช้ค่าปกติ</button>':''}</div>
   <span class="small muted">${studyN<capFor(sel)&&sel>=today?`วันนี้มีเวลาว่างพอแค่ ${studyN} ช่วง`:`ค่าปกติวัน${DWL[wd]} ${S.settings.capDays[wd]} ช่วง`}</span></div>
   <div class="timeline">${rows||'<div class="empty">ไม่มีช่วงอ่านในวันนี้</div>'}</div>
@@ -464,7 +531,8 @@ function viewSubj(){
     <td><input type="number" id="tp-${id}" min="1" max="30" data-f="topics" data-c="${id}" value="${x.topics}"></td>
     <td><select id="cf-${id}" data-f="conf" data-c="${id}">${[1,2,3,4,5].map(v=>`<option value="${v}" ${Math.round(x.conf)===v?'selected':''}>${v}${v===1?' ไม่รู้เรื่อง':v===5?' มั่นใจมาก':''}</option>`).join('')}</select></td>
     <td><div class="bar"><i style="width:${pct}%"></i></div><div class="small mono muted">${dn}/${r.total}</div></td>
-    <td>${del}</td></tr>`;
+    <td>${del}</td></tr>
+    <tr class="tnrow"><td></td><td colspan="7"><details${openTN===s.c?' open':''} data-tnbox="${id}"><summary class="small" style="cursor:pointer;color:var(--accent)">ตั้งชื่อบท (${x.topics} บท)${hardTopics(s.c).length?` · <span style="color:var(--warn)">ยาก ${hardTopics(s.c).length} บท</span>`:''}</summary><div class="tnames">${Array.from({length:+x.topics},(_,i)=>`<label for="tn-${id}-${i}">${i+1}.<input id="tn-${id}-${i}" data-tn="${id}" data-ti="${i}" value="${esc((x.topicNames||[])[i]||'')}" placeholder="ชื่อบท">${(x.topicRate||{})[i+1]==='hard'?`<button data-unhard="${id}" data-tno="${i+1}" title="กดเมื่อบทนี้ไม่ยากแล้ว">ยาก ✕</button>`:''}</label>`).join('')}</div></details></td></tr>`;
   }).join('');
   const d0=addD(nowInfo().date,21);
   const form=`<details class="addbox" id="addsubbox" ${showAdd||!S.subjList.length?'open':''}><summary>เพิ่มวิชา</summary><div class="addsub">
@@ -542,10 +610,30 @@ function stageImport(txt){
   render();
 }
 
+function fbText(){
+  const g=n=>{const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:'-'};
+  const t=($('fb-t')||{}).value||'';
+  const {date:today}=nowInfo(),days=dIdx(today)-dIdx(S.since||today)+1;
+  const done=S.plan.filter(x=>x.done).length,hard=active().reduce((a,s)=>a+hardTopics(s.c).length,0);
+  return `[Sand To Pharmacist ความเห็น]\nช่วยให้อ่านตามแผนได้ (1-5): ${g('fb1')}\nเทอมหน้าจะใช้อีก: ${g('fb2')}\nยอมจ่ายต่อเทอม: ${g('fb3')}\nอยากให้ปรับ: ${t.trim()||'-'}\n---\nใช้มาแล้ว ${days} วัน · ${S.subjList.length} วิชา · ติ๊กแล้ว ${done} ช่วง · บทยาก ${hard} บท`;
+}
+function fbUpdate(){const a=$('fb-line');if(a)a.href='https://line.me/R/share?text='+encodeURIComponent(fbText())}
+function viewFb(){
+  const q=(name,label,opts)=>`<div class="fbq"><b>${label}</b><div class="opts">${opts.map((o,i)=>`<label><input type="radio" name="${name}" id="${name}-${i}" value="${o}">${o}</label>`).join('')}</div></div>`;
+  return `<div class="section"><h2>ส่งความเห็นเกี่ยวกับแอป</h2><p class="small muted" style="margin:0">ใช้เวลาไม่ถึง 1 นาที ความเห็นของคุณช่วยตัดสินว่าจะพัฒนาอะไรต่อ ข้อความจะแนบสถิติการใช้งานคร่าว ๆ ไปด้วย (จำนวนวัน วิชา และช่วงที่ติ๊ก) ไม่มีชื่อหรือข้อมูลส่วนตัว</p>
+  ${FEEDBACK_FORM?`<div class="fbq"><b>ตอบแบบสอบถามออนไลน์</b><a class="btn primary" href="${esc(FEEDBACK_FORM)}" target="_blank" rel="noopener">เปิดแบบสอบถาม</a></div>`:''}
+  ${q('fb1','1. แอปช่วยให้อ่านตามแผนได้แค่ไหน',['1 ไม่ช่วยเลย','2','3','4','5 ช่วยมาก'])}
+  ${q('fb2','2. เทอมหน้าจะใช้อีกไหม',['ใช้แน่นอน','อาจจะ','ไม่ใช้'])}
+  ${q('fb3','3. ถ้ามีเวอร์ชันพิเศษ (สำรองบนคลาวด์ ใช้หลายเครื่อง สถิติ) ยอมจ่ายต่อเทอมเท่าไร',['ไม่จ่าย ใช้ฟรีพอ','29 บาท','49 บาท','99 บาท'])}
+  <div class="fbq"><b>4. อยากให้ปรับหรือเพิ่มอะไร</b><textarea id="fb-t" placeholder="เช่น อยากให้แจ้งเตือนก่อนถึงเวลาอ่าน"></textarea></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><a class="btn primary" id="fb-line" href="#" target="_blank" rel="noopener">ส่งทาง LINE</a><button class="btn" data-act="fbcopy">คัดลอกข้อความ</button><span class="small" id="fb-msg" style="color:var(--accent)"></span></div>
+  <p class="small muted" style="margin:0">กด “ส่งทาง LINE” แล้วเลือกแชตที่จะส่ง เช่น กลุ่มเพื่อนที่ทดลองใช้ หรือคนที่ชวนคุณมาใช้แอปนี้</p></div>`;
+}
 function render(){
   header();
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
-  $('view').innerHTML=tab==='day'?viewDay():tab==='plan'?viewPlan():tab==='subj'?viewSubj():viewSched();
+  $('view').innerHTML=tab==='day'?viewDay():tab==='plan'?viewPlan():tab==='subj'?viewSubj():tab==='fb'?viewFb():viewSched();
+  if(tab==='fb')fbUpdate();
   const a=document.querySelector('.day[aria-pressed="true"]');if(a)a.scrollIntoView({block:'nearest',inline:'center'});
 }
 
@@ -562,6 +650,9 @@ document.addEventListener('click',e=>{
     x.rating=old===t.dataset.rate?null:t.dataset.rate;
     if(x.rating)sub.conf+=delta[x.rating];
     sub.conf=Math.max(1,Math.min(5,sub.conf));
+    sub.topicRate=sub.topicRate||{};
+    if(x.kind==='learn'&&x.topic){if(x.rating)sub.topicRate[x.topic]=x.rating;else delete sub.topicRate[x.topic]}
+    if(x.kind==='practice'&&x.focus&&x.rating==='easy')sub.topicRate[x.focus]='ok';
     generate();render();return}
   if(t.dataset.cancel){S.exceptions.push({id:uid(),type:'cancel',ref:t.dataset.cancel,date:sel});generate();render();return}
   if(t.dataset.uncancel){S.exceptions=S.exceptions.filter(x=>!(x.type==='cancel'&&x.ref===t.dataset.uncancel&&x.date===sel));generate();render();return}
@@ -569,7 +660,10 @@ document.addEventListener('click',e=>{
   if(t.dataset.delk){S.classes=S.classes.filter(k=>k.id!==t.dataset.delk);S.exceptions=S.exceptions.filter(x=>x.ref!==t.dataset.delk);generate();render();return}
   if(t.dataset.cap){S.dayCap[sel]=Math.max(0,Math.min(14,capFor(sel)+ +t.dataset.cap));generate();render();return}
   if(t.dataset.delslot){const n=S.plan.filter(x=>x.date===sel).length;S.plan=S.plan.filter(x=>x.id!==t.dataset.delslot);S.dayCap[sel]=Math.max(0,Math.min(capFor(sel),n-1));generate();render();return}
+  if(t.dataset.unhard){const sub=S.subjects[t.dataset.unhard];if(sub&&sub.topicRate)sub.topicRate[t.dataset.tno]='ok';openTN=t.dataset.unhard;generate();render();return}
   const act=t.dataset.act;
+  if(act==='fbcopy'){const txt=fbText(),m=$('fb-msg');const ok=()=>{if(m)m.textContent='คัดลอกแล้ว นำไปวางในแชตได้เลย'};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,()=>{if(m)m.textContent='คัดลอกอัตโนมัติไม่ได้ ลองกดส่งทาง LINE แทน'});return}
   if(act==='capreset'){delete S.dayCap[sel];generate();render();return}
   if(act==='addown'){const c=$('o-c').value,st=$('o-s').value;if(!c||!st)return;const a=toMin(st),{kind,topic}=nextKind(c);
     const n=S.plan.filter(x=>x.date===sel).length;
@@ -617,6 +711,8 @@ document.addEventListener('click',e=>{
   if(act==='reset-no'){confirmReset=false;render()}
   if(act==='reset-yes'){confirmReset=false;S=blank();save();sel=nowInfo().date;tab='day';render()}
 });
+document.addEventListener('input',e=>{if(tab==='fb')fbUpdate()});
+document.addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.tnbox){if(d.open)openTN=d.dataset.tnbox;else if(openTN===d.dataset.tnbox)openTN=null}},true);
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.dataset.stime||t.dataset.ssubj){const x=S.plan.find(p=>p.id===(t.dataset.stime||t.dataset.ssubj));if(!x||!t.value)return;
@@ -629,6 +725,8 @@ document.addEventListener('change',e=>{
     generate();render();return}
   if(t.id==='bk-file'&&t.files&&t.files[0]){const r=new FileReader();r.onload=()=>stageImport(String(r.result));r.readAsText(t.files[0]);t.value='';return}
   if(t.dataset.m==='sh'){const m=S.subjList.find(x=>x.c===t.dataset.c);if(m&&t.value.trim())m.sh=t.value.trim();save();render();return}
+  if(t.dataset.tn){const sub=S.subjects[t.dataset.tn];sub.topicNames=sub.topicNames||[];sub.topicNames[+t.dataset.ti]=t.value.trim();openTN=t.dataset.tn;save();return}
+  if(t.name&&t.name.startsWith('fb')){fbUpdate();return}
   if(t.dataset.recall){S.recall[t.dataset.recall]=t.checked;save();return}
   if(t.dataset.f){
     const x=S.subjects[t.dataset.c],f=t.dataset.f;

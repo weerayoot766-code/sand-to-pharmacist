@@ -1,5 +1,5 @@
 // ให้แอปเปิดได้แม้ออฟไลน์ เปลี่ยนเลขเวอร์ชันทุกครั้งที่อัปเดตไฟล์
-const CACHE = 'sand2pharm-v8';
+const CACHE = 'sand2pharm-v9';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
