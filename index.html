@@ -270,7 +270,7 @@ function sample(){
   const b=blank();
   b.subjList=sampleSubj();
   b.subjects=Object.fromEntries(SUBJ.map(s=>[s.c,{exam:s.exam,et:s.et,ee:s.ee,real:s.real,topics:s.topics,conf:s.conf,on:true}]));
-  b.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));b.settings.classEnd='2026-10-23';b.sample=true;
+  b.classes=CLASSES.map((k,i)=>({...k,id:'k'+i}));b.settings.classEnd='2026-10-23';b.presetCheck=true;
   return b;
 }
 function normalize(x){
@@ -417,7 +417,8 @@ function header(){
   let h='';
   const ex=active().filter(s=>!S.subjects[s.c].real);
   if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>esc(s.sh)).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><button class="btn" data-go="subj">ใส่วันสอบ</button></div>`;
-  if(S.sample)h+=`<div class="banner info"><span class="small">ตอนนี้เป็น<b>ข้อมูลตัวอย่าง</b> (เภสัชฯ ปี 1) ลองกดดูได้ พร้อมใช้จริงเมื่อไรให้ลบตัวอย่างแล้วเริ่มกรอกของตัวเอง</span><button class="btn" data-act="clearsample">ลบตัวอย่าง เริ่มของฉัน</button></div>`;
+  if(S.presetCheck)h+=`<div class="banner info"><span class="small">ใส่ตารางเภสัชฯ ปี 1 เทอมนี้ให้แล้ว (8 วิชา) ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้งความมั่นใจของแต่ละวิชาให้ตรงกับตัวเอง</span><span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-go="sched">ตรวจตารางเรียน</button><button class="btn" data-act="presetok">ตรวจแล้ว</button></span></div>`;
+  if(S.sample)h+=`<div class="banner info"><span class="small">ตอนนี้เป็น<b>ข้อมูลตัวอย่าง</b> พร้อมใช้จริงเมื่อไรให้ลบตัวอย่างแล้วเริ่มกรอกของตัวเอง</span><button class="btn" data-act="clearsample">ลบตัวอย่าง เริ่มของฉัน</button></div>`;
   if(missed)h+=`<div class="banner"><span class="small">มี ${missed} ช่วงอ่านที่ผ่านไปแล้วแต่ยังไม่ได้ติ๊ก งานที่ค้างจะถูกยกไปวันถัดไป</span><button class="btn primary" data-act="replan">จัดแผนใหม่</button></div>`;
   $('banner').innerHTML=h;$('banner').style.display=h?'flex':'none';$('banner').style.flexDirection='column';$('banner').style.gap='8px';
 }
@@ -425,7 +426,8 @@ function header(){
 function welcome(){
   return `<div class="welcome"><div><h2>เริ่มใช้ Sand To Pharmacist</h2><p class="muted small" style="margin:4px 0 0">ใส่ข้อมูลของคุณ 3 ขั้น แล้วแอปจะจัดเวลาอ่านหนังสือให้ทุกวันจนถึงวันสอบ</p></div>
   <ol><li><b>เพิ่มวิชา</b> พร้อมวันและเวลาสอบ จำนวนบทที่ออกสอบ และความมั่นใจ</li><li><b>ใส่ตารางเรียน</b> แอปจะไม่จัดเวลาอ่านทับคาบเรียน</li><li><b>ตั้งจำนวนช่วงอ่านต่อวัน</b> ที่ทำได้จริง</li></ol>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="startadd">เพิ่มวิชาแรก</button><button class="btn" data-act="loadsample">ลองดูตัวอย่างก่อน</button><button class="btn" data-go="sched">มีไฟล์สำรอง? นำเข้าข้อมูล</button></div></div>`;
+  <div class="fbq" style="background:var(--accent-soft);border-color:transparent"><b>นักศึกษาเภสัชฯ ปี 1 เทอมนี้?</b><span class="small muted">ใส่ 8 วิชา วันสอบ และตารางเรียนให้ทันที แล้วค่อยปรับให้ตรงกลุ่มเรียนของคุณ</span><div><button class="btn primary" data-act="loadsample">ใช้ตารางเภสัชฯ ปี 1 เทอมนี้</button></div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="startadd">เริ่มเองจากหน้าว่าง</button><button class="btn" data-go="sched">มีรหัสสำรอง? นำเข้าข้อมูล</button></div></div>`;
 }
 function riskList(){
   const {date:today,min}=nowInfo();
@@ -673,6 +675,7 @@ document.addEventListener('click',e=>{
     S.dayCap[sel]=Math.max(capFor(sel),n+1);generate();render();return}
   if(act==='addk'){S.classes.push({id:uid(),d:1,s:'08:00',e:'09:00',c:S.subjList[0]?.c||''});save();render();return}
   if(act==='startadd'){tab='subj';showAdd=true;render();setTimeout(()=>{const i=$('n-th');if(i)i.focus()},0);return}
+  if(act==='presetok'){S.presetCheck=false;save();render();return}
   if(act==='loadsample'){S=sample();sel=nowInfo().date;generate();render();return}
   if(act==='clearsample'){S=blank();save();tab='subj';showAdd=true;render();return}
   if(act==='delno'){confirmDel=null;render();return}
@@ -687,7 +690,7 @@ document.addEventListener('click',e=>{
     const used=new Set(S.subjList.map(x=>x.ci));let ci=0;while(used.has(ci)&&ci<11)ci++;if(used.has(ci))ci=S.subjList.length%12;
     S.subjList.push({c,th,sh:sh||(th.length>14?th.slice(0,14)+'…':th),cr:+$('n-cr').value||3,ci,auto:!$('n-c').value.trim()});
     S.subjects[c]={exam,et,ee,real:true,topics:Math.max(1,+$('n-tp').value||1),conf:+$('n-cf').value||3,on:true};
-    S.sample=false;showAdd=true;generate();render();
+    S.sample=false;S.presetCheck=false;showAdd=true;generate();render();
     const m=$('n-msg');if(m){m.style.color='var(--accent)';m.textContent=`เพิ่ม ${th} แล้ว เพิ่มวิชาต่อไปได้เลย`}
     return}
   if(act==='bkcopy'){bkCode=encodeBk();const done=()=>{bkMsg={t:'คัดลอกรหัสสำรองแล้ว นำไปวางใน LINE หรือโน้ตได้เลย'};render()};
