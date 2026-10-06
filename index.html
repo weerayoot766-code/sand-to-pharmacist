@@ -642,7 +642,9 @@ document.addEventListener('click',e=>{
   if(t.dataset.tab){tab=t.dataset.tab;render();return}
   if(t.dataset.go){tab=t.dataset.go;render();return}
   if(t.dataset.day){sel=t.dataset.day;render();return}
-  if(t.dataset.tick){const x=S.plan.find(p=>p.id===t.dataset.tick);x.done=!x.done;if(!x.done)x.rating=null;save();render();return}
+  if(t.dataset.tick){const x=S.plan.find(p=>p.id===t.dataset.tick),{date:today,min}=nowInfo();x.done=!x.done;if(!x.done)x.rating=null;
+    // ติ๊กย้อนหลัง: จัดแผนข้างหน้าใหม่ เพื่อไม่ให้มีงานซ้ำที่ทำไปแล้ว
+    if(x.date<today||(x.date===today&&x.e<min))generate();else save();render();return}
   if(t.dataset.rate){
     const x=S.plan.find(p=>p.id===t.dataset.id),sub=S.subjects[x.code],old=x.rating;
     const delta={easy:.25,ok:0,hard:-.5};
