@@ -685,7 +685,7 @@ document.addEventListener('click',e=>{
     if(!th){$('n-msg').textContent='ใส่ชื่อวิชาก่อน';return}
     if(!exam){$('n-msg').textContent='ใส่วันสอบก่อน';return}
     if(ee<=et){$('n-msg').textContent='เวลาสอบเสร็จต้องหลังเวลาเริ่ม';return}
-    if(!c)c='S'+uid().slice(1,7);
+    if(!c)c='S'+uid().slice(1);
     if(hasS(c)){$('n-msg').textContent='มีวิชารหัสนี้แล้ว';return}
     const used=new Set(S.subjList.map(x=>x.ci));let ci=0;while(used.has(ci)&&ci<11)ci++;if(used.has(ci))ci=S.subjList.length%12;
     S.subjList.push({c,th,sh:sh||(th.length>14?th.slice(0,14)+'…':th),cr:+$('n-cr').value||3,ci,auto:!$('n-c').value.trim()});
