@@ -119,6 +119,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .row.study.done .chip .sw{background:var(--accent)!important}
 .donebadge{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;font-weight:600;color:var(--accent);margin-top:4px}
 .row.study.missed{border:2px dashed var(--warn)}
+.row.study.moved{opacity:.55;border:1px dashed var(--line);background:var(--surface)}
 .row.missed .t span{color:var(--warn)}
 .title{font-weight:600}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-family:var(--mono);color:var(--muted)}
@@ -376,7 +377,7 @@ function header(){
   const up=active().map(s=>({s,d:S.subjects[s.c].exam})).filter(o=>o.d>=today).sort((a,b)=>a.d<b.d?-1:1)[0];
   $('count').innerHTML=up?`<b class="mono">${dIdx(up.d)-dIdx(today)}</b><span class="muted small">วันถึงสอบวิชาแรก<br>${esc(up.s.sh)} · ${thDate(up.d)}</span>`:S.subjList.length?'<span class="muted">สอบครบทุกวิชาแล้ว</span>':'';
   const {min}=nowInfo();
-  const missed=S.plan.filter(x=>!x.done&&(x.date<today||(x.date===today&&x.e<min))&&x.date>=addD(today,-3)).length;
+  const missed=S.plan.filter(x=>!x.done&&!x.moved&&(x.date<today||(x.date===today&&x.e<min))&&x.date>=addD(today,-3)).length;
   let h='';
   const ex=active().filter(s=>!S.subjects[s.c].real);
   if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>esc(s.sh)).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><button class="btn" data-go="subj">ใส่วันสอบ</button></div>`;
@@ -409,9 +410,9 @@ function viewDay(){
     const tm=`<div class="t">${hm(i.s)}–${hm(i.e)}</div>`;
     if(i.t==='cls'){const k=i.k;return `<div class="row cls${k.cancelled?' off':''}">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${clsCol(k)}"></span>${k.c&&hasS(k.c)?'':''}${k.extra?'<span class="kind">เฉพาะวันนี้</span>':''}</div><div class="title">${k.cancelled?'งดคาบ':k.c?'คาบเรียน':''} ${clsName(k)}</div></div><div>${k.extra?`<button class="btn sm" data-delex="${k.id}">ลบ</button>`:k.cancelled?`<button class="btn sm" data-uncancel="${k.id}">เรียนตามปกติ</button>`:`<button class="btn sm" data-cancel="${k.id}">งดคาบนี้</button>`}</div></div>`}
     if(i.t==='exam')return `<div class="row examrow">${tm}<div class="main"><div class="chip"><span class="sw" style="background:${col(i.c)}"></span>${i.c}</div><div class="title">สอบ ${esc(M(i.c).th)}${i.real?'':' <span class="kind">วันตัวอย่าง</span>'}</div><div class="tip">นอนให้พอ เตรียมบัตรนักศึกษาและอุปกรณ์ตั้งแต่คืนก่อน</div></div><div></div></div>`;
-    const x=i.x,missed=!x.done&&(x.date<today||(x.date===today&&x.e<min));
+    const x=i.x,past=!x.done&&(x.date<today||(x.date===today&&x.e<min)),moved=past&&x.moved,missed=past&&!x.moved;
     const rate=x.done?`<div class="rate"><span class="small muted">รอบนี้รู้สึกว่า</span>${[['easy','ง่าย'],['ok','พอได้'],['hard','ยาก']].map(([k,l])=>`<button data-rate="${k}" data-id="${x.id}" aria-pressed="${x.rating===k}">${l}</button>`).join('')}</div>`:'';
-    return `<div class="row study${x.done?' done':''}${missed?' missed':''}" style="--sc:${col(x.code)}"><div class="t"><b>${hm(x.s)}</b><span>ถึง ${hm(x.e)}</span></div><div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${esc(M(x.code).sh)}<span class="kind ${x.kind}${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${x.done?'<div class="donebadge">✓ อ่านเสร็จแล้ว</div>':''}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${esc(s.c)}" ${s.c===x.code?'selected':''}>${esc(s.sh)}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="${x.done?'ยกเลิกติ๊ก':'ติ๊กว่าอ่านเสร็จ'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>`;
+    return `<div class="row study${x.done?' done':''}${missed?' missed':''}${moved?' moved':''}" style="--sc:${col(x.code)}"><div class="t"><b>${hm(x.s)}</b><span>ถึง ${hm(x.e)}</span></div><div class="main"><div class="chip"><span class="sw" style="background:${col(x.code)}"></span>${esc(M(x.code).sh)}<span class="kind ${x.kind}${x.eve?' eve':''}">${x.eve?'ก่อนสอบ · ':''}${KIND[x.kind]}</span></div><div class="title">${slotTitle(x)}</div>${moved?'<div class="tip">ยกไปวันถัดไปแล้ว ถ้าทำไปแล้วกดติ๊กได้</div>':missed?'<div class="tip" style="color:var(--warn)">ยังไม่ได้ทำ</div>':`<div class="tip">${TIP[x.kind]}${x.pinned?' · <span style="color:var(--accent)">ตั้งเอง</span>':''}</div>`}${x.done?'<div class="donebadge">✓ อ่านเสร็จแล้ว</div>':''}${rate}${x.done?'':`<details class="edit"><summary>แก้ช่วงนี้</summary><div class="form"><input type="time" data-stime="${x.id}" value="${hm(x.s)}" aria-label="เวลาเริ่ม"><select data-ssubj="${x.id}" aria-label="วิชา">${active().map(s=>`<option value="${esc(s.c)}" ${s.c===x.code?'selected':''}>${esc(s.sh)}</option>`).join('')}</select><button class="btn sm" data-delslot="${x.id}">ลบช่วงนี้</button></div></details>`}</div><button class="check" data-tick="${x.id}" aria-pressed="${x.done}" aria-label="${x.done?'ยกเลิกติ๊ก':'ติ๊กว่าอ่านเสร็จ'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>`;
   }).join('');
   const rc=recallFor(sel);
   const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${esc(M(r.code).sh)} บทที่ ${r.topic} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
@@ -608,7 +609,7 @@ document.addEventListener('click',e=>{
     if(p){S=p;generate();bkMsg={t:'ย้อนกลับเป็นข้อมูลเดิมแล้ว'}}render();return}
   if(act==='addextra'){const c=$('x-c').value,st=$('x-s').value,en=$('x-e').value;if(!st||!en||en<=st)return;
     S.exceptions.push({id:uid(),type:'extra',date:sel,s:st,e:en,c,label:c?'':($('x-label').value.trim()||'นัดพิเศษ')});generate();render();return}
-  if(act==='replan'){generate();render()}
+  if(act==='replan'){const {date:today,min}=nowInfo();S.plan.forEach(x=>{if(!x.done&&(x.date<today||(x.date===today&&x.e<min)))x.moved=true});generate();render()}
   if(t.dataset.askdel){confirmDel=t.dataset.askdel;render();return}
   if(t.dataset.delsubj){const c=t.dataset.delsubj;S.subjList=S.subjList.filter(x=>x.c!==c);delete S.subjects[c];S.plan=S.plan.filter(x=>x.code!==c);S.classes.forEach(k=>{if(k.c===c)k.c=''});confirmDel=null;generate();render();return}
   if(t.dataset.confirm){S.subjects[t.dataset.confirm].real=true;save();render();return}
