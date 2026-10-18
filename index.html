@@ -668,7 +668,7 @@ function header(){
   const missed=S.plan.filter(x=>!x.done&&!x.moved&&(x.date<today||(x.date===today&&x.e<min))&&x.date>=addD(today,-3)).length;
   let h='';
   const ex=active().filter(s=>!S.subjects[s.c].real);
-  if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>esc(s.sh)).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><button class="btn" data-go="subj">ใส่วันสอบ</button></div>`;
+  if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>esc(s.sh)).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" data-act="allreal">วันสอบถูกต้องแล้วทุกวิชา</button><button class="btn" data-go="subj">แก้วันสอบ</button></span></div>`;
   if(S.presetCheck)h+=`<div class="banner info"><span class="small">ใส่ตารางเภสัชฯ ปี 1 เทอมนี้ให้แล้ว (8 วิชา) ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้งความมั่นใจของแต่ละวิชาให้ตรงกับตัวเอง</span><span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-go="sched">ตรวจตารางเรียน</button><button class="btn" data-act="presetok">ตรวจแล้ว</button></span></div>`;
   if(S.sample)h+=`<div class="banner info"><span class="small">ตอนนี้เป็น<b>ข้อมูลตัวอย่าง</b> พร้อมใช้จริงเมื่อไรให้ลบตัวอย่างแล้วเริ่มกรอกของตัวเอง</span><button class="btn" data-act="clearsample">ลบตัวอย่าง เริ่มของฉัน</button></div>`;
   const odT=tOverdue();
@@ -971,6 +971,7 @@ document.addEventListener('click',e=>{
     if(p){S=p;generate();bkMsg={t:'ย้อนกลับเป็นข้อมูลเดิมแล้ว'}}render();return}
   if(act==='addextra'){const c=$('x-c').value,st=$('x-s').value,en=$('x-e').value;if(!st||!en||en<=st)return;
     S.exceptions.push({id:uid(),type:'extra',date:sel,s:st,e:en,c,label:c?'':($('x-label').value.trim()||'นัดพิเศษ')});generate();render();return}
+  if(act==='allreal'){active().forEach(x=>{S.subjects[x.c].real=true});save();render();return}
   if(act==='replan'){const {date:today,min}=nowInfo();S.plan.forEach(x=>{if(!x.done&&(x.date<today||(x.date===today&&x.e<min)))x.moved=true});generate();render()}
   if(t.dataset.askdel){confirmDel=t.dataset.askdel;render();return}
   if(t.dataset.delsubj){const c=t.dataset.delsubj;S.subjList=S.subjList.filter(x=>x.c!==c);delete S.subjects[c];S.plan=S.plan.filter(x=>x.code!==c);S.classes.forEach(k=>{if(k.c===c)k.c=''});(S.tasks||[]).forEach(x=>{if(x.c===c)x.c=''});confirmDel=null;generate();render();return}
