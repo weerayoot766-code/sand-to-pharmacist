@@ -493,7 +493,7 @@ const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v24',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v25',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -1623,6 +1623,9 @@ const termName=t=>`ปี ${t.yr} ${SEMS[t.sem]||''}/${t.ay}`;
 const termOrder=(a,b)=>a.ay-b.ay||a.sem-b.sem;
 function guessTerm(){const d=new Date(),m=d.getMonth()+1,y=d.getFullYear()+543;const sem=m>=6&&m<=12?1:m<=5?2:1;return {ay:m>=6?y:y-1,sem,yr:S.gYear||1}}
 let gForm=null,gSel=null,gMsg='',gManual=null,gEdit=null,gConfirmNew=false;
+// v25: ฟอร์มเทอมนี้ (เกรดที่เลือก วิชาที่ไม่นับ วิชาที่เพิ่มเอง) และแถวที่กำลังแก้ของเทอมที่บันทึกแล้ว
+let gCurG={},gExcl=new Set(),gExtra=[],gInitFor=null,gEditRows=null;
+const gNewRow=()=>({c:'x'+uid().slice(1),th:'',sh:'',cr:3,g:''});
 // สถิติการอ่านของแต่ละวิชาในเทอมปัจจุบัน (ใช้ตอนบันทึกเกรด / ปิดเทอม)
 function subjStats(c){
   const {date:today}=nowInfo(),x=S.subjects[c],exam=x.exam;
@@ -1646,8 +1649,9 @@ function termSnapshot(){
 function saveCurrentTerm(f,grades){
   const id=`${f.ay}-${f.sem}`;let t=S.terms.find(x=>x.id===id);
   const old=t?Object.fromEntries((t.subjects||[]).map(x=>[x.c,x.g])):{};
-  const subs=active().map(s=>({c:s.c,th:s.th,sh:s.sh,cr:+s.cr,g:grades[s.c]!==undefined?grades[s.c]:(old[s.c]||''),st:subjStats(s.c)}));
-  const rec={id,ay:+f.ay,sem:+f.sem,yr:+f.yr,src:'app',saved:nowInfo().date,meta:termSnapshot(),subjects:subs};
+  const subs=active().filter(s=>!gExcl.has(s.c)).map(s=>({c:s.c,th:s.th,sh:s.sh,cr:+s.cr,g:grades[s.c]!==undefined?grades[s.c]:(old[s.c]||''),st:subjStats(s.c)}))
+    .concat(gExtra.filter(r=>r.sh.trim()).map(r=>({c:r.c,th:r.sh.trim(),sh:r.sh.trim(),cr:Math.max(0,+r.cr||0),g:r.g})));
+  const rec={id,ay:+f.ay,sem:+f.sem,yr:+f.yr,src:'app',saved:nowInfo().date,meta:termSnapshot(),subjects:subs,ex:[...gExcl].filter(c=>hasS(c))};
   if(t)Object.assign(t,rec);else S.terms.push(rec);S.terms.sort(termOrder);S.curTerm=id;S.gYear=+f.yr;return id;
 }
 function gpaOf(subs){let pts=0,cr=0;subs.forEach(x=>{if(GP[x.g]!==undefined&&+x.cr>0){pts+=GP[x.g]*x.cr;cr+=+x.cr}});return {gpa:cr?pts/cr:null,cr,pts}}
@@ -1751,7 +1755,9 @@ function viewGrade(){
   if(!Array.isArray(S.terms))S.terms=[];
   if(!gForm){const cur=S.terms.find(x=>x.id===S.curTerm);gForm=cur?{ay:cur.ay,sem:cur.sem,yr:cur.yr}:guessTerm()}
   const G=gpax(),terms=S.terms.slice().sort(termOrder),cur=S.terms.find(x=>x.id===`${gForm.ay}-${gForm.sem}`);
-  const curG=cur?Object.fromEntries(cur.subjects.map(x=>[x.c,x.g])):{};
+  const fid=`${gForm.ay}-${gForm.sem}`;
+  if(gInitFor!==fid){gInitFor=fid;if(cur){gCurG=Object.fromEntries(cur.subjects.map(x=>[x.c,x.g]));gExcl=new Set(cur.ex||[]);
+    gExtra=cur.subjects.filter(x=>!x.st&&!hasS(x.c)).map(x=>({c:x.c,th:x.th,sh:x.sh,cr:x.cr,g:x.g}))}}
   if(!gSel||!S.terms.some(t=>t.id===gSel)){const w=terms.filter(t=>t.subjects.some(x=>GP[x.g]!==undefined));gSel=w.length?w[w.length-1].id:null}
   const sel=S.terms.find(t=>t.id===gSel),A=sel?analyze(sel):null,cs=confSuggest();
   const hasSubj=active().length&&!S.sample;
@@ -1764,9 +1770,11 @@ function viewGrade(){
   // บันทึกเกรดเทอมนี้
   h+=`<div class="section"><h2>ใส่เกรดเทอมนี้ <span class="muted small">จากวิชาในแอป</span></h2>
   ${hasSubj?`<div class="gform">${termSelHTML(gForm,'')}</div>
-  <div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">หน่วยกิต</th><th class="n">อ่านไป</th><th>เกรด</th></tr></thead><tbody>
-  ${active().map(s=>{const st=subjStats(s.c);return `<tr><td><span class="sw" style="background:${col(s.c)}"></span> ${esc(s.sh)}</td><td class="n">${s.cr}</td><td class="n">${f1(st.h)} ชม.</td><td>${gradeSel('cur:'+s.c,curG[s.c]||'')}</td></tr>`}).join('')}</tbody></table></div>
-  <div class="xbtns"><button class="btn primary" data-act="gsave">บันทึกเกรด${cur?' (อัปเดต)':''}</button></div>
+  <div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">หน่วยกิต</th><th class="n">อ่านไป</th><th>เกรด</th><th></th></tr></thead><tbody>
+  ${active().map(s=>{const st=subjStats(s.c),ex=gExcl.has(s.c);return `<tr${ex?' style="opacity:.5"':''}><td><span class="sw" style="background:${col(s.c)}"></span> ${ex?`<s>${esc(s.sh)}</s>`:esc(s.sh)}</td><td class="n">${s.cr}</td><td class="n">${f1(st.h)} ชม.</td><td>${ex?'<span class="small muted">ไม่นับ</span>':gradeSel('cur:'+s.c,gCurG[s.c]||'')}</td><td>${ex?`<button class="btn sm" data-gincl="${s.c}" title="นับวิชานี้">คืน</button>`:`<button class="btn sm" data-gexcl="${s.c}" aria-label="ไม่นับวิชา ${esc(s.sh)} ในเกรดเทอมนี้" title="ไม่นับวิชานี้">×</button>`}</td></tr>`}).join('')}
+  ${gExtra.map((r,i)=>`<tr><td><input class="gname" data-gx="${i}:sh" value="${esc(r.sh)}" placeholder="ชื่อวิชา" style="width:100%;min-width:110px;font:inherit;font-size:.9rem;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td class="n"><input type="number" min="0" max="12" data-gx="${i}:cr" value="${r.cr}" aria-label="หน่วยกิต" style="width:52px;font:inherit;font-size:.9rem;padding:5px 4px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td class="n small muted">–</td><td><select data-gx="${i}:g" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(x=>`<option${x===r.g?' selected':''}>${x}</option>`).join('')}</select></td><td><button class="btn sm" data-gxdel="${i}" aria-label="ลบวิชานี้">×</button></td></tr>`).join('')}</tbody></table></div>
+  <div class="xbtns"><button class="btn sm" data-act="gxadd">+ เพิ่มวิชาที่ไม่ได้อยู่ในแอป</button><button class="btn primary" data-act="gsave">บันทึกเกรด${cur?' (อัปเดต)':''}</button></div>
+  <span class="small muted">กด × ที่วิชาในแอป = ไม่นับวิชานั้นในเกรดเทอมนี้ (แผนอ่านไม่เปลี่ยน) · วิชาที่เพิ่มเองเช่น พลศึกษา หรือวิชาเลือกที่ไม่ได้วางแผนอ่าน นับใน GPA แต่ไม่มีข้อมูลการอ่าน</span>
   <span class="small muted">บันทึกได้หลายครั้ง เกรดออกไม่พร้อมกันก็ใส่ทีละวิชาได้ แอปจะเก็บสถิติการอ่านของเทอมนี้ไว้คู่กับเกรด</span>`
   :`<div class="empty">${S.sample?'ตอนนี้เป็นข้อมูลตัวอย่าง ใส่วิชาจริงก่อน แล้วค่อยบันทึกเกรด':'ยังไม่มีวิชาในแอป'}</div>`}
   ${gMsg?`<span class="small" style="color:var(--accent);font-weight:600">${esc(gMsg)}</span>`:''}</div>`;
@@ -1774,9 +1782,10 @@ function viewGrade(){
   if(terms.length){h+=`<div class="section"><h2>วิเคราะห์ผล</h2><div class="gform"><label class="small">เทอม <select data-gpick>${terms.map(t=>`<option value="${t.id}"${t.id===gSel?' selected':''}>${esc(termName(t))} · GPA ${f2(gpaOf(t.subjects).gpa)}</option>`).join('')}</select></label></div>`;
     if(sel){const S2=sel.subjects;
       h+=`<div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">นก.</th><th>เกรด</th>${sel.src==='app'?'<th class="n">ชม.</th><th class="n">ชม./นก.</th><th class="n">ตามแผน</th><th class="n">อ่านท้าย</th><th class="n">ทำโจทย์</th>':''}</tr></thead><tbody>
-      ${S2.map(x=>{const st=x.st||{},g=x.g,gc=GP[g]===undefined?'na':GP[g]<=2.5?'lo':'';return `<tr><td>${esc(x.sh)}</td><td class="n">${x.cr}</td><td>${gEdit===sel.id?gradeSel(`t:${sel.id}:${x.c}`,g):`<span class="ggrade ${gc}">${esc(g||'–')}</span>`}</td>${sel.src==='app'?`<td class="n">${f1(st.h)}</td><td class="n">${f1(st.h/(x.cr||1))}</td><td class="n">${st.p?pct(st.d/st.p):'–'}</td><td class="n">${pct(st.cram)}</td><td class="n">${pct(st.prac)}</td>`:''}</tr>`}).join('')}</tbody></table></div>
+      ${gEdit===sel.id&&gEditRows?gEditRows.map((x,i)=>`<tr><td><input data-ge="${i}:sh" value="${esc(x.sh)}" placeholder="ชื่อวิชา" style="width:100%;min-width:110px;font:inherit;font-size:.9rem;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td class="n"><input type="number" min="0" max="12" data-ge="${i}:cr" value="${x.cr}" aria-label="หน่วยกิต" style="width:52px;font:inherit;font-size:.9rem;padding:5px 4px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td><select data-ge="${i}:g" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(v=>`<option${v===x.g?' selected':''}>${v}</option>`).join('')}</select></td><td colspan="${sel.src==='app'?5:1}"><button class="btn sm" data-gedel="${i}" aria-label="ลบวิชานี้">× ลบ</button></td></tr>`).join('')
+      :S2.map(x=>{const st=x.st||{},g=x.g,gc=GP[g]===undefined?'na':GP[g]<=2.5?'lo':'';return `<tr><td>${esc(x.sh)}</td><td class="n">${x.cr}</td><td><span class="ggrade ${gc}">${esc(g||'–')}</span></td>${sel.src==='app'?(x.st?`<td class="n">${f1(st.h)}</td><td class="n">${f1(st.h/(x.cr||1))}</td><td class="n">${st.p?pct(st.d/st.p):'–'}</td><td class="n">${pct(st.cram)}</td><td class="n">${pct(st.prac)}</td>`:'<td class="n small muted" colspan="5">ไม่มีข้อมูลการอ่าน</td>'):''}</tr>`}).join('')}</tbody></table></div>
       ${sel.src==='app'?'<span class="small muted">ตามแผน = ช่วงที่ติ๊กเทียบกับช่วงที่ถึงเวลา · อ่านท้าย = สัดส่วนเวลาอ่านใน 3 วันก่อนสอบ · ทำโจทย์ = สัดส่วนช่วงทำโจทย์และข้อสอบเก่า</span>':''}
-      <div class="xbtns">${gEdit===sel.id?`<button class="btn primary" data-act="geditdone">บันทึกการแก้เกรด</button>`:`<button class="btn sm" data-act="gedit">แก้เกรดเทอมนี้</button>`}<button class="btn sm" data-act="gdel">${gConfirmNew==='del'?'กดอีกครั้งเพื่อลบเทอมนี้':'ลบเทอมนี้'}</button></div>
+      <div class="xbtns">${gEdit===sel.id?`<button class="btn sm" data-act="geadd">+ เพิ่มวิชา</button><button class="btn primary" data-act="geditdone">บันทึกการแก้ไข</button><button class="btn sm" data-act="geditno">ยกเลิก</button>`:`<button class="btn sm" data-act="gedit">แก้ไข / เพิ่ม / ลบวิชา</button>`}<button class="btn sm" data-act="gdel">${gConfirmNew==='del'?'กดอีกครั้งเพื่อลบเทอมนี้':'ลบเทอมนี้'}</button></div>
       <div class="inslist">${A.out.map(i=>`<div class="ins ${i.k}"><b class="t">${esc(i.t)}</b><ul>${i.b.map(b=>`<li class="small">${esc(b)}</li>`).join('')}</ul></div>`).join('')}</div>`;
       if(A.recs.length||cs.length){h+=`<h3 style="margin:14px 0 6px">นำไปปรับแผนเทอมหน้า</h3><div class="inslist">${A.recs.map(r=>`<div class="ins rec"><b class="t">${esc(r.t)}</b><span class="small">${esc(r.b)}</span>${r.noapply?'':`<button class="btn sm" style="align-self:flex-start" data-grec="${r.id}">ใช้คำแนะนำนี้</button>`}</div>`).join('')}
       ${cs.length?`<div class="ins rec"><b class="t">ตั้งความมั่นใจเริ่มต้นจากผลวิชากลุ่มเดียวกัน</b><ul>${cs.map(x=>`<li class="small">${esc(x.sh)} (กลุ่ม${esc(x.fam)}): เคยได้ ${esc(x.from)} → แนะนำความมั่นใจ ${x.sug}/5 (ตอนนี้ ${x.cur}/5)</li>`).join('')}</ul><button class="btn sm" style="align-self:flex-start" data-grec="conf">ใช้ความมั่นใจที่แนะนำ</button></div>`:''}</div>`}
@@ -1797,9 +1806,18 @@ function viewGrade(){
 function readGrades(prefix){const o={};document.querySelectorAll(`[data-gsel^="${prefix}"]`).forEach(el=>{o[el.dataset.gsel.slice(prefix.length)]=el.value});return o}
 function v24Click(t){
   const a=t.dataset.act;
-  if(a==='gsave'){const id=saveCurrentTerm(gForm,readGrades('cur:'));gSel=id;gMsg=`บันทึก ${termName(S.terms.find(x=>x.id===id))} แล้ว`;save();render();return true}
-  if(a==='gedit'){gEdit=gSel;render();return true}
-  if(a==='geditdone'){const tm=S.terms.find(x=>x.id===gEdit),gr=readGrades(`t:${gEdit}:`);if(tm)tm.subjects.forEach(x=>{if(gr[x.c]!==undefined)x.g=gr[x.c]});gEdit=null;save();render();return true}
+  if(a==='gsave'){Object.assign(gCurG,readGrades('cur:'));const id=saveCurrentTerm(gForm,gCurG);gInitFor=null;gSel=id;gMsg=`บันทึก ${termName(S.terms.find(x=>x.id===id))} แล้ว`;save();render();return true}
+  if(a==='gedit'){gEdit=gSel;const tm=S.terms.find(x=>x.id===gSel);gEditRows=tm?tm.subjects.map(x=>({...x})):null;render();return true}
+  if(a==='geditno'){gEdit=null;gEditRows=null;render();return true}
+  if(a==='geadd'){gEditRows.push(gNewRow());render();const el=document.querySelector(`[data-ge="${gEditRows.length-1}:sh"]`);if(el)el.focus();return true}
+  if(t.dataset.gedel!==undefined){gEditRows.splice(+t.dataset.gedel,1);render();return true}
+  if(a==='gxadd'){gExtra.push(gNewRow());render();const el=document.querySelector(`[data-gx="${gExtra.length-1}:sh"]`);if(el)el.focus();return true}
+  if(t.dataset.gxdel!==undefined){gExtra.splice(+t.dataset.gxdel,1);render();return true}
+  if(t.dataset.gexcl){gExcl.add(t.dataset.gexcl);render();return true}
+  if(t.dataset.gincl){gExcl.delete(t.dataset.gincl);render();return true}
+  if(a==='geditdone'){const tm=S.terms.find(x=>x.id===gEdit);if(tm&&gEditRows){const rows=gEditRows.filter(x=>(x.sh||'').trim());if(!rows.length){gMsg='ต้องมีอย่างน้อย 1 วิชา ถ้าจะลบทั้งเทอมให้กด “ลบเทอมนี้”';render();return true}
+    const gone=tm.subjects.filter(x=>!rows.some(r=>r.c===x.c)&&hasS(x.c)).map(x=>x.c);if(tm.id===S.curTerm&&gone.length)tm.ex=[...new Set([...(tm.ex||[]),...gone])];
+    tm.subjects=rows.map(x=>({...x,sh:x.sh.trim(),th:x.st?x.th:x.sh.trim(),cr:Math.max(0,+x.cr||0)}));if(tm.id===gInitFor)gInitFor=null}gEdit=null;gEditRows=null;gMsg='บันทึกการแก้ไขแล้ว';save();render();return true}
   if(a==='gdel'){if(gConfirmNew!=='del'){gConfirmNew='del';render();return true}S.terms=S.terms.filter(x=>x.id!==gSel);if(S.curTerm===gSel)S.curTerm=null;gSel=null;gConfirmNew=false;save();render();return true}
   if(a==='gmrow'){gManual.open=true;gManual.rows.push({n:'',cr:3,g:''});render();return true}
   if(a==='gmsave'){const rows=gManual.rows.filter(r=>r.n.trim()&&r.g);if(!rows.length){gMsg='กรอกชื่อวิชาและเกรดอย่างน้อย 1 วิชา';render();return true}
@@ -1811,7 +1829,7 @@ function v24Click(t){
   if(a==='gnewno'){gConfirmNew=false;render();return true}
   if(a==='gnewgo'){
     try{localStorage.setItem(KEY+'-before-newterm',JSON.stringify(S))}catch(e){}
-    const id=saveCurrentTerm(gForm,readGrades('cur:'));
+    Object.assign(gCurG,readGrades('cur:'));const id=saveCurrentTerm(gForm,gCurG);gInitFor=null;gExcl=new Set();gExtra=[];gCurG={};
     S.subjList=[];S.subjects={};S.plan=[];S.recall={};S.classes=[];S.exceptions=[];S.dayCap={};S.settings.classEnd='';
     S.tasks=(S.tasks||[]).filter(x=>x.status==='open');S.tasks.forEach(x=>{x.c=null});S.curTerm=null;S.shareCheck=false;S.presetCheck=false;S.since=nowInfo().date;
     const nx=gForm.sem===1?{ay:gForm.ay,sem:2,yr:gForm.yr}:{ay:+gForm.ay+1,sem:1,yr:Math.min(6,+gForm.yr+1)};gForm=nx;gConfirmNew=false;gSel=id;
@@ -1826,12 +1844,15 @@ function v24Click(t){
   return false;
 }
 document.addEventListener('change',e=>{const t=e.target;
+  if(t.dataset.gsel&&t.dataset.gsel.startsWith('cur:')){gCurG[t.dataset.gsel.slice(4)]=t.value;return}
+  if(t.dataset.gx){const [i,k]=t.dataset.gx.split(':');if(gExtra[+i])gExtra[+i][k]=k==='cr'?+t.value:t.value;return}
+  if(t.dataset.ge){const [i,k]=t.dataset.ge.split(':');if(gEditRows&&gEditRows[+i])gEditRows[+i][k]=k==='cr'?+t.value:t.value;return}
   if(t.dataset.gf){const k=t.dataset.gf,v=+t.value;if(k[0]==='m'){gManual.f[k.slice(1)]=v;gManual.open=true}else{gForm[k]=v}render();return}
   if(t.dataset.gpick!==undefined&&t.matches('[data-gpick]')){gSel=t.value;gEdit=null;gConfirmNew=false;render();return}
   if(t.dataset.gm){const [i,k]=t.dataset.gm.split(':');gManual.rows[+i][k]=k==='cr'?+t.value:t.value;gManual.open=true;return}
   if(t.matches('[data-gtarget]')){const v=+t.value;if(v>=1&&v<=4){S.gpaTarget=v;save();render()}return}
 });
-document.addEventListener('input',e=>{const t=e.target;if(t.dataset.gm){const [i,k]=t.dataset.gm.split(':');gManual.rows[+i][k]=k==='cr'?+t.value:t.value;gManual.open=true}});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.gx){const [i,k]=t.dataset.gx.split(':');if(gExtra[+i])gExtra[+i][k]=k==='cr'?+t.value:t.value;return}if(t.dataset.ge){const [i,k]=t.dataset.ge.split(':');if(gEditRows&&gEditRows[+i])gEditRows[+i][k]=k==='cr'?+t.value:t.value;return}if(t.dataset.gm){const [i,k]=t.dataset.gm.split(':');gManual.rows[+i][k]=k==='cr'?+t.value:t.value;gManual.open=true}});
 document.addEventListener('toggle',e=>{const t=e.target;if(t.matches&&t.matches('[data-gmanual]')&&gManual)gManual.open=t.open},true);
 
 loadNews();
