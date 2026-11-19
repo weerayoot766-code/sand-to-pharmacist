@@ -384,6 +384,25 @@ nav#tabs .ti,nav#tabs .ts{display:none}
 }
 @keyframes tabpop{0%{transform:scale(.75)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
 @media (max-width:720px){html:not(.nofx) nav#tabs button[aria-selected="true"] .ti{animation:tabpop .35s ease}}
+
+/* v22: สีประจำวันแบบไทย ในตารางรายวันและแถบเลือกวัน */
+.pdays{display:flex;flex-direction:column;gap:8px}
+.pweek{font-size:.85rem;font-weight:700;color:var(--muted);margin:12px 0 0;letter-spacing:.01em}.pweek:first-child{margin-top:0}
+.pday{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px 12px 12px;border-radius:12px;
+ background:var(--surface);background:color-mix(in srgb,var(--dc) 10%,var(--surface));border:1px solid var(--line);border-color:color-mix(in srgb,var(--dc) 35%,var(--line));border-left:7px solid var(--dc)}
+.pday .pdh{display:flex;flex-direction:column;gap:1px;line-height:1.25}
+.pday .pdh b{font-size:1.08rem}
+.pday .pdh span{font-size:.92rem;color:var(--muted)}
+.pday .pdh em{font-style:normal;font-size:.75rem;font-weight:700;color:var(--bg);background:var(--accent);border-radius:99px;padding:1px 8px;align-self:flex-start;margin-top:3px}
+.pday .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pday .pchip{font-size:.95rem;padding:5px 10px;border-radius:8px;background:var(--surface)}
+.pday .pchip .sw{width:10px;height:10px}
+.pday .pdn{grid-column:2;font-size:.82rem;color:var(--muted);margin-top:-4px}
+.pday.today{box-shadow:0 0 0 2px var(--accent)}
+.pday.rest .chips{color:var(--muted)}
+@media (max-width:480px){.pday{grid-template-columns:84px minmax(0,1fr);gap:10px;padding:10px 10px 10px 10px}.pday .pdh b{font-size:1rem}.pday .pchip{font-size:.9rem}}
+.strip .day{border-top:4px solid var(--dc,var(--line))}
+.strip .day[aria-pressed="true"]{border-top-color:var(--dc,var(--fg))}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -438,10 +457,12 @@ const SUBJ=[
  {c:'SU115',th:'อาหารเพื่อสุขภาพ',sh:'อาหารเพื่อสุขภาพ',cr:3,exam:'2026-11-03',et:'13:00',ee:'15:00',real:true,topics:5,conf:4}];
 const DW=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
 const DWL=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+// สีประจำวันแบบไทย (อา. แดง จ. เหลือง อ. ชมพู พ. เขียว พฤ. ส้ม ศ. ฟ้า ส. ม่วง)
+const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6'];
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v20',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v22',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -875,7 +896,7 @@ function viewDay(){
   for(let d=start;d<=end;d=addD(d,1)){
     const dt=pd(d),n=S.plan.filter(x=>x.date===d).length,ex=active().some(s=>S.subjects[s.c].exam===d);
     const du=!ex&&(S.tasks||[]).some(t=>t.status==='open'&&t.due===d);
-    strip+=`<button class="day${ex?' exam':du?' due':''}" data-day="${d}" aria-pressed="${d===sel}"><div class="dw">${DW[dt.getDay()]}</div><div class="dn">${dt.getDate()}</div><div class="dots">${'<i></i>'.repeat(Math.min(n,6))}</div></button>`;
+    strip+=`<button class="day${ex?' exam':du?' due':''}" data-day="${d}" aria-pressed="${d===sel}" style="--dc:${DCOL[dt.getDay()]}"><div class="dw">${DW[dt.getDay()]}</div><div class="dn">${dt.getDate()}</div><div class="dots">${'<i></i>'.repeat(Math.min(n,6))}</div></button>`;
   }
   const dt=pd(sel),wd=dt.getDay(),items=[];
   classesOn(sel,true).forEach(k=>items.push({t:'cls',s:toMin(k.s),e:toMin(k.e),k}));
@@ -925,12 +946,15 @@ function viewPlan(){
     const sl=S.plan.filter(x=>x.date===d&&isOn(x.code)),cnt={};
     sl.forEach(x=>cnt[x.code]=(cnt[x.code]||0)+1);
     const ex=active().filter(s=>S.subjects[s.c].exam===d).map(s=>`<span class="pchip ex">สอบ ${esc(s.sh)}</span>`).join('');
-    days+=`<div class="planday"><div class="small mono">${thDate(d)}</div><div class="chips">${ex}${Object.entries(cnt).map(([c,n])=>`<span class="pchip"><span class="sw" style="background:${col(c)}"></span>${esc(M(c).sh)} ×${n}</span>`).join('')||(ex?'':'<span class="muted small">พัก</span>')}</div></div>`;
+    const dt=pd(d),wd=dt.getDay(),hrs=+(sl.reduce((a,x)=>a+(x.e-x.s),0)/60).toFixed(1);
+    if(wd===1&&d!==today)days+=`<div class="pweek">สัปดาห์ ${dt.getDate()} ${MON[dt.getMonth()]}</div>`;
+    const ch=Object.entries(cnt).map(([c,n])=>`<span class="pchip"><span class="sw" style="background:${col(c)}"></span>${esc(M(c).sh)} ×${n}</span>`).join('');
+    days+=`<div class="pday${d===today?' today':''}${!sl.length&&!ex?' rest':''}" style="--dc:${DCOL[wd]}"><div class="pdh"><b>${DWL[wd]}</b><span>${dt.getDate()} ${MON[dt.getMonth()]}</span>${d===today?'<em>วันนี้</em>':''}</div><div class="chips">${ex}${ch||(ex?'':'<span>พัก ไม่มีช่วงอ่าน</span>')}</div>${sl.length?`<div class="pdn">${sl.length} ช่วง · ${hrs} ชม.</div>`:''}</div>`;
   }
   const total=S.plan.filter(x=>x.date>=today).length;
   return `<div class="section"><h2>ความครอบคลุมแต่ละวิชา</h2><p class="small muted" style="margin:0">จำนวนช่วง (ช่วงละ ${S.settings.slot} นาที) ที่ควรใช้ คำนวณจากจำนวนบท ความมั่นใจ และหน่วยกิต ถ้าขาด ให้เพิ่มชั่วโมงอ่านต่อวันในแท็บตั้งค่า</p>
   <div class="tablebox"><table><thead><tr><th>วิชา</th><th>วันสอบ</th><th>ควรใช้</th><th>จัดไว้</th><th>ทำแล้ว</th><th>สถานะ</th></tr></thead><tbody>${cov}</tbody></table></div></div>
-  <div class="section"><h2>รายวัน <span class="muted small">รวม ${total} ช่วง · ${Math.round(total*S.settings.slot/60)} ชม.</span></h2><div>${days}</div></div>
+  <div class="section"><h2>รายวัน <span class="muted small">รวม ${total} ช่วง · ${Math.round(total*S.settings.slot/60)} ชม.</span></h2><div class="pdays">${days}</div></div>
   <div class="section small muted"><b style="color:var(--fg)">วิธีจัด:</b> ทุกช่วงว่าง ระบบเลือกวิชาที่ได้คะแนนสูงสุดจาก (หน่วยกิต+1) × (6 − ความมั่นใจ) × งานที่เหลือ ÷ วันที่เหลือก่อนสอบ วิชาที่สอบใกล้ ไม่มั่นใจ และเหลือเยอะจะขึ้นก่อน ไม่ให้วิชาเดียวกันติดกันถ้าเลี่ยงได้ และวันก่อนสอบจะเน้นข้อสอบเก่าของวิชานั้น</div>`;
 }
 
@@ -1408,11 +1432,12 @@ const FAC_LINKS=[
  ['คณะเภสัชศาสตร์ มหาวิทยาลัยอุบลราชธานี','https://phar.ubu.ac.th/'],
  ['สำนักวิชาเภสัชศาสตร์ มหาวิทยาลัยวลัยลักษณ์','https://pharmacy.wu.ac.th/'],
  ['วิทยาลัยเภสัชศาสตร์ มหาวิทยาลัยรังสิต','https://rsupharmacy.rsu.ac.th/']];
-const ORG_LINKS=[['สภาเภสัชกรรม','https://www.pharmacycouncil.org/','สอบใบประกอบวิชาชีพ ประกาศ และข่าววิชาชีพ']];
+const ORG_LINKS=[['ศูนย์สอบความรู้ฯ สภาเภสัชกรรม','https://www.plecenter.org/','ปฏิทินสอบ สมัครสอบ ประกาศผล PLE'],['สภาเภสัชกรรม','https://www.pharmacycouncil.org/','ประกาศ และข่าววิชาชีพ']];
 let newsFeed=[],newsLinks=null,newsIdx=0,newsUntil=0,newsHover=false;
 function loadNews(){
   if(location.protocol==='file:')return;
   fetch('news.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;if(Array.isArray(j.items))newsFeed=j.items;
+    if(Array.isArray(j.ple)&&j.ple.length)plePle=j.ple.filter(e=>Array.isArray(e)&&/^\d{4}-\d\d-\d\d$/.test(e[0]));
     if(Array.isArray(j.links))newsLinks=j.links.filter(x=>x&&x.name&&/^https?:\/\//.test(x.url||''));renderNews();if(tab==='news')render()}).catch(()=>{});
 }
 function newsAll(){
@@ -1421,7 +1446,7 @@ function newsAll(){
     .map(x=>({id:'n:'+(x.id||x.text),hot:!!x.hot,date:x.start||'',text:String(x.text),link:safeUrl(x.link),linkText:x.linkText||'อ่านต่อ'}))
     .sort((a,b)=>(b.hot-a.hot)||(a.date<b.date?1:a.date>b.date?-1:0));
 }
-const newsItems=()=>{const hid=new Set(S.newsHidden||[]);return newsAll().filter(x=>!hid.has(x.id))};
+const newsItems=()=>{const hid=new Set(S.newsHidden||[]);return [...pleNews(),...newsAll()].filter(x=>!hid.has(x.id))};
 function renderNews(){
   const el=$('news');if(!el)return;const it=tab==='day'&&!pvReport?newsItems():[];
   if(!it.length){el.hidden=true;return}
@@ -1437,6 +1462,7 @@ function viewNews(){
   return `<div class="section"><h2>📰 ข่าวสาร</h2>
   ${all.length?`<div class="nlist">${all.map(x=>`<div class="nitem${x.hot?' hot':''}">${x.date?`<span class="nd">${x.hot?'<b style="color:var(--warn)">ด่วน</b> · ':''}${thDate(x.date)}</span>`:''}<span>${esc(x.text)}</span>${x.link?`<a class="btn sm" style="align-self:flex-start" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.linkText)} ›</a>`:''}${hid.has(x.id)?'<span class="small muted">ซ่อนจากหน้าแรกแล้ว</span>':''}</div>`).join('')}</div>`:`<div class="empty">${location.protocol==='file:'?'ข่าวจะแสดงเมื่อเปิดแอปจากเว็บ':'ยังไม่มีข่าวตอนนี้'}</div>`}
   ${hid.size?'<button class="btn sm" data-act="newsunhide" style="align-self:flex-start">แสดงข่าวที่ซ่อนไว้บนหน้าแรกอีกครั้ง</button>':''}</div>
+  ${pleSection()}
   <div class="section" style="margin-top:18px"><h2>🏛️ เว็บไซต์คณะเภสัชศาสตร์</h2><p class="small muted" style="margin:0">กดเพื่อเปิดหน้าเว็บของคณะ ดูประกาศ ปฏิทินการศึกษา ทุน และกิจกรรม แอปไม่ได้ดึงข่าวจากเว็บคณะมาเอง</p>
   <div class="facs">${fac.map(([n,u,note],i)=>`<a class="fac${i===0?' mine':''}" href="${esc(u)}" target="_blank" rel="noopener"><span class="fi">💊</span><span><b>${esc(n)}</b><small>${esc(note||host(u))}</small></span></a>`).join('')}</div></div>
   <div class="section" style="margin-top:18px"><h2>⚖️ องค์กรวิชาชีพ</h2><div class="facs">${ORG_LINKS.map(([n,u,note])=>`<a class="fac" href="${esc(u)}" target="_blank" rel="noopener"><span class="fi">📜</span><span><b>${esc(n)}</b><small>${esc(note)}</small></span></a>`).join('')}</div></div>`;
@@ -1445,9 +1471,90 @@ function v19Click(t){
   if(t.dataset.fx){S.fx=t.dataset.fx==='on';save();render();if(S.fx){const r=t.getBoundingClientRect();sandBurst(r.left+r.width/2,r.top+r.height/2)}return true}
   if(t.dataset.news){const n=newsItems().length;if(n){newsIdx=(newsIdx+ +t.dataset.news+n)%n;newsUntil=Date.now()+20000;renderNews()}return true}
   if(t.dataset.newshide){S.newsHidden=(S.newsHidden||[]).concat([t.dataset.newshide]).slice(-100);save();newsIdx=0;renderNews();return true}
+  if(t.dataset.act==='pletoggle'){S.ple=!S.ple;save();render();return true}
+  if(t.dataset.act==='pleadd'){pleMsg=pleAddSubj(+(($('ple-pick')||{}).value||0));save();render();const b=$('plebox');if(b)b.scrollIntoView({block:'center'});return true}
   if(t.dataset.act==='newsunhide'){S.newsHidden=[];save();render();return true}
   return false;
 }
+
+// ===================== v21: สอบใบประกอบวิชาชีพ (PLE) =====================
+// ที่มา: ปฏิทินสอบของศูนย์สอบความรู้ฯ สภาเภสัชกรรม (plecenter.org) ปี 2569 และ 2570 · วันอาจเปลี่ยน ให้ยึดเว็บศูนย์สอบ
+// แต่ละแถว: [วันเริ่ม, วันสิ้นสุด('' = วันเดียว), ชนิด(reg/apply/exam/result), ข้อความ, รหัสสอบสำหรับใส่ในแผน, เวลาเริ่ม-จบ]
+// อัปเดตได้จาก news.json โดยใส่ "ple": [ ...แถวแบบเดียวกัน... ] ไม่ต้องแก้ index.html
+const PLE_URL='https://www.plecenter.org/';
+const PLE_CAL=[
+ ['2026-12-11','','exam','สอบ PLE-CC2 (สอบปฏิบัติ)','PLE-CC2'],
+ ['2026-12-12','2026-12-13','exam','สอบ PLE-CC1 (ข้อเขียน 14:00–17:00)','PLE-CC1','14:00-17:00'],
+ ['2026-12-13','','exam','สอบ PLE-PC1 / IP1 / PHCP1 (9:00–12:00)','PLE-PC1','09:00-12:00'],
+ ['2026-12-18','','exam','สอบ PLE-PC2 / PHCP2'],
+ ['2026-12-19','2026-12-20','exam','สอบ PLE-IP2'],
+ ['2027-01-18','2027-01-27','reg','ลงทะเบียนระบบสอบ PLE-CC1/CC2 (ผู้สมัครใหม่) รอบมี.ค. 70'],
+ ['2027-01-25','','result','ประกาศผลสอบรอบ ธ.ค. 69'],
+ ['2027-01-25','2027-01-29','apply','สมัครสอบตามสาย (PC/IP/PHCP) รอบมี.ค. 70'],
+ ['2027-02-01','2027-02-05','apply','สมัครสอบ PLE-CC1/CC2 รอบมี.ค. 70'],
+ ['2027-03-19','','exam','สอบ PLE-CC2 (สอบปฏิบัติ)','PLE-CC2'],
+ ['2027-03-20','2027-03-21','exam','สอบ PLE-CC1 (ข้อเขียน 14:00–17:00)','PLE-CC1','14:00-17:00'],
+ ['2027-03-21','','exam','สอบ PLE-PC1 / IP1 / PHCP1 (9:00–12:00)','PLE-PC1','09:00-12:00'],
+ ['2027-03-26','','exam','สอบ PLE-PC2 / PHCP2'],
+ ['2027-03-27','2027-03-28','exam','สอบ PLE-IP2'],
+ ['2027-04-23','','result','ประกาศผลสอบรอบมี.ค. 70'],
+ ['2027-05-17','2027-05-26','reg','ลงทะเบียนระบบสอบ PLE-CC1/CC2 (ผู้สมัครใหม่) รอบก.ค. 70'],
+ ['2027-05-24','2027-05-28','apply','สมัครสอบตามสาย (PC/IP/PHCP) รอบก.ค. 70'],
+ ['2027-05-31','2027-06-04','apply','สมัครสอบ PLE-CC1/CC2 รอบก.ค. 70'],
+ ['2027-07-02','','exam','สอบ PLE-CC2 (สอบปฏิบัติ)','PLE-CC2'],
+ ['2027-07-03','2027-07-04','exam','สอบ PLE-CC1 (ข้อเขียน 14:00–17:00)','PLE-CC1','14:00-17:00'],
+ ['2027-07-04','','exam','สอบ PLE-PC1 / IP1 / PHCP1 (9:00–12:00)','PLE-PC1','09:00-12:00'],
+ ['2027-07-09','','exam','สอบ PLE-PC2 / PHCP2'],
+ ['2027-07-10','2027-07-11','exam','สอบ PLE-IP2'],
+ ['2027-08-20','','result','ประกาศผลสอบรอบก.ค. 70'],
+ ['2027-09-01','2027-09-13','reg','ลงทะเบียนระบบสอบ PLE-CC1/CC2 (ผู้สมัครใหม่) รอบธ.ค. 70'],
+ ['2027-09-20','2027-09-24','apply','สมัครสอบ PLE-CC1/CC2 รอบธ.ค. 70'],
+ ['2027-09-27','2027-10-01','apply','สมัครสอบตามสาย (PC/IP/PHCP) รอบธ.ค. 70'],
+ ['2027-12-17','','exam','สอบ PLE-CC2 (สอบปฏิบัติ)','PLE-CC2'],
+ ['2027-12-18','2027-12-19','exam','สอบ PLE-CC1 (ข้อเขียน 14:00–17:00)','PLE-CC1','14:00-17:00'],
+ ['2027-12-19','','exam','สอบ PLE-PC1 / IP1 / PHCP1 (9:00–12:00)','PLE-PC1','09:00-12:00'],
+ ['2027-12-24','','exam','สอบ PLE-PC2 / PHCP2'],
+ ['2027-12-25','2027-12-26','exam','สอบ PLE-IP2'],
+ ['2028-01-24','','result','ประกาศผลสอบรอบธ.ค. 70']];
+let plePle=null;
+const pleCal=()=>(plePle||PLE_CAL).slice().sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:0);
+const pleUpcoming=()=>{const {date:today}=nowInfo();return pleCal().filter(e=>(e[1]||e[0])>=today)};
+const pleRange=e=>{const a=pd(e[0]),b=e[1]?pd(e[1]):null,y=` ${(b||a).getFullYear()+543-2500}`;return (b?(a.getMonth()===b.getMonth()?`${a.getDate()}–${b.getDate()} ${MON[b.getMonth()]}`:`${a.getDate()} ${MON[a.getMonth()]} – ${b.getDate()} ${MON[b.getMonth()]}`):`${DW[a.getDay()]} ${a.getDate()} ${MON[a.getMonth()]}`)+y};
+const pleWhen=e=>{const {date:today}=nowInfo(),n=dIdx(e[0])-dIdx(today);if(n>1)return `อีก ${n} วัน`;if(n===1)return 'พรุ่งนี้';if(n===0)return 'วันนี้';const m=dIdx(e[1]||e[0])-dIdx(today);return m>0?`ช่วงนี้ เหลืออีก ${m} วัน`:'วันนี้วันสุดท้าย'};
+const PLE_ICON={reg:'🪪',apply:'📝',exam:'✍️',result:'📣'};
+// ข่าวอัตโนมัติในแถบข่าว (เปิดเองได้ เฉพาะคนที่จะสอบ): เหตุการณ์ใน 30 วันข้างหน้า
+function pleNews(){
+  if(!S.ple)return [];const {date:today}=nowInfo();
+  return pleUpcoming().filter(e=>dIdx(e[0])-dIdx(today)<=30).slice(0,4).map(e=>({id:'ple:'+e[0]+e[3],hot:e[2]!=='result'&&dIdx(e[0])-dIdx(today)<=3,date:e[0],sort:dIdx(e[0]),
+    text:`${pleWhen(e)}: ${e[3]} (${pleRange(e)})`,link:PLE_URL,linkText:'ศูนย์สอบ'}));
+}
+// ใส่การสอบ PLE เป็นวิชาในแผนอ่าน
+function pleAddSubj(i){
+  const e=pleUpcoming().filter(x=>x[4])[i];if(!e)return '';
+  const code=(e[4]+'-'+e[0]).replace(/[^A-Za-z0-9-]/g,'');if(hasS(code))return `มี ${e[4]} รอบ ${pleRange(e)} ในแผนอยู่แล้ว`;
+  const [et,ee]=(e[5]||'09:00-12:00').split('-');
+  const used=new Set(S.subjList.map(x=>x.ci));let ci=0;while(used.has(ci)&&ci<11)ci++;if(used.has(ci))ci=S.subjList.length%12;
+  S.subjList.push({c:code,th:'สอบใบประกอบ '+e[4],sh:e[4],cr:3,ci});
+  S.subjects[code]={exam:e[0],et,ee,real:true,topics:e[4]==='PLE-CC2'?6:10,conf:3,on:true,
+    topicNames:e[4]==='PLE-CC1'?['กฎหมายและจรรยาบรรณ','บริบาลเภสัชกรรม: โรคระบบหัวใจ/ไต','บริบาลเภสัชกรรม: ติดเชื้อ','บริบาลเภสัชกรรม: ระบบประสาท/จิตเวช','บริบาลเภสัชกรรม: ต่อมไร้ท่อ/อื่น ๆ','เทคโนโลยีเภสัชกรรม: รูปแบบยา','เทคโนโลยีเภสัชกรรม: การผลิต/QC','เภสัชเคมี/เภสัชเวท','ทำข้อสอบเก่า ชุด 1','ทำข้อสอบเก่า ชุด 2']:
+      e[4]==='PLE-CC2'?['การเตรียมยา (compounding)','การซักประวัติ/ให้คำแนะนำผู้ป่วย','เทคนิคพิเศษ','จับเวลาสถานีละ 4 นาที','ซ้อมกับเพื่อน','ทบทวนจุดที่พลาด']:undefined};
+  S.sample=false;generate();return `ใส่ ${e[4]} (สอบ ${pleRange(e)}) ในแผนอ่านแล้ว ปรับจำนวนบทและความมั่นใจได้ที่แท็บวิชาและวันสอบ`;
+}
+let pleMsg='';
+function pleSection(){
+  const up=pleUpcoming(),nx=up.slice(0,8),addable=up.filter(x=>x[4]);
+  return `<div class="section" style="margin-top:18px" id="plebox"><h2>🎓 สอบใบประกอบวิชาชีพเภสัชกรรม <span class="muted small">สำหรับปี 4–6</span></h2>
+  <div class="small" style="display:flex;flex-direction:column;gap:4px">
+   <span><b>หลังเรียนครบปี 4</b> สอบสมรรถนะร่วม: <b>PLE-CC1</b> ข้อเขียน 2 วัน (บริบาลฯ ราว 50% เทคโนโลยีฯ ราว 40% กฎหมาย ฯลฯ) เกณฑ์ผ่าน 60% และ <b>PLE-CC2</b> สอบปฏิบัติราว 14 สถานี สถานีละ 4 นาที เกณฑ์ผ่าน 80%</span>
+   <span><b>หลังจบปี 6</b> สอบตามสาย เช่น สายบริบาล <b>PLE-PC1</b> (ข้อเขียน 120 ข้อ) และ <b>PLE-PC2</b> (long case SOAP) หรือสายอุตสาหการ PLE-IP1/IP2</span>
+   <span class="muted">คุณสมบัติผู้สมัครและการสมัครแต่ละรอบ ให้ตรวจกับคณะและเว็บศูนย์สอบเสมอ วันในตารางนี้มาจากปฏิทินของศูนย์สอบ และอาจเปลี่ยนได้</span></div>
+  ${nx.length?`<div class="plist">${nx.map(e=>`<div><span>${PLE_ICON[e[2]]||'•'}</span><b>${esc(e[3])}</b><span class="small${e[2]==='exam'?' pbad':''}">${pleRange(e)} · ${pleWhen(e)}</span></div>`).join('')}</div>`:'<div class="empty">ยังไม่มีปฏิทินรอบถัดไป ดูที่เว็บศูนย์สอบ</div>'}
+  <div class="xbtns"><a class="btn primary" href="${PLE_URL}" target="_blank" rel="noopener">เปิดเว็บศูนย์สอบ ›</a><button class="btn" data-act="pletoggle">${S.ple?'✓ เตือนวันสอบในหน้าแรกอยู่':'เตือนวันสอบและวันสมัครในหน้าแรก'}</button></div>
+  ${addable.length?`<div class="bk"><b>ใส่การสอบเป็นวิชาในแผนอ่าน</b><span class="small muted">แอปจะจัดเวลาอ่านทบทวนให้จนถึงวันสอบ เหมือนวิชาอื่น ๆ</span>
+   <div class="row2" style="display:flex;gap:8px;flex-wrap:wrap"><select id="ple-pick" aria-label="เลือกรอบสอบ" style="font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)">${addable.slice(0,6).map((e,i)=>`<option value="${i}">${esc(e[4])} · ${pleRange(e)}</option>`).join('')}</select><button class="btn primary" data-act="pleadd">ใส่ในแผน</button></div>
+   ${pleMsg?`<span class="small" style="color:var(--accent);font-weight:600">${esc(pleMsg)}</span>`:''}</div>`:''}</div>`;
+}
+
 loadNews();
 
 // v20: กดแท็บแล้วเลื่อนขึ้นบนสุด (กดแท็บเดิมซ้ำ = เลื่อนขึ้นแบบนุ่ม ๆ)
