@@ -434,6 +434,14 @@ nav#tabs .ti,nav#tabs .ts{display:none}
 .inslist{display:flex;flex-direction:column;gap:8px}
 .gbar{display:grid;grid-template-columns:86px minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:.85rem}
 .gbar .pt{height:12px;border-radius:6px;background:var(--line);overflow:hidden}.gbar .pt i{display:block;height:100%;background:var(--accent);border-radius:6px}
+
+/* v26: ตารางเรียนแต่ละเทอม */
+.tt{display:flex;flex-direction:column;gap:6px}
+.ttday{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;align-items:start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);border-left:6px solid var(--dc);background:var(--surface);background:color-mix(in srgb,var(--dc) 8%,var(--surface))}
+.ttday b{font-size:.95rem}.ttday .tk{display:flex;flex-wrap:wrap;gap:6px}
+.ttday .tk span{display:inline-flex;gap:6px;align-items:center;font-size:.88rem;padding:3px 9px;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
+.ttday .tk em{font-style:normal;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.termtag{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);vertical-align:middle}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -493,7 +501,7 @@ const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v25',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v26',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -1034,10 +1042,11 @@ function viewSched(){
     const ref=x.type==='cancel'?S.classes.find(k=>k.id===x.ref):null;
     return `<div class="krow"><span class="mono small" style="min-width:96px">${thDate(x.date)}</span><span class="grow">${x.type==='cancel'?`งดคาบ ${ref?clsName(ref)+' '+ref.s:''}`:`เพิ่ม ${clsName(x)} ${x.s}–${x.e}`}</span><button class="btn sm" data-delex="${x.id}">ยกเลิก</button></div>`}).join('');
   const st=S.settings,f=(k,l,t,extra='')=>`<label for="st-${k}">${l}<input id="st-${k}" type="${t}" data-s="${k}" value="${st[k]}" ${extra}></label>`;
-  return `${themeView()}<div class="section"><h2>ตารางเรียนประจำสัปดาห์</h2><p class="small muted" style="margin:0">แก้วัน เวลา หรือวิชาได้เลย แผนอ่านจะจัดใหม่ทันที ระบบเว้นเวลาก่อนและหลังคาบ 15 นาทีไว้เดินทาง ถ้าเปลี่ยนแค่บางวัน (งดคาบ/เรียนชดเชย) ให้ทำที่แท็บแผนรายวันของวันนั้น</p>
+  return `${themeView()}<div class="section"><h2>ตารางเรียนประจำสัปดาห์ ${curTermTag()}</h2><p class="small muted" style="margin:0">แก้วัน เวลา หรือวิชาได้เลย แผนอ่านจะจัดใหม่ทันที ระบบเว้นเวลาก่อนและหลังคาบ 15 นาทีไว้เดินทาง ถ้าเปลี่ยนแค่บางวัน (งดคาบ/เรียนชดเชย) ให้ทำที่แท็บแผนรายวันของวันนั้น</p>
   <div class="klist">${week||'<div class="empty">ยังไม่มีคาบเรียน</div>'}</div>
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="addk">เพิ่มคาบเรียน</button></div></div>
   ${exs?`<div class="section"><h2>เปลี่ยนเฉพาะวัน</h2><div class="klist">${exs}</div></div>`:''}
+  ${pastTTView()}
   <div class="section"><h2>เวลาอ่านหนังสือ</h2><div class="settings">
   ${f('wdStart','วันเรียน เริ่มได้','time')}${f('wdEnd','วันเรียน หยุดอ่าน','time')}
   ${f('weStart','เสาร์-อาทิตย์ เริ่มได้','time')}${f('weEnd','เสาร์-อาทิตย์ หยุดอ่าน','time')}
@@ -1121,6 +1130,7 @@ document.addEventListener('click',e=>{
   if(v18Click(t))return;
   if(v19Click(t))return;
   if(v24Click(t))return;
+  if(v26Click(t))return;
   if(t.dataset.go){tab=t.dataset.go;render();return}
   if(t.dataset.day){sel=t.dataset.day;render();return}
   if(t.dataset.tick){const x=S.plan.find(p=>p.id===t.dataset.tick),{date:today,min}=nowInfo();x.done=!x.done;if(!x.done)x.rating=null;
@@ -1651,7 +1661,8 @@ function saveCurrentTerm(f,grades){
   const old=t?Object.fromEntries((t.subjects||[]).map(x=>[x.c,x.g])):{};
   const subs=active().filter(s=>!gExcl.has(s.c)).map(s=>({c:s.c,th:s.th,sh:s.sh,cr:+s.cr,g:grades[s.c]!==undefined?grades[s.c]:(old[s.c]||''),st:subjStats(s.c)}))
     .concat(gExtra.filter(r=>r.sh.trim()).map(r=>({c:r.c,th:r.sh.trim(),sh:r.sh.trim(),cr:Math.max(0,+r.cr||0),g:r.g})));
-  const rec={id,ay:+f.ay,sem:+f.sem,yr:+f.yr,src:'app',saved:nowInfo().date,meta:termSnapshot(),subjects:subs,ex:[...gExcl].filter(c=>hasS(c))};
+  const rec={id,ay:+f.ay,sem:+f.sem,yr:+f.yr,src:'app',saved:nowInfo().date,meta:termSnapshot(),subjects:subs,ex:[...gExcl].filter(c=>hasS(c)),cls:S.classes.map(k=>({d:k.d,s:k.s,e:k.e,n:clsName(k),col:k.c&&hasS(k.c)?col(k.c):''})),ce:S.settings.classEnd||''};
+  if(t&&!rec.cls.length&&t.cls&&t.cls.length){rec.cls=t.cls;rec.ce=t.ce}
   if(t)Object.assign(t,rec);else S.terms.push(rec);S.terms.sort(termOrder);S.curTerm=id;S.gYear=+f.yr;return id;
 }
 function gpaOf(subs){let pts=0,cr=0;subs.forEach(x=>{if(GP[x.g]!==undefined&&+x.cr>0){pts+=GP[x.g]*x.cr;cr+=+x.cr}});return {gpa:cr?pts/cr:null,cr,pts}}
@@ -1854,6 +1865,47 @@ document.addEventListener('change',e=>{const t=e.target;
 });
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.gx){const [i,k]=t.dataset.gx.split(':');if(gExtra[+i])gExtra[+i][k]=k==='cr'?+t.value:t.value;return}if(t.dataset.ge){const [i,k]=t.dataset.ge.split(':');if(gEditRows&&gEditRows[+i])gEditRows[+i][k]=k==='cr'?+t.value:t.value;return}if(t.dataset.gm){const [i,k]=t.dataset.gm.split(':');gManual.rows[+i][k]=k==='cr'?+t.value:t.value;gManual.open=true}});
 document.addEventListener('toggle',e=>{const t=e.target;if(t.matches&&t.matches('[data-gmanual]')&&gManual)gManual.open=t.open},true);
+
+
+// ===================== v26: ตารางเรียนแยกตามเทอม =====================
+let ttSel=null,ttMsg='',ttConfirm=false;
+function ensureGForm(){if(!Array.isArray(S.terms))S.terms=[];if(!gForm){const cur=S.terms.find(x=>x.id===S.curTerm);gForm=cur?{ay:cur.ay,sem:cur.sem,yr:cur.yr}:guessTerm()}return gForm}
+function curTermTag(){const t=(S.terms||[]).find(x=>x.id===S.curTerm);const f=t||ensureGForm();return `<span class="termtag">${esc(t?termName(t):termName(f))}</span>`}
+function ttHTML(cls){
+  const order=[1,2,3,4,5,6,0];
+  const days=order.map(d=>{const ks=cls.filter(k=>k.d===d).sort((p,q)=>toMin(p.s)-toMin(q.s));if(!ks.length)return '';
+    return `<div class="ttday" style="--dc:${DCOL[d]}"><b>${DWL[d]}</b><div class="tk">${ks.map(k=>`<span>${k.col?`<i class="sw" style="background:${k.col}"></i>`:''}${esc(k.n)} <em>${k.s}–${k.e}</em></span>`).join('')}</div></div>`}).join('');
+  return days?`<div class="tt">${days}</div>`:'<div class="empty">เทอมนี้ไม่มีคาบเรียนที่บันทึกไว้</div>';
+}
+function pastTTView(){
+  const T=(S.terms||[]).filter(t=>Array.isArray(t.cls)&&t.cls.length).slice().sort(termOrder);
+  const f=ensureGForm(),hasCls=S.classes.length>0&&!S.sample,curRec=(S.terms||[]).find(x=>x.id===`${f.ay}-${f.sem}`);
+  let h=`<div class="section"><h2>ตารางเรียนแต่ละเทอม</h2>
+  <p class="small muted" style="margin:0">เก็บตารางเรียนของแต่ละเทอมไว้ดูย้อนหลัง แอปเก็บให้เองตอนบันทึกเกรด หรือตอนกด “ปิดเทอมนี้ แล้วเริ่มเทอมใหม่” ในหน้าผลการเรียน</p>
+  ${hasCls?`<div class="gform">${termSelHTML(f,'')}<button class="btn sm" data-act="ttsave">${curRec&&curRec.cls&&curRec.cls.length?'อัปเดตตารางที่เก็บไว้':'เก็บตารางเทอมนี้ไว้'}</button></div>`:''}
+  ${ttMsg?`<span class="small" style="color:var(--accent);font-weight:600">${esc(ttMsg)}</span>`:''}`;
+  if(T.length){if(!ttSel||!T.some(t=>t.id===ttSel))ttSel=T[T.length-1].id;const t=T.find(x=>x.id===ttSel);
+    h+=`<div class="gform"><label class="small">ดูตารางของ <select data-ttpick>${T.map(x=>`<option value="${x.id}"${x.id===ttSel?' selected':''}>${esc(termName(x))}${x.id===S.curTerm?' (เทอมนี้)':''}</option>`).join('')}</select></label></div>
+    ${ttHTML(t.cls)}${t.ce?`<span class="small muted">มีคาบเรียนถึง ${thDate(t.ce)}</span>`:''}
+    ${t.id!==S.curTerm?(ttConfirm?`<div class="banner"><span class="small">ตารางเรียนตอนนี้จะถูกแทนด้วยตารางของ ${esc(termName(t))} (คาบจะเป็นชื่อวิชาเดิม ไม่ผูกกับวิชาในแผน) แอปเก็บสำเนาก่อนเปลี่ยนไว้ให้</span><span class="xbtns"><button class="btn primary" data-act="ttusego">ใช้ตารางนี้</button><button class="btn" data-act="ttuseno">ยกเลิก</button></span></div>`
+      :`<div class="xbtns"><button class="btn sm" data-act="ttuse">คัดลอกตารางนี้มาใช้เทอมนี้</button></div>`):''}`}
+  else h+=`<div class="empty">ยังไม่มีตารางเทอมไหนถูกเก็บไว้</div>`;
+  return h+`</div>`;
+}
+function v26Click(t){
+  const a=t.dataset.act;
+  if(a==='ttsave'){const f=ensureGForm(),rec=S.terms.find(x=>x.id===`${f.ay}-${f.sem}`),gr=rec?Object.fromEntries(rec.subjects.map(x=>[x.c,x.g])):{};
+    if(rec){gExcl=new Set(rec.ex||[]);gExtra=rec.subjects.filter(x=>!x.st&&!hasS(x.c)).map(x=>({c:x.c,th:x.th,sh:x.sh,cr:x.cr,g:x.g}))}
+    const id=saveCurrentTerm(f,gr);ttSel=id;gInitFor=null;ttMsg=`เก็บตารางเรียน ${termName(S.terms.find(x=>x.id===id))} แล้ว`;save();render();return true}
+  if(a==='ttuse'){ttConfirm=true;render();return true}
+  if(a==='ttuseno'){ttConfirm=false;render();return true}
+  if(a==='ttusego'){const tm=S.terms.find(x=>x.id===ttSel);if(!tm)return true;try{localStorage.setItem(KEY+'-before-import',JSON.stringify(S))}catch(e){}
+    const byName=Object.fromEntries(S.subjList.map(x=>[x.sh,x.c]));
+    S.classes=tm.cls.map(k=>({id:uid(),d:k.d,s:k.s,e:k.e,c:byName[k.n]||'',...(byName[k.n]?{}:{label:k.n})}));S.exceptions=S.exceptions.filter(x=>x.type!=='cancel');
+    ttConfirm=false;ttMsg=`ใช้ตารางของ ${termName(tm)} แล้ว ${S.classes.length} คาบ ตรวจวันเวลาอีกครั้งได้ด้านบน`;generate();render();return true}
+  return false;
+}
+document.addEventListener('change',e=>{const t=e.target;if(t.matches&&t.matches('[data-ttpick]')){ttSel=t.value;ttConfirm=false;render()}});
 
 loadNews();
 
