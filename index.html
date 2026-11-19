@@ -501,7 +501,7 @@ const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v29',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v30',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -1421,6 +1421,7 @@ function v18Banners(h){
   if(repOpen)top+=repPanel();
   if(shOpen)top+=shPanel();
   if(S.shareCheck)low+=`<div class="banner info"><span class="small">ใส่ตารางจากเพื่อนแล้ว ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้ง<b>ความมั่นใจ</b>ของแต่ละวิชาให้ตรงกับตัวเอง</span><span class="xbtns"><button class="btn" data-go="sched">ตรวจตารางเรียน</button><button class="btn" data-go="subj">ตั้งความมั่นใจ</button><button class="btn" data-act="sharecheckok">เรียบร้อยแล้ว</button></span></div>`;
+  {const D=!top&&gradeDue();if(D)low+=`<div class="banner info"><span class="small"><b>🎓 สอบครบทุกวิชาของ${esc(termName(D.f))}แล้ว</b> เกรดออกเมื่อไหร่ ใส่ได้เลย (ยังขาด ${D.miss.length} วิชา) แอปจะวิเคราะห์ผล และปรับแผนเทอมหน้าให้เอง</span><span class="xbtns"><button class="btn primary" data-act="gradenow">ใส่เกรด</button><button class="btn" data-act="gradelater">ไว้ทีหลัง</button></span></div>`}
   if(!top&&S.autoNote&&S.autoNote.items&&S.autoNote.items.length)low+=`<div class="banner info"><span class="small"><b>ปรับแผนจากผล${esc(S.autoNote.from)}ให้แล้ว</b><br>${S.autoNote.items.map(x=>'• '+esc(x)).join('<br>')}</span><span class="xbtns"><button class="btn" data-tab="grade">ดูผลวิเคราะห์</button><button class="btn" data-act="autonoteok">รับทราบ</button></span></div>`;
   if(!top&&bkDue()){const a=bkAge();low+=`<div class="banner"><span class="small"><b>สำรองข้อมูลไว้กันหาย</b> ${a==null?'คุณติ๊กไปหลายช่วงแล้ว แต่ยังไม่เคยสำรองข้อมูล':`สำรองครั้งล่าสุด ${a} วันที่แล้ว`} ข้อมูลอยู่ในเครื่องนี้เท่านั้น ถ้าเปลี่ยนมือถือหรือล้างเบราว์เซอร์ ข้อมูลจะหายทั้งหมด</span><span class="xbtns"><button class="btn primary" data-act="bkgo">สำรองตอนนี้</button><button class="btn" data-act="bklater">ไว้ทีหลัง</button></span></div>`}
   else if(!top&&repDue())low+=`<div class="banner info"><span class="small">ครบสัปดาห์แล้ว ส่งสรุปการอ่านให้ผู้ปกครองดูไหม? ช่วยให้ที่บ้านสบายใจ และไม่ต้องถามบ่อย</span><span class="xbtns"><button class="btn primary" data-act="repopen">ส่งรายงาน</button><button class="btn" data-act="repskip">ไว้ทีหลัง</button></span></div>`;
@@ -1997,9 +1998,23 @@ function gateView(G){
   <span class="small muted">ถ้ากด “เกรดยังไม่ออก” แอปจะจัดแผนจากตารางเรียนและวันสอบไปก่อน พอเกรดออกแล้วใส่ในหน้า 🎓 ผลการเรียน แอปจะปรับแผนให้เองทันที</span></div></div>`;
 }
 function v29Click(t){const a=t.dataset.act;
+  if(a==='gradenow'){tab='grade';render();return true}
+  if(a==='gradelater'){S.gradeAskSnooze=nowInfo().date;save();render();return true}
   if(a==='gatego'){const G=gradeGate();if(G){gSel=G.prev.id;gEdit=G.prev.id;gEditRows=G.prev.subjects.map(x=>({...x}))}tab='grade';render();setTimeout(()=>{const el=document.querySelector('[data-ge]');if(el)el.scrollIntoView({block:'center'})},60);return true}
   if(a==='gateskip'){const G=gradeGate();if(G){S.gateSkip=G.prev.id;save()}render();return true}
   return false}
+
+
+// ===================== v30: เตือนให้ใส่เกรดเมื่อสอบครบทุกวิชาของเทอม =====================
+function gradeDue(){
+  if(S.sample)return null;const act=active();if(!act.length)return null;const {date:today}=nowInfo();
+  if(!act.every(x=>S.subjects[x.c].exam&&S.subjects[x.c].exam<today))return null;   // ยังสอบไม่ครบ
+  if(S.gradeAskSnooze&&dIdx(today)-dIdx(S.gradeAskSnooze)<7)return null;
+  const f=ensureGForm(),rec=(S.terms||[]).find(x=>x.id===`${f.ay}-${f.sem}`);
+  const got=rec?Object.fromEntries(rec.subjects.map(x=>[x.c,x.g])):{},ex=new Set(rec&&rec.ex||[]);
+  const miss=act.filter(x=>!ex.has(x.c)&&!got[x.c]);if(!miss.length)return null;
+  return {f,miss};
+}
 
 loadNews();
 
