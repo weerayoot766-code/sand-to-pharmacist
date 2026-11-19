@@ -403,6 +403,18 @@ nav#tabs .ti,nav#tabs .ts{display:none}
 @media (max-width:480px){.pday{grid-template-columns:84px minmax(0,1fr);gap:10px;padding:10px 10px 10px 10px}.pday .pdh b{font-size:1rem}.pday .pchip{font-size:.9rem}}
 .strip .day{border-top:4px solid var(--dc,var(--line))}
 .strip .day[aria-pressed="true"]{border-top-color:var(--dc,var(--fg))}
+
+/* v23: ข่าวแต่ละประเภทคนละสี */
+.news{--nc:var(--accent);border:1px solid var(--line);border-color:color-mix(in srgb,var(--nc) 40%,var(--line));border-left:7px solid var(--nc);background:var(--surface);background:color-mix(in srgb,var(--nc) 11%,var(--surface));transition:background .4s ease,border-color .4s ease}
+.news .nic,.news.hot .nic{background:var(--nc);color:#fff;font-size:.75rem;padding:3px 10px}
+.news .ntx{font-size:.92rem}
+.news .ntx .nlink,.nitem .nlink{font:inherit;font-weight:700;color:var(--nc);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.news .ntx a{color:var(--nc)}
+.ndots{display:flex;gap:4px;align-items:center}.ndots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.ndots i.on{background:var(--nc);width:16px;border-radius:4px}
+.nitem{--nc:var(--accent);border-left:7px solid var(--nc);background:color-mix(in srgb,var(--nc) 8%,var(--surface))}
+.nitem .nbadge{align-self:flex-start;font-size:.72rem;font-weight:700;color:#fff;background:var(--nc);border-radius:99px;padding:2px 10px}
+.nitem .nhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nitem a.btn{border-color:var(--nc);color:var(--nc)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -462,7 +474,7 @@ const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v22',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v23',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -1440,27 +1452,43 @@ function loadNews(){
     if(Array.isArray(j.ple)&&j.ple.length)plePle=j.ple.filter(e=>Array.isArray(e)&&/^\d{4}-\d\d-\d\d$/.test(e[0]));
     if(Array.isArray(j.links))newsLinks=j.links.filter(x=>x&&x.name&&/^https?:\/\//.test(x.url||''));renderNews();if(tab==='news')render()}).catch(()=>{});
 }
-function newsAll(){
-  const {date:today}=nowInfo();
-  return newsFeed.filter(x=>x&&x.text&&!(x.start&&today<x.start)&&!(x.end&&today>x.end))
-    .map(x=>({id:'n:'+(x.id||x.text),hot:!!x.hot,date:x.start||'',text:String(x.text),link:safeUrl(x.link),linkText:x.linkText||'อ่านต่อ'}))
-    .sort((a,b)=>(b.hot-a.hot)||(a.date<b.date?1:a.date>b.date?-1:0));
+// ประเภทข่าว: กำหนดใน news.json ด้วย "type" (feature / tip / event / ple / news) ถ้าไม่ใส่ แอปเดาจากข้อความ
+const NTYPE={hot:['ด่วน','#d9363e'],ple:['สอบใบประกอบ','#7b4fd0'],feature:['ใหม่','#1f9d6b'],tip:['ทิป','#2f7fd6'],event:['กิจกรรม','#e07a1f'],news:['ข่าว','#0e8a8a']};
+const NROT=['#0e8a8a','#c2477a','#9a7a12','#5b6bd6'];
+// สีย่อยของแต่ละประเภท: ข่าวประเภทเดียวกันที่อยู่ติดกันจะได้สีต่างกัน
+const NSHADE={hot:['#d9363e','#c0392b'],ple:['#7b4fd0','#a2449c'],feature:['#1f9d6b','#0f8a9a'],tip:['#2f7fd6','#4f5fd0'],event:['#e07a1f','#c4561a'],news:NROT};
+// สลับประเภทให้ข่าวที่อยู่ติดกันไม่ซ้ำประเภท แล้วลงสี
+function nArrange(list){
+  const g=new Map();list.forEach(x=>{const t=x.type||'news';if(!g.has(t))g.set(t,[]);g.get(t).push(x)});
+  const out=[],qs=[...g.values()];while(qs.some(q=>q.length))qs.forEach(q=>{if(q.length)out.push(q.shift())});
+  const n={};return out.map(x=>{const t=NSHADE[x.type]?x.type:'news',i=n[t]=(n[t]||0)+1;return {...x,color:NSHADE[t][(i-1)%NSHADE[t].length]}});
 }
-const newsItems=()=>{const hid=new Set(S.newsHidden||[]);return [...pleNews(),...newsAll()].filter(x=>!hid.has(x.id))};
+const nType=x=>x.hot?'hot':NTYPE[x.type]?x.type:/^ใหม่/.test(x.text)?'feature':/^ทิป/.test(x.text)?'tip':'news';
+function newsAll(){
+  const {date:today}=nowInfo();let k=0;
+  return newsFeed.filter(x=>x&&x.text&&!(x.start&&today<x.start)&&!(x.end&&today>x.end))
+    .map(x=>({id:'n:'+(x.id||x.text),hot:!!x.hot,type:String(x.type||''),date:x.start||'',text:String(x.text),link:safeUrl(x.link),linkText:x.linkText||'อ่านต่อ'}))
+    .sort((a,b)=>(b.hot-a.hot)||(a.date<b.date?1:a.date>b.date?-1:0))
+    .map(x=>({...x,type:nType(x)}));
+}
+const nColor=x=>x.color||(NTYPE[x.type]||NTYPE.news)[1];
+const nLabel=x=>(NTYPE[x.type]||NTYPE.news)[0];
+const nLinkHTML=x=>x.act?` <button class="nlink" data-act="${x.act}">${esc(x.actText||'ดูเพิ่ม')} ›</button>`:x.link?` <a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.linkText)} ›</a>`:'';
+const newsItems=()=>{const hid=new Set(S.newsHidden||[]);return nArrange([...pleNews(),...newsAll()].filter(x=>!hid.has(x.id)))};
 function renderNews(){
   const el=$('news');if(!el)return;const it=tab==='day'&&!pvReport?newsItems():[];
   if(!it.length){el.hidden=true;return}
   if(newsIdx>=it.length)newsIdx=0;const x=it[newsIdx];
-  el.hidden=false;el.className='news'+(x.hot?' hot':'');
-  el.innerHTML=`<span class="nic">${x.hot?'ด่วน':'ข่าว'}</span><span class="ntx" aria-live="polite">${esc(x.text)}${x.link?` <a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.linkText)} ›</a>`:''}</span>
-  <span class="nnav">${it.length>1?`<button data-news="-1" aria-label="ข่าวก่อนหน้า">‹</button><span class="ncnt">${newsIdx+1}/${it.length}</span><button data-news="1" aria-label="ข่าวถัดไป">›</button>`:''}<button data-newshide="${esc(x.id)}" aria-label="ซ่อนข่าวนี้">×</button></span>`;
+  el.hidden=false;el.className='news';el.style.setProperty('--nc',nColor(x));
+  el.innerHTML=`<span class="nic">${nLabel(x)}</span><span class="ntx" aria-live="polite">${esc(x.text)}${nLinkHTML(x)}</span>
+  <span class="nnav">${it.length>1?`<button data-news="-1" aria-label="ข่าวก่อนหน้า">‹</button><span class="ndots" aria-label="ข่าวที่ ${newsIdx+1} จาก ${it.length}">${it.map((y,i)=>`<i class="${i===newsIdx?'on':''}"></i>`).join('')}</span><button data-news="1" aria-label="ข่าวถัดไป">›</button>`:''}<button data-newshide="${esc(x.id)}" aria-label="ซ่อนข่าวนี้">×</button></span>`;
 }
 setInterval(()=>{if(newsHover||Date.now()<newsUntil||document.hidden||tab!=='day')return;const n=newsItems().length;if(n>1){newsIdx=(newsIdx+1)%n;renderNews()}},7000);
 {const el=$('news');if(el){el.addEventListener('mouseenter',()=>{newsHover=true});el.addEventListener('mouseleave',()=>{newsHover=false})}}
 function viewNews(){
-  const all=newsAll(),hid=new Set(S.newsHidden||[]),fac=(newsLinks&&newsLinks.length?newsLinks.map(x=>[x.name,x.url,x.note||'']):FAC_LINKS),host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return u}};
+  const all=nArrange([...pleNews().filter(x=>x.act!=='plego'),...newsAll()]),hid=new Set(S.newsHidden||[]),fac=(newsLinks&&newsLinks.length?newsLinks.map(x=>[x.name,x.url,x.note||'']):FAC_LINKS),host=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return u}};
   return `<div class="section"><h2>📰 ข่าวสาร</h2>
-  ${all.length?`<div class="nlist">${all.map(x=>`<div class="nitem${x.hot?' hot':''}">${x.date?`<span class="nd">${x.hot?'<b style="color:var(--warn)">ด่วน</b> · ':''}${thDate(x.date)}</span>`:''}<span>${esc(x.text)}</span>${x.link?`<a class="btn sm" style="align-self:flex-start" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.linkText)} ›</a>`:''}${hid.has(x.id)?'<span class="small muted">ซ่อนจากหน้าแรกแล้ว</span>':''}</div>`).join('')}</div>`:`<div class="empty">${location.protocol==='file:'?'ข่าวจะแสดงเมื่อเปิดแอปจากเว็บ':'ยังไม่มีข่าวตอนนี้'}</div>`}
+  ${all.length?`<div class="nlist">${all.map(x=>`<div class="nitem" style="--nc:${nColor(x)}"><div class="nhead"><span class="nbadge">${nLabel(x)}</span>${x.date?`<span class="nd">${thDate(x.date)}</span>`:''}</div><span>${esc(x.text)}</span>${x.act?`<button class="nlink" style="align-self:flex-start" data-act="${x.act}">${esc(x.actText)} ›</button>`:x.link?`<a class="btn sm" style="align-self:flex-start" href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.linkText)} ›</a>`:''}${hid.has(x.id)?'<span class="small muted">ซ่อนจากหน้าแรกแล้ว</span>':''}</div>`).join('')}</div>`:`<div class="empty">${location.protocol==='file:'?'ข่าวจะแสดงเมื่อเปิดแอปจากเว็บ':'ยังไม่มีข่าวตอนนี้'}</div>`}
   ${hid.size?'<button class="btn sm" data-act="newsunhide" style="align-self:flex-start">แสดงข่าวที่ซ่อนไว้บนหน้าแรกอีกครั้ง</button>':''}</div>
   ${pleSection()}
   <div class="section" style="margin-top:18px"><h2>🏛️ เว็บไซต์คณะเภสัชศาสตร์</h2><p class="small muted" style="margin:0">กดเพื่อเปิดหน้าเว็บของคณะ ดูประกาศ ปฏิทินการศึกษา ทุน และกิจกรรม แอปไม่ได้ดึงข่าวจากเว็บคณะมาเอง</p>
@@ -1473,6 +1501,7 @@ function v19Click(t){
   if(t.dataset.newshide){S.newsHidden=(S.newsHidden||[]).concat([t.dataset.newshide]).slice(-100);save();newsIdx=0;renderNews();return true}
   if(t.dataset.act==='pletoggle'){S.ple=!S.ple;save();render();return true}
   if(t.dataset.act==='pleadd'){pleMsg=pleAddSubj(+(($('ple-pick')||{}).value||0));save();render();const b=$('plebox');if(b)b.scrollIntoView({block:'center'});return true}
+  if(t.dataset.act==='plego'){tab='news';render();setTimeout(()=>{const b=$('plebox');if(b)b.scrollIntoView({block:'start',behavior:fxOn()?'smooth':'auto'})},80);return true}
   if(t.dataset.act==='newsunhide'){S.newsHidden=[];save();render();return true}
   return false;
 }
@@ -1524,9 +1553,12 @@ const pleWhen=e=>{const {date:today}=nowInfo(),n=dIdx(e[0])-dIdx(today);if(n>1)r
 const PLE_ICON={reg:'🪪',apply:'📝',exam:'✍️',result:'📣'};
 // ข่าวอัตโนมัติในแถบข่าว (เปิดเองได้ เฉพาะคนที่จะสอบ): เหตุการณ์ใน 30 วันข้างหน้า
 function pleNews(){
-  if(!S.ple)return [];const {date:today}=nowInfo();
-  return pleUpcoming().filter(e=>dIdx(e[0])-dIdx(today)<=30).slice(0,4).map(e=>({id:'ple:'+e[0]+e[3],hot:e[2]!=='result'&&dIdx(e[0])-dIdx(today)<=3,date:e[0],sort:dIdx(e[0]),
+  const {date:today}=nowInfo(),up=pleUpcoming();
+  if(S.ple)return up.filter(e=>dIdx(e[0])-dIdx(today)<=30).slice(0,4).map(e=>({id:'ple:'+e[0]+e[3],type:e[2]!=='result'&&dIdx(e[0])-dIdx(today)<=3?'hot':'ple',date:e[0],
     text:`${pleWhen(e)}: ${e[3]} (${pleRange(e)})`,link:PLE_URL,linkText:'ศูนย์สอบ'}));
+  // ทุกคนเห็น 1 ข่าว: เส้นชัยสู่เภสัชกร (ปิดได้ด้วย ×)
+  const e=up.find(x=>x[4]==='PLE-CC1'&&x[2]==='exam');if(!e)return [];
+  return [{id:'plem:'+e[0],type:'ple',date:'',text:`🎓 เส้นชัยของว่าที่เภสัชกร: สอบใบประกอบ PLE-CC1 รอบถัดไป ${pleRange(e)} (${pleWhen(e)}) ปี 4 ขึ้นไปเตรียมตัวได้เลย ส่วนปี 1–3 ทุกช่วงที่อ่านวันนี้ คือแต้มต่อในวันสอบ`,act:'plego',actText:'ดูปฏิทินสอบ'}];
 }
 // ใส่การสอบ PLE เป็นวิชาในแผนอ่าน
 function pleAddSubj(i){
