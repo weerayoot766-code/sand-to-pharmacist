@@ -363,6 +363,27 @@ html:not(.nofx) .news .ntx{animation:rise .4s ease both}
 .fac{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);color:var(--fg);text-decoration:none}
 .fac b{display:block;font-size:.9rem}.fac small{color:var(--muted);font-size:.72rem;word-break:break-all}.fac .fi{font-size:1.3rem;flex:none}
 .fac.mine{border-color:var(--accent);background:var(--accent-soft)}
+
+/* v20: แถบเมนูด้านล่างบนมือถือ */
+nav#tabs .ti,nav#tabs .ts{display:none}
+@media (max-width:720px){
+ nav#tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;border-bottom:0;border-top:1px solid var(--line);
+  background:var(--surface);background:color-mix(in srgb,var(--surface) 86%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom));overflow:visible;box-shadow:0 -8px 24px -18px rgba(0,0,0,.45)}
+ nav#tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:2px 0;min-height:52px;border:0;border-radius:14px;font-size:.72rem;position:relative;-webkit-tap-highlight-color:transparent}
+ nav#tabs .ti{display:grid;place-items:center;width:52px;height:30px;border-radius:999px;transition:background .25s ease,transform .2s ease}
+ nav#tabs .ti svg{width:23px;height:23px}
+ nav#tabs .tl{display:none}nav#tabs .ts{display:block;white-space:nowrap;line-height:1.1}
+ nav#tabs button[aria-selected="true"]{color:var(--accent);font-weight:700}
+ nav#tabs button[aria-selected="true"] .ti{background:var(--accent-soft)}
+ nav#tabs button:active .ti{transform:scale(.9)}
+ nav#tabs .tbadge{position:absolute;top:0;left:calc(50% + 8px);margin:0;box-shadow:0 0 0 2px var(--surface)}
+ .wrap{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+ .stfab{bottom:calc(86px + env(safe-area-inset-bottom))!important}
+ .fxtoast{bottom:calc(92px + env(safe-area-inset-bottom))}
+}
+@keyframes tabpop{0%{transform:scale(.75)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@media (max-width:720px){html:not(.nofx) nav#tabs button[aria-selected="true"] .ti{animation:tabpop .35s ease}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -378,11 +399,11 @@ html:not(.nofx) .news .ntx{animation:rise .4s ease both}
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><button class="btn primary" id="installBtn" hidden>ติดตั้งแอป</button><div class="count" id="count"></div></div>
   </header>
   <nav role="tablist" id="tabs">
-    <button role="tab" data-tab="day" aria-selected="true">แผนรายวัน</button>
-    <button role="tab" data-tab="plan" aria-selected="false">ภาพรวมแผน</button>
-    <button role="tab" data-tab="subj" aria-selected="false">วิชาและวันสอบ</button>
-    <button role="tab" data-tab="task" aria-selected="false">งานที่ต้องส่ง<span class="tbadge" id="tbadge" hidden></span></button>
-    <button role="tab" data-tab="sched" aria-selected="false">ตารางเรียนและตั้งค่า</button>
+    <button role="tab" data-tab="day" aria-selected="true"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/></svg></span><span class="tl">แผนรายวัน</span><span class="ts">วันนี้</span></button>
+    <button role="tab" data-tab="plan" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><rect x="5.5" y="11" width="3" height="6.5" rx="1"/><rect x="10.5" y="6" width="3" height="11.5" rx="1"/><rect x="15.5" y="13" width="3" height="4.5" rx="1"/></svg></span><span class="tl">ภาพรวมแผน</span><span class="ts">ภาพรวม</span></button>
+    <button role="tab" data-tab="subj" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(-40 12 12)"><rect x="3" y="8.2" width="18" height="7.6" rx="3.8"/><path d="M12 8.2v7.6"/></g></svg></span><span class="tl">วิชาและวันสอบ</span><span class="ts">วิชา/สอบ</span></button>
+    <button role="tab" data-tab="task" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9 4.5V3.5h6v1"/><path d="M9 11h6M9 15h4"/></svg></span><span class="tl">งานที่ต้องส่ง</span><span class="ts">งานส่ง</span><span class="tbadge" id="tbadge" hidden></span></button>
+    <button role="tab" data-tab="sched" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tl">ตารางเรียนและตั้งค่า</span><span class="ts">ตั้งค่า</span></button>
   </nav>
   <div id="news" class="news" hidden></div>
   <div id="banner"></div>
@@ -420,7 +441,7 @@ const DWL=['อาทิตย์','จันทร์','อังคาร','�
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v19',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v20',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -1428,6 +1449,9 @@ function v19Click(t){
   return false;
 }
 loadNews();
+
+// v20: กดแท็บแล้วเลื่อนขึ้นบนสุด (กดแท็บเดิมซ้ำ = เลื่อนขึ้นแบบนุ่ม ๆ)
+document.addEventListener('click',e=>{const b=e.target.closest('#tabs button');if(!b)return;const same=b.dataset.tab===tab;requestAnimationFrame(()=>window.scrollTo({top:0,behavior:same&&fxOn()?'smooth':'auto'}))},true);
 
 if(S.subjList.length&&!S.plan.length)generate();
 render();
