@@ -501,7 +501,7 @@ const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v26',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v27',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -1065,8 +1065,8 @@ function backupView(){
   return `<div class="section" id="bksec"><h2>สำรองและย้ายข้อมูล</h2>
   <p class="small muted" style="margin:0">ข้อมูลทั้งหมดเก็บอยู่ในเบราว์เซอร์ของเครื่องนี้เท่านั้น ควรสำรองไว้เป็นระยะ ใช้ย้ายไปเครื่องใหม่ หรือส่งให้ผู้ปกครองดูความคืบหน้าก็ได้</p>
   <div class="bk"><b>1. สำรองจากเครื่องนี้</b><span class="small muted">ตอนนี้มี ${st.subj} วิชา ติ๊กแล้ว ${st.done} ช่วง</span>
-  <div class="row2"><button class="btn primary" data-act="bkcopy">คัดลอกรหัสสำรอง</button><button class="btn" data-act="bkfile">บันทึกเป็นไฟล์</button></div>
-  ${bkCode?`<textarea id="bk-out" readonly aria-label="รหัสสำรอง">${esc(bkCode)}</textarea><span class="small muted">ส่งรหัสนี้ทาง LINE หรือเก็บไว้ในโน้ต รหัสยาว ให้คัดลอกให้ครบทั้งหมด</span>`:''}</div>
+  <div class="row2"><button class="btn primary" data-act="bkcopy">คัดลอกรหัสสำรอง</button>${navigator.canShare&&(()=>{try{return navigator.canShare({files:[new File(["x"],"a.json",{type:"application/json"})]})}catch(e){return false}})()?'<button class="btn" data-act="bkshare">แชร์ไฟล์สำรอง (LINE ฯลฯ)</button>':''}<button class="btn" data-act="bkfile">บันทึกเป็นไฟล์</button></div>
+  ${bkCode?`<textarea id="bk-out" readonly aria-label="รหัสสำรอง">${esc(bkCode)}</textarea><span class="small ${bkCode.length>LINE_MAX?'':'muted'}"${bkCode.length>LINE_MAX?' style="color:var(--exam);font-weight:600"':''}>รหัสยาว ${bkCode.length.toLocaleString()} ตัวอักษร ${bkCode.length>LINE_MAX?`เกินที่ LINE ส่งได้ (ประมาณ ${LINE_MAX.toLocaleString()}) ข้อความจะถูกตัด ให้ส่งเป็นไฟล์แทน`:'ส่งทาง LINE ได้ ให้คัดลอกให้ครบทั้งหมด'}</span>`:''}</div>
   <div class="bk"><b>2. นำเข้าในเครื่องอื่น</b><textarea id="bk-in" placeholder="วางรหัสสำรองที่นี่" aria-label="วางรหัสสำรอง"></textarea>
   <div class="row2"><button class="btn primary" data-act="bkcheck">นำเข้ารหัส</button><label class="btn" for="bk-file" style="cursor:pointer">เลือกไฟล์สำรอง</label><input type="file" id="bk-file" accept=".json,application/json,text/plain" hidden></div>
   ${imp}${prev?'<div class="row2"><span class="small muted">นำเข้าผิด? ย้อนกลับเป็นข้อมูลก่อนนำเข้าได้</span><button class="btn sm" data-act="impundo">ย้อนกลับ</button></div>':''}</div>
@@ -1074,6 +1074,30 @@ function backupView(){
   <div class="row2" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${confirmReset?'<span class="small">ลบข้อมูลทั้งหมดในเครื่องนี้และเริ่มจากหน้าว่าง?</span><button class="btn" data-act="reset-yes">ลบทั้งหมด</button><button class="btn" data-act="reset-no">ยกเลิก</button>':'<button class="btn" data-act="reset">ลบข้อมูลทั้งหมด เริ่มใหม่</button>'}</div></div>`;
 }
 const encodeBk=()=>'S2P1:'+btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+// v27: รหัสสำรองแบบใหม่ S2P2 = บีบอัด + ไม่เก็บช่วงอ่านในอนาคตที่ยังไม่ติ๊ก (แอปจัดใหม่ให้ตอนนำเข้า) สั้นลงราว 8–20 เท่า ส่งทาง LINE ได้
+const LINE_MAX=5000;
+// ช่วงอ่านเก็บแบบคอลัมน์ (ไม่เก็บ id เพราะใช้แค่บนหน้าจอ สร้างใหม่ตอนนำเข้า) บีบอัดได้ดีกว่ามาก
+function packPlan(plan){const ks=[...new Set(plan.flatMap(o=>Object.keys(o)))].filter(k=>k!=='id');return {k:ks,v:ks.map(k=>plan.map(o=>o[k]===undefined?null:o[k]))}}
+function unpackPlan(pp){const n=pp&&pp.v&&pp.v[0]?pp.v[0].length:0,out=[];for(let i=0;i<n;i++){const o={id:uid()};pp.k.forEach((k,j)=>{const v=pp.v[j][i];if(v!==null&&v!==undefined)o[k]=v});out.push(o)}return out}
+const bkLean=()=>{const {date:today}=nowInfo();return {...S,plan:[],_pp:packPlan(S.plan.filter(x=>x.done||x.date<today||x.pinned))}};
+async function zip64(str){const st=new Blob([str]).stream().pipeThrough(new CompressionStream('deflate-raw'));const u=new Uint8Array(await new Response(st).arrayBuffer());let b='';for(let i=0;i<u.length;i+=0x8000)b+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(b)}
+async function unzip64(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);const st=new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return await new Response(st).text()}
+async function encodeBk2(){const j=JSON.stringify(bkLean());if(!window.CompressionStream)return encodeBk();return 'S2P2:'+await zip64(j)}
+let bkCache=null;
+function bkPrep(){clearTimeout(bkPrep.t);bkPrep.t=setTimeout(async()=>{try{const sig=JSON.stringify(bkLean());if(bkCache&&bkCache.sig===sig)return;bkCache={sig,code:await encodeBk2()}}catch(e){}},250)}
+const bkCut=n=>`รหัสไม่ครบ หรือถูกตัดระหว่างส่ง (ได้มา ${n.toLocaleString()} ตัวอักษร) LINE ส่งข้อความได้ไม่เกินประมาณ ${LINE_MAX.toLocaleString()} ตัวอักษร ส่วนที่เกินจะหายไป ให้ผู้ส่งอัปเดตแอปเป็นเวอร์ชันล่าสุด แล้วกด “คัดลอกรหัสสำรอง” ใหม่ (รหัสแบบใหม่สั้นลงมาก) หรือกด “แชร์ไฟล์สำรอง” ส่งเป็นไฟล์แทน`;
+async function decodeBkAny(txt){
+  txt=(txt||'').trim();if(!txt)throw new Error('ยังไม่ได้วางรหัส');
+  if(txt.startsWith('{')){let o;try{o=JSON.parse(txt)}catch(e){throw new Error('ไฟล์สำรองไม่สมบูรณ์ ลองบันทึกไฟล์ใหม่จากเครื่องต้นทาง')}const n=normalize(o);if(!n)throw new Error('ไม่ใช่ข้อมูลของ Sand To Pharmacist');return n}
+  const flat=txt.replace(/\s+/g,'');
+  let m=flat.match(/S2P2:([A-Za-z0-9+/=]+)/);
+  if(m){if(!window.DecompressionStream)throw new Error('เบราว์เซอร์นี้เก่าเกินไป อ่านรหัสแบบใหม่ไม่ได้ ลองอัปเดตระบบ หรือใช้ไฟล์สำรองแทน');
+    let j;try{j=await unzip64(m[1])}catch(e){throw new Error(bkCut(m[0].length))}
+    let o;try{o=JSON.parse(j)}catch(e){throw new Error(bkCut(m[0].length))}if(o&&o._pp){o.plan=unpackPlan(o._pp);delete o._pp}const n=normalize(o);if(!n)throw new Error('ไม่ใช่ข้อมูลของ Sand To Pharmacist');return n}
+  m=flat.match(/S2P1:([A-Za-z0-9+/=]+)/);
+  if(m){let o;try{o=JSON.parse(decodeURIComponent(escape(atob(m[1]))))}catch(e){throw new Error(bkCut(m[0].length))}const n=normalize(o);if(!n)throw new Error('ไม่ใช่ข้อมูลของ Sand To Pharmacist');return n}
+  throw new Error('ไม่พบรหัสสำรอง รหัสต้องขึ้นต้นด้วย S2P2: หรือ S2P1: ลองคัดลอกข้อความที่ส่งมาให้ครบ');
+}
 function decodeBk(txt){
   txt=(txt||'').trim();if(!txt)throw new Error('ยังไม่ได้วางรหัส');
   let obj;
@@ -1083,10 +1107,10 @@ function decodeBk(txt){
   const n=normalize(obj);if(!n)throw new Error('ไม่ใช่ข้อมูลของ Sand To Pharmacist');
   return n;
 }
-function stageImport(txt){
-  try{const n=decodeBk(txt);pendingImport={data:n,st:stats(n)};bkMsg=null}
-  catch(e){pendingImport=null;bkMsg={t:'นำเข้าไม่ได้: '+(e.message||'รหัสไม่สมบูรณ์ ลองคัดลอกใหม่ให้ครบ'),err:true}}
-  render();
+async function stageImport(txt){
+  try{const n=await decodeBkAny(txt);pendingImport={data:n,st:stats(n)};bkMsg=null}
+  catch(e){pendingImport=null;bkMsg={t:'นำเข้าไม่ได้: '+(e&&e.message&&/[ก-๙]/.test(e.message)?e.message:'รหัสไม่สมบูรณ์ ลองคัดลอกใหม่ให้ครบ'),err:true}}
+  render();const b=$('bksec');if(b&&tab==='sched')setTimeout(()=>{const m=document.querySelector('#bksec .msg,#bksec .confirmbox');if(m)m.scrollIntoView({block:'center'})},30);
 }
 
 function fbText(){
@@ -1117,7 +1141,7 @@ function render(){
   {const b=$('repFoot');if(b)b.hidden=!hasData()||S.sample}
   $('view').innerHTML=tab==='day'?viewDay():tab==='plan'?viewPlan():tab==='subj'?viewSubj():tab==='fb'?viewFb():tab==='news'?viewNews():tab==='grade'?viewGrade():tab==='task'?viewTask():viewSched();
   if(tab==='fb')fbUpdate();
-  renderNews();fxEnter();
+  renderNews();fxEnter();if(tab==='sched')bkPrep();
   const a=document.querySelector('.day[aria-pressed="true"]');if(a)a.scrollIntoView({block:'nearest',inline:'center'});
 }
 
@@ -1183,10 +1207,17 @@ document.addEventListener('click',e=>{
     S.sample=false;S.presetCheck=false;showAdd=true;generate();render();
     const m=$('n-msg');if(m){m.style.color='var(--accent)';m.textContent=`เพิ่ม ${th} แล้ว เพิ่มวิชาต่อไปได้เลย`}
     return}
-  if(act==='bkcopy'){bkCode=encodeBk();markBackup();const done=()=>{bkMsg={t:'คัดลอกรหัสสำรองแล้ว นำไปวางใน LINE หรือโน้ตได้เลย'};render()};
-    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(bkCode).then(done,()=>{bkMsg={t:'คัดลอกอัตโนมัติไม่ได้ กดค้างที่ช่องรหัสแล้วเลือกคัดลอก'};render();const o=$('bk-out');if(o){o.focus();o.select()}});
-    else{bkMsg={t:'กดค้างที่ช่องรหัสแล้วเลือกคัดลอก'};render();const o=$('bk-out');if(o){o.focus();o.select()}}
+  if(act==='bkcopy'){markBackup();
+    const ok=()=>{bkMsg={t:`คัดลอกรหัสสำรองแล้ว (${bkCode.length.toLocaleString()} ตัวอักษร) นำไปวางใน LINE หรือโน้ตได้เลย`};render()};
+    const manual=()=>{bkMsg={t:'คัดลอกอัตโนมัติไม่ได้ กดค้างที่ช่องรหัสแล้วเลือกคัดลอก'};render();const o=$('bk-out');if(o){o.focus();o.select()}};
+    const sig=JSON.stringify(bkLean());
+    if(bkCache&&bkCache.sig===sig){bkCode=bkCache.code;if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(bkCode).then(ok,manual);else manual();return}
+    const pr=encodeBk2().then(c=>{bkCode=c;bkCache={sig,code:c};return c});
+    if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){try{navigator.clipboard.write([new ClipboardItem({'text/plain':pr.then(c=>new Blob([c],{type:'text/plain'}))})]).then(ok,()=>pr.then(manual));return}catch(e){}}
+    pr.then(c=>navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(c).then(ok,manual):manual(),()=>{bkMsg={t:'สร้างรหัสไม่ได้ ใช้ปุ่มบันทึกเป็นไฟล์แทน',err:true};render()});
     return}
+  if(act==='bkshare'){const f=new File([JSON.stringify(S)],`sand2pharm-${nowInfo().date}.json`,{type:'application/json'});
+    navigator.share({files:[f],title:'ไฟล์สำรอง Sand To Pharmacist'}).then(()=>{markBackup();bkMsg={t:'ส่งไฟล์สำรองแล้ว ที่เครื่องปลายทางกด “เลือกไฟล์สำรอง” แล้วเลือกไฟล์นี้'};render()},()=>{});return}
   if(act==='bkfile'){try{const b=new Blob([JSON.stringify(S)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');
     a.href=u;a.download=`sand2pharm-${nowInfo().date}.json`;document.body.appendChild(a);a.click();a.remove();markBackup();setTimeout(()=>URL.revokeObjectURL(u),2000);
     bkMsg={t:'บันทึกไฟล์แล้ว ดูได้ในโฟลเดอร์ดาวน์โหลด ถ้าไม่มีไฟล์ ให้ใช้ปุ่มคัดลอกรหัสสำรองแทน'}}catch(e){bkMsg={t:'บันทึกไฟล์ไม่ได้ ใช้ปุ่มคัดลอกรหัสสำรองแทน',err:true}}render();return}
