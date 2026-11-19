@@ -305,12 +305,31 @@ a.btn{text-decoration:none;display:inline-block}
 .seg button{font:inherit;font-size:.88rem;padding:6px 14px;border:0;background:none;color:var(--fg);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface);font-weight:600}
 
+
+/* v18: รายงานผู้ปกครอง / แชร์ตาราง / เตือนสำรอง */
+.btn.line{background:#06C755;border-color:#06C755;color:#fff}
+body.pmode #wrap{display:none}
+.pview{padding-top:18px}.pview .phd{display:flex;gap:14px;align-items:center}.pview .phd h1{margin:2px 0;font-size:1.35rem}
+.pview .plogo{width:56px;height:56px;flex:none}
+.pbars{display:flex;flex-direction:column;gap:6px}
+.pbr{display:grid;grid-template-columns:minmax(64px,30%) minmax(0,1fr) auto;gap:8px;align-items:center}
+.pbr .pk{font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pbr .pt{height:10px;border-radius:5px;background:var(--line);overflow:hidden}.pbr .pt i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.plist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.plist>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;padding:10px 12px;border-bottom:1px solid var(--line)}.plist>div:last-child{border-bottom:0}
+.plist>div>span:last-child{margin-left:auto}
+.plist.od{border-color:var(--exam)}.pbad{color:var(--exam);font-weight:600}
+.xpanel{flex-direction:column;align-items:stretch!important}.xpanel>div{display:flex;flex-direction:column;gap:6px}
+.xbtns{display:flex;gap:6px;flex-wrap:wrap}
+.repnick{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.repnick input,.xpanel textarea{font:inherit;font-size:.9rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.repnick input{width:170px;min-height:38px}.xpanel textarea{width:100%;box-sizing:border-box;min-height:64px;font-family:var(--mono);font-size:.75rem;word-break:break-all}
+.xpanel label.chk{display:flex;gap:8px;align-items:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<div class="wrap" id="wrap">
   <header>
     <div class="brand"><svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="โลโก้ Sand To Pharmacist"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--logo1,#22785f)"/><stop offset="1" style="stop-color:var(--logo2,#155343)"/></linearGradient><clipPath id="lcap"><rect x="196" y="330" width="120" height="40" rx="20"/></clipPath></defs><rect width="512" height="512" fill="url(#lg)"/><g transform="translate(256,178) scale(0.68) translate(-256,-256)"><path d="M196 160 L316 160 C310 200 274 222 256 244 C238 222 202 200 196 160 Z" fill="#f0c873"/><line x1="256" y1="246" x2="256" y2="322" stroke="#f0c873" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 14"/><g clip-path="url(#lcap)"><rect x="196" y="330" width="60" height="40" fill="#f0c873"/><rect x="256" y="330" width="60" height="40" fill="#ffffff"/></g><path d="M176 128 C176 196 230 222 244 256 C230 290 176 316 176 384 L336 384 C336 316 282 290 268 256 C282 222 336 196 336 128 Z" fill="none" stroke="#ffffff" stroke-width="14" stroke-linejoin="round"/><rect x="146" y="102" width="220" height="30" rx="15" fill="#ffffff"/><rect x="146" y="380" width="220" height="30" rx="15" fill="#ffffff"/></g><path d="M175.88000000000002 345.0H181.32000000000002Q181.32000000000002 347.08 182.38000000000002 348.26Q183.44000000000003 349.44 185.32000000000002 349.44H189.76000000000002Q191.52 349.44 192.62 348.7Q193.72000000000003 347.96 193.72000000000003 346.72V345.36Q193.72000000000003 343.4 190.84 342.92L183.48000000000002 341.68Q179.88000000000002 341.08 178.02000000000004 339.38Q176.16000000000003 337.68 176.16000000000003 335.04V332.8Q176.16000000000003 330.68 177.3 329.06Q178.44000000000003 327.44 180.54000000000002 326.56Q182.64000000000001 325.68 185.4 325.68H189.92000000000002Q192.52 325.68 194.52 326.76Q196.52 327.84 197.62 329.78Q198.72000000000003 331.72 198.72000000000003 334.28H193.28000000000003Q193.28000000000003 332.6 192.36 331.58000000000004Q191.44000000000003 330.56 189.92000000000002 330.56H185.4Q183.72000000000003 330.56 182.70000000000002 331.28Q181.68 332.0 181.68 333.2V334.28Q181.68 336.28 184.44000000000003 336.76L191.76000000000002 338.04Q195.4 338.68 197.32 340.3Q199.24 341.92 199.24 344.48V347.12Q199.24 349.24 198.06 350.88Q196.88000000000002 352.52 194.76000000000002 353.41999999999996Q192.64000000000001 354.32 189.84 354.32H185.24Q180.84 354.32 178.36 351.86Q175.88000000000002 349.4 175.88000000000002 345.0Z M203.28000000000003 348.64V347.16Q203.28000000000003 344.64 205.28000000000003 343.1Q207.28000000000003 341.56 210.56000000000003 341.56H213.00000000000003Q214.04000000000002 341.56 215.24 341.84000000000003Q216.44000000000003 342.12 217.44000000000003 342.6V340.52Q217.44000000000003 339.52 216.78000000000003 338.9Q216.12000000000003 338.28 215.04000000000002 338.28H211.60000000000002Q210.48000000000002 338.28 209.8 338.79999999999995Q209.12000000000003 339.32 209.12000000000003 340.2H203.84000000000003Q203.84000000000003 337.28 205.98000000000002 335.5Q208.12000000000003 333.72 211.60000000000002 333.72H215.04000000000002Q218.56000000000003 333.72 220.72000000000003 335.58000000000004Q222.88000000000002 337.44 222.88000000000002 340.52V354.0H217.84000000000003V351.6Q216.88000000000002 352.84 215.48000000000002 353.58Q214.08 354.32 212.72000000000003 354.32H210.24Q207.12000000000003 354.32 205.20000000000005 352.76Q203.28000000000003 351.2 203.28000000000003 348.64ZM213.12000000000003 350.16Q214.60000000000002 350.16 215.76000000000002 349.4Q216.92000000000002 348.64 217.44000000000003 347.36V346.68Q216.8 346.2 215.66000000000003 345.91999999999996Q214.52 345.64 213.24 345.64H210.72000000000003Q209.76000000000002 345.64 209.16000000000003 346.12Q208.56000000000003 346.6 208.56000000000003 347.4V348.44Q208.56000000000003 349.2 209.22000000000003 349.68Q209.88000000000002 350.16 210.96000000000004 350.16Z M228.28000000000003 334.04H233.32000000000005V336.44Q234.20000000000005 335.2 235.60000000000002 334.46000000000004Q237.00000000000003 333.72 238.40000000000003 333.72H240.80000000000004Q244.00000000000003 333.72 245.94000000000005 335.72Q247.88000000000005 337.72 247.88000000000005 341.0V354.0H242.44000000000003V341.2Q242.44000000000003 339.96 241.78000000000003 339.2Q241.12000000000003 338.44 240.08000000000004 338.44H237.68000000000004Q236.28000000000003 338.44 235.18000000000004 339.46000000000004Q234.08000000000004 340.48 233.72000000000003 342.12V354.0H228.28000000000003Z M252.48000000000005 346.48V341.92Q252.48000000000005 339.48 253.52000000000004 337.62Q254.56000000000003 335.76 256.44000000000005 334.74Q258.32000000000005 333.72 260.8 333.72H263.00000000000006Q264.16 333.72 265.36 334.22Q266.56000000000006 334.72 267.36 335.56V326.0H272.8V354.0H267.76000000000005V351.36Q266.96000000000004 352.68 265.6 353.5Q264.24 354.32 262.76000000000005 354.32H260.40000000000003Q256.84000000000003 354.32 254.66000000000003 352.15999999999997Q252.48000000000005 350.0 252.48000000000005 346.48ZM263.36 349.64Q265.00000000000006 349.64 266.1 348.46Q267.20000000000005 347.28 267.36 345.32V341.84Q267.08000000000004 340.28 266.14000000000004 339.34Q265.20000000000005 338.4 263.92 338.4H261.48Q259.88000000000005 338.4 258.90000000000003 339.48Q257.92 340.56 257.92 342.32V346.08Q257.92 347.68 258.80000000000007 348.65999999999997Q259.68000000000006 349.64 261.08000000000004 349.64Z  M298.00000000000006 330.8H289.12000000000006V326.0H312.40000000000003V330.8H303.52000000000004V354.0H298.00000000000006Z M315.40000000000003 346.4V341.72Q315.40000000000003 339.36 316.48 337.54Q317.56000000000006 335.72 319.50000000000006 334.72Q321.44000000000005 333.72 323.96000000000004 333.72H327.56000000000006Q330.08000000000004 333.72 332.02000000000004 334.72Q333.96000000000004 335.72 335.0400000000001 337.54Q336.12000000000006 339.36 336.12000000000006 341.72V346.4Q336.12000000000006 348.76 335.0400000000001 350.56Q333.96000000000004 352.36 332.02000000000004 353.34000000000003Q330.08000000000004 354.32 327.52000000000004 354.32H323.9200000000001Q321.40000000000003 354.32 319.46000000000004 353.34000000000003Q317.52000000000004 352.36 316.46000000000004 350.56Q315.40000000000003 348.76 315.40000000000003 346.4ZM327.44000000000005 349.64Q328.9200000000001 349.64 329.80000000000007 348.62Q330.68000000000006 347.6 330.68000000000006 345.96V342.08Q330.68000000000006 340.44 329.80000000000007 339.41999999999996Q328.9200000000001 338.4 327.4800000000001 338.4H324.0400000000001Q322.6000000000001 338.4 321.72 339.41999999999996Q320.84000000000003 340.44 320.84000000000003 342.08V345.96Q320.84000000000003 347.6 321.72 348.62Q322.6000000000001 349.64 324.00000000000006 349.64Z" fill="#f0c873"/><path d="M128.77200000000002 371.8H145.746Q148.55200000000002 371.8 150.714 372.881Q152.876 373.962 154.072 375.96299999999997Q155.26800000000003 377.964 155.26800000000003 380.54V384.818Q155.26800000000003 387.486 154.026 389.533Q152.78400000000002 391.58 150.553 392.707Q148.322 393.834 145.37800000000001 393.834H135.12V404.0H128.77200000000002ZM145.286 388.314Q146.89600000000002 388.314 147.90800000000002 387.279Q148.92000000000002 386.244 148.92000000000002 384.54200000000003V380.816Q148.92000000000002 379.206 148.02300000000002 378.26300000000003Q147.126 377.32 145.65400000000002 377.32H135.12V388.314Z M159.58 371.8H165.836V383.346Q166.848 382.15 168.34300000000002 381.414Q169.838 380.678 171.21800000000002 380.678H174.07Q177.75 380.678 179.981 382.978Q182.21200000000002 385.278 182.21200000000002 389.05V404.0H175.95600000000002V389.28Q175.95600000000002 387.854 175.197 386.98Q174.43800000000002 386.106 173.24200000000002 386.106H170.39000000000001Q168.78 386.106 167.515 387.279Q166.25 388.452 165.836 390.338V404.0H159.58Z M187.536 397.836V396.134Q187.536 393.236 189.836 391.46500000000003Q192.13600000000002 389.694 195.90800000000002 389.694H198.714Q199.91000000000003 389.694 201.29000000000002 390.016Q202.67000000000002 390.338 203.82000000000002 390.89V388.498Q203.82000000000002 387.348 203.06100000000004 386.635Q202.30200000000002 385.922 201.06 385.922H197.104Q195.816 385.922 195.034 386.52Q194.252 387.118 194.252 388.13H188.18Q188.18 384.772 190.64100000000002 382.725Q193.102 380.678 197.104 380.678H201.06Q205.108 380.678 207.592 382.817Q210.07600000000002 384.956 210.07600000000002 388.498V404.0H204.28V401.24Q203.17600000000002 402.666 201.56600000000003 403.517Q199.95600000000002 404.368 198.39200000000002 404.368H195.54000000000002Q191.95200000000003 404.368 189.74400000000003 402.57399999999996Q187.536 400.78 187.536 397.836ZM198.852 399.584Q200.554 399.584 201.888 398.71000000000004Q203.222 397.836 203.82000000000002 396.364V395.582Q203.084 395.03 201.77300000000002 394.70799999999997Q200.46200000000002 394.386 198.99 394.386H196.092Q194.988 394.386 194.298 394.938Q193.608 395.49 193.608 396.41V397.606Q193.608 398.48 194.36700000000002 399.03200000000004Q195.126 399.584 196.36800000000002 399.584Z M216.13600000000002 381.046H221.93200000000002V383.99Q222.806 382.656 224.43900000000002 381.805Q226.072 380.954 227.866 380.954H230.99400000000003V386.382H227.866Q225.42800000000003 386.382 223.91000000000003 387.85400000000004Q222.39200000000002 389.326 222.39200000000002 391.626V404.0H216.13600000000002Z M268.702 388.912V404.0H262.446V388.912Q262.446 387.624 261.848 386.865Q261.25 386.106 260.284 386.106H258.30600000000004Q257.01800000000003 386.106 256.052 387.049Q255.086 387.992 254.85600000000002 389.556V404.0H248.60000000000002V388.958Q248.60000000000002 387.67 248.002 386.88800000000003Q247.40400000000002 386.106 246.43800000000002 386.106H244.644Q243.31 386.106 242.298 387.302Q241.286 388.498 241.01000000000002 390.43V404.0H234.75400000000002V381.046H240.55V383.714Q241.37800000000001 382.334 242.68900000000002 381.506Q244.0 380.678 245.334 380.678H247.91000000000003Q249.566 380.678 250.923 381.552Q252.28 382.426 253.062 383.99Q254.074 382.426 255.477 381.552Q256.88 380.678 258.444 380.678H260.974Q264.47 380.678 266.586 382.955Q268.702 385.23199999999997 268.702 388.912Z M274.026 397.836V396.134Q274.026 393.236 276.326 391.46500000000003Q278.626 389.694 282.39799999999997 389.694H285.204Q286.4 389.694 287.78 390.016Q289.15999999999997 390.338 290.31 390.89V388.498Q290.31 387.348 289.551 386.635Q288.792 385.922 287.55 385.922H283.594Q282.306 385.922 281.524 386.52Q280.742 387.118 280.742 388.13H274.67Q274.67 384.772 277.131 382.725Q279.592 380.678 283.594 380.678H287.55Q291.598 380.678 294.082 382.817Q296.566 384.956 296.566 388.498V404.0H290.77V401.24Q289.666 402.666 288.056 403.517Q286.44599999999997 404.368 284.882 404.368H282.03Q278.442 404.368 276.23400000000004 402.57399999999996Q274.026 400.78 274.026 397.836ZM285.342 399.584Q287.044 399.584 288.378 398.71000000000004Q289.712 397.836 290.31 396.364V395.582Q289.574 395.03 288.26300000000003 394.70799999999997Q286.952 394.386 285.48 394.386H282.582Q281.478 394.386 280.788 394.938Q280.098 395.49 280.098 396.41V397.606Q280.098 398.48 280.85699999999997 399.03200000000004Q281.616 399.584 282.858 399.584Z M301.70599999999996 395.214V389.832Q301.70599999999996 387.118 302.92499999999995 385.048Q304.14399999999995 382.978 306.352 381.828Q308.55999999999995 380.678 311.45799999999997 380.678H315.092Q317.852 380.678 319.96799999999996 381.78200000000004Q322.08399999999995 382.886 323.2339999999999 384.887Q324.38399999999996 386.888 324.38399999999996 389.51H318.174Q318.174 387.946 317.323 387.00300000000004Q316.472 386.06 315.092 386.06H311.54999999999995Q309.93999999999994 386.06 308.95099999999996 387.233Q307.962 388.406 307.962 390.292V394.754Q307.962 396.64 308.974 397.813Q309.986 398.986 311.59599999999995 398.986H315.138Q316.60999999999996 398.986 317.50699999999995 397.928Q318.404 396.87 318.404 395.122H324.614Q324.614 399.308 322.015 401.83799999999997Q319.41599999999994 404.368 315.138 404.368H311.50399999999996Q308.606 404.368 306.375 403.21799999999996Q304.14399999999995 402.068 302.92499999999995 399.998Q301.70599999999996 397.928 301.70599999999996 395.214Z M329.38599999999997 375.112Q329.38599999999997 373.41 330.467 372.375Q331.54799999999994 371.34000000000003 333.342 371.34000000000003Q335.13599999999997 371.34000000000003 336.217 372.375Q337.29799999999994 373.41 337.29799999999994 375.112Q337.29799999999994 376.814 336.217 377.84900000000005Q335.13599999999997 378.884 333.342 378.884Q331.54799999999994 378.884 330.467 377.84900000000005Q329.38599999999997 376.814 329.38599999999997 375.112ZM330.21399999999994 381.046H336.46999999999997V404.0H330.21399999999994Z M342.53 396.364H348.69399999999996Q348.69399999999996 397.606 349.54499999999996 398.365Q350.39599999999996 399.124 351.77599999999995 399.124H355.91599999999994Q358.67599999999993 399.124 358.67599999999993 397.606V396.824Q358.67599999999993 396.364 358.21599999999995 395.97299999999996Q357.756 395.582 356.97399999999993 395.444L349.01599999999996 394.064Q346.2099999999999 393.604 344.57699999999994 392.063Q342.94399999999996 390.522 342.94399999999996 388.452V386.934Q342.94399999999996 383.99 345.3589999999999 382.334Q347.77399999999994 380.678 352.09799999999996 380.678H355.6859999999999Q359.54999999999995 380.678 361.919 382.725Q364.28799999999995 384.772 364.28799999999995 388.13H358.12399999999997Q358.12399999999997 387.118 357.457 386.52Q356.78999999999996 385.922 355.6859999999999 385.922H352.18999999999994Q349.19999999999993 385.922 349.19999999999993 387.302V388.038Q349.19999999999993 388.544 349.59099999999995 388.889Q349.98199999999997 389.234 350.71799999999996 389.372L359.09 390.89Q361.71199999999993 391.35 363.32199999999995 392.845Q364.93199999999996 394.34 364.93199999999996 396.226V397.882Q364.93199999999996 400.872 362.47099999999995 402.62Q360.00999999999993 404.368 355.91599999999994 404.368H351.77599999999995Q347.59 404.368 345.05999999999995 402.15999999999997Q342.53 399.952 342.53 396.364Z M372.09599999999995 396.456V386.382H368.04799999999994V381.046H372.28V374.1H378.352V381.046H384.332V386.382H378.352V396.18Q378.352 397.468 378.835 398.06600000000003Q379.318 398.664 380.376 398.664H384.332V404.0H379.916Q375.868 404.0 373.98199999999997 402.15999999999997Q372.09599999999995 400.32 372.09599999999995 396.456Z" fill="#ffffff"/></svg><div>
       <div class="muted small" id="subtitle">ติวเข้มก่อนสอบปลายภาค</div>
@@ -328,16 +347,17 @@ a.btn{text-decoration:none;display:inline-block}
   </nav>
   <div id="banner"></div>
   <main id="view"></main>
-  <div class="foot" style="gap:8px;flex-wrap:wrap"><button class="btn" data-act="gotheme">🎨 เปลี่ยนธีม</button><button class="btn" data-tab="fb">💬 ส่งความเห็นเกี่ยวกับแอป</button></div>
+  <div class="foot" style="gap:8px;flex-wrap:wrap"><button class="btn" data-act="gotheme">🎨 เปลี่ยนธีม</button><button class="btn" data-act="repopen" id="repFoot" hidden>📤 ส่งรายงานให้ผู้ปกครอง</button><button class="btn" data-act="shopen">👥 แชร์ตารางให้เพื่อน</button><button class="btn" data-tab="fb">💬 ส่งความเห็นเกี่ยวกับแอป</button></div>
   <footer class="sitefoot">
     <div class="fname">Sand To Pharmacist</div>
     <div>โดย <b>ปรุงยาเภสัช</b></div>
     <div class="muted">📍 3/5 หมู่ 1 ตำบลอิปัน อำเภอพระแสง จังหวัดสุราษฎร์ธานี</div>
     <div class="muted small">© 2026 ปรุงยาเภสัช สงวนลิขสิทธิ์</div>
     <div class="muted small mono" id="appver"></div>
-    <details class="small muted" style="max-width:34em;margin-top:6px"><summary style="cursor:pointer">ความเป็นส่วนตัว</summary><p style="margin:6px 0 0;text-align:left">ข้อมูลการเรียนทั้งหมด (วิชา แผนอ่าน การติ๊ก งานที่ต้องส่ง) เก็บในเครื่องนี้เท่านั้น ผู้พัฒนามองไม่เห็น มีเพียงตัวนับผู้ใช้ ที่วันละครั้งตอนเปิดแอปจะส่ง<b>รหัสเครื่องที่สุ่มขึ้น</b> วันที่เริ่มใช้ ประเภทเครื่อง และว่าติดตั้งเป็นแอปหรือไม่ เพื่อนับจำนวนผู้ใช้แบบรวม ไม่มีชื่อ และไม่มีข้อมูลการเรียน</p></details>
+    <details class="small muted" style="max-width:34em;margin-top:6px"><summary style="cursor:pointer">ความเป็นส่วนตัว</summary><p style="margin:6px 0 0;text-align:left">ข้อมูลการเรียนทั้งหมด (วิชา แผนอ่าน การติ๊ก งานที่ต้องส่ง) เก็บในเครื่องนี้เท่านั้น ผู้พัฒนามองไม่เห็น ข้อมูลจะออกจากเครื่องเมื่อคุณกด<b>ส่งรายงานให้ผู้ปกครอง</b> (สรุป 7 วันอยู่ในลิงก์) หรือ<b>แชร์ตารางให้เพื่อน</b> (วิชา วันสอบ ตารางเรียน งานที่ต้องส่ง ไม่มีการติ๊กหรือชื่อ) ซึ่งคุณเป็นคนเลือกส่งเอง นอกจากนี้มีเพียงตัวนับผู้ใช้ ที่วันละครั้งตอนเปิดแอปจะส่ง<b>รหัสเครื่องที่สุ่มขึ้น</b> วันที่เริ่มใช้ ประเภทเครื่อง และว่าติดตั้งเป็นแอปหรือไม่ เพื่อนับจำนวนผู้ใช้แบบรวม ไม่มีชื่อ และไม่มีข้อมูลการเรียน</p></details>
   </footer>
 </div>
+<div class="wrap pview" id="parentView" hidden></div>
 
 <script>
 const CLASSES=[
@@ -360,7 +380,7 @@ const DWL=['อาทิตย์','จันทร์','อังคาร','�
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v17',APP_DATE='18 พ.ย. 2569';
+const APP_VER='v18',APP_DATE='19 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -742,6 +762,7 @@ function header(){
   const odT=tOverdue();
   if(odT.length&&tab!=='task'){const o=odT[0];h+=`<div class="banner" style="background:var(--exam-soft)"><span class="small"><b style="color:var(--exam)">ค้างส่ง ${odT.length} ชิ้น:</b> ${esc(o.name)} (${esc(tSubName(o))}) ${dueLabel(o)}${odT.length>1?` และอีก ${odT.length-1} ชิ้น`:''}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${odT.length===1?`<button class="btn danger" data-tsent="${o.id}">ส่งแล้ว</button><button class="btn" data-tman="${o.id}">อาจารย์ให้เลื่อน</button>`:'<button class="btn danger" data-tab="task">ดูงานค้าง</button>'}</span></div>`}
   if(missed)h+=`<div class="banner"><span class="small">มี ${missed} ช่วงอ่านที่ผ่านไปแล้วแต่ยังไม่ได้ติ๊ก งานที่ค้างจะถูกยกไปวันถัดไป</span><button class="btn primary" data-act="replan">จัดแผนใหม่</button></div>`;
+  h=v18Banners(h);
   $('banner').innerHTML=h;$('banner').style.display=h?'flex':'none';$('banner').style.flexDirection='column';$('banner').style.gap='8px';
 }
 
@@ -749,7 +770,7 @@ function welcome(){
   return `<div class="welcome"><div><h2>เริ่มใช้ Sand To Pharmacist</h2><p class="muted small" style="margin:4px 0 0">ใส่ข้อมูลของคุณ 3 ขั้น แล้วแอปจะจัดเวลาอ่านหนังสือให้ทุกวันจนถึงวันสอบ</p></div>
   <ol><li><b>เพิ่มวิชา</b> พร้อมวันและเวลาสอบ จำนวนบทที่ออกสอบ และความมั่นใจ</li><li><b>ใส่ตารางเรียน</b> แอปจะไม่จัดเวลาอ่านทับคาบเรียน</li><li><b>ตั้งจำนวนช่วงอ่านต่อวัน</b> ที่ทำได้จริง</li></ol>
   <div class="fbq" style="background:var(--accent-soft);border-color:transparent"><b>นักศึกษาเภสัชฯ ปี 1 เทอมนี้?</b><span class="small muted">ใส่ 8 วิชา วันสอบ และตารางเรียนให้ทันที แล้วค่อยปรับให้ตรงกลุ่มเรียนของคุณ</span><div><button class="btn primary" data-act="loadsample">ใช้ตารางเภสัชฯ ปี 1 เทอมนี้</button></div></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="startadd">เริ่มเองจากหน้าว่าง</button><button class="btn" data-go="sched">มีรหัสสำรอง? นำเข้าข้อมูล</button></div></div>`;
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="startadd">เริ่มเองจากหน้าว่าง</button><button class="btn" data-act="shopen">เพื่อนส่งตารางมา? วางลิงก์</button><button class="btn" data-go="sched">มีรหัสสำรอง? นำเข้าข้อมูล</button></div></div>`;
 }
 function riskList(){
   const {date:today,min}=nowInfo();
@@ -914,7 +935,7 @@ function backupView(){
   const st=stats(S);let prev=null;try{prev=localStorage.getItem(KEY+'-before-import')}catch(e){}
   const msg=bkMsg?`<div class="msg${bkMsg.err?' err':''}">${esc(bkMsg.t)}</div>`:'';
   const imp=pendingImport?`<div class="confirmbox"><span class="small">ข้อมูลสำรองมี ${pendingImport.st.subj} วิชา ติ๊กแล้ว ${pendingImport.st.done} ช่วง จะแทนที่ข้อมูลในเครื่องนี้ (${st.subj} วิชา ติ๊กแล้ว ${st.done} ช่วง)</span><button class="btn sm primary" data-act="impyes">แทนที่ด้วยข้อมูลสำรอง</button><button class="btn sm" data-act="impno">ยกเลิก</button></div>`:'';
-  return `<div class="section"><h2>สำรองและย้ายข้อมูล</h2>
+  return `<div class="section" id="bksec"><h2>สำรองและย้ายข้อมูล</h2>
   <p class="small muted" style="margin:0">ข้อมูลทั้งหมดเก็บอยู่ในเบราว์เซอร์ของเครื่องนี้เท่านั้น ควรสำรองไว้เป็นระยะ ใช้ย้ายไปเครื่องใหม่ หรือส่งให้ผู้ปกครองดูความคืบหน้าก็ได้</p>
   <div class="bk"><b>1. สำรองจากเครื่องนี้</b><span class="small muted">ตอนนี้มี ${st.subj} วิชา ติ๊กแล้ว ${st.done} ช่วง</span>
   <div class="row2"><button class="btn primary" data-act="bkcopy">คัดลอกรหัสสำรอง</button><button class="btn" data-act="bkfile">บันทึกเป็นไฟล์</button></div>
@@ -966,6 +987,7 @@ function render(){
   header();
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
   {const n=tOverdue().length,b=$('tbadge');b.textContent=n;b.hidden=!n}
+  {const b=$('repFoot');if(b)b.hidden=!hasData()||S.sample}
   $('view').innerHTML=tab==='day'?viewDay():tab==='plan'?viewPlan():tab==='subj'?viewSubj():tab==='fb'?viewFb():tab==='task'?viewTask():viewSched();
   if(tab==='fb')fbUpdate();
   const a=document.querySelector('.day[aria-pressed="true"]');if(a)a.scrollIntoView({block:'nearest',inline:'center'});
@@ -977,6 +999,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.mode){S.mode=t.dataset.mode;save();render();return}
   if(t.dataset.tab){tab=t.dataset.tab;if(tab==='task'){tv=null;draft=null}render();return}
   if(taskClick(t))return;
+  if(v18Click(t))return;
   if(t.dataset.go){tab=t.dataset.go;render();return}
   if(t.dataset.day){sel=t.dataset.day;render();return}
   if(t.dataset.tick){const x=S.plan.find(p=>p.id===t.dataset.tick),{date:today,min}=nowInfo();x.done=!x.done;if(!x.done)x.rating=null;
@@ -1029,12 +1052,12 @@ document.addEventListener('click',e=>{
     S.sample=false;S.presetCheck=false;showAdd=true;generate();render();
     const m=$('n-msg');if(m){m.style.color='var(--accent)';m.textContent=`เพิ่ม ${th} แล้ว เพิ่มวิชาต่อไปได้เลย`}
     return}
-  if(act==='bkcopy'){bkCode=encodeBk();const done=()=>{bkMsg={t:'คัดลอกรหัสสำรองแล้ว นำไปวางใน LINE หรือโน้ตได้เลย'};render()};
+  if(act==='bkcopy'){bkCode=encodeBk();markBackup();const done=()=>{bkMsg={t:'คัดลอกรหัสสำรองแล้ว นำไปวางใน LINE หรือโน้ตได้เลย'};render()};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(bkCode).then(done,()=>{bkMsg={t:'คัดลอกอัตโนมัติไม่ได้ กดค้างที่ช่องรหัสแล้วเลือกคัดลอก'};render();const o=$('bk-out');if(o){o.focus();o.select()}});
     else{bkMsg={t:'กดค้างที่ช่องรหัสแล้วเลือกคัดลอก'};render();const o=$('bk-out');if(o){o.focus();o.select()}}
     return}
   if(act==='bkfile'){try{const b=new Blob([JSON.stringify(S)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');
-    a.href=u;a.download=`sand2pharm-${nowInfo().date}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
+    a.href=u;a.download=`sand2pharm-${nowInfo().date}.json`;document.body.appendChild(a);a.click();a.remove();markBackup();setTimeout(()=>URL.revokeObjectURL(u),2000);
     bkMsg={t:'บันทึกไฟล์แล้ว ดูได้ในโฟลเดอร์ดาวน์โหลด ถ้าไม่มีไฟล์ ให้ใช้ปุ่มคัดลอกรหัสสำรองแทน'}}catch(e){bkMsg={t:'บันทึกไฟล์ไม่ได้ ใช้ปุ่มคัดลอกรหัสสำรองแทน',err:true}}render();return}
   if(act==='bkcheck'){stageImport($('bk-in').value);return}
   if(act==='impno'){pendingImport=null;render();return}
@@ -1087,8 +1110,195 @@ document.addEventListener('change',e=>{
     generate();render()}
 });
 
+
+// ===================== v18 =====================
+const b64e=o=>{const u=new TextEncoder().encode(JSON.stringify(o));let x='';u.forEach(c=>{x+=String.fromCharCode(c)});return btoa(x).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const b64d=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');const x=atob(t);return JSON.parse(new TextDecoder().decode(Uint8Array.from(x,c=>c.charCodeAt(0))))};
+const baseURL=()=>location.origin+location.pathname;
+const copyTxt=(txt,ok,bad)=>(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(ok,bad);
+const hasData=()=>S.subjList.length>0;
+
+// ---- 1) รายงานถึงผู้ปกครอง: ข้อมูลอยู่ในลิงก์ (#r=...) ไม่ผ่านเซิร์ฟเวอร์ ----
+const PKEY='sand2pharm-parent';
+let repOpen=false,repMsg='';
+function weekStats(from,to){
+  const {date:today,min}=nowInfo();
+  const due=S.plan.filter(x=>x.date>=from&&x.date<=to&&isOn(x.code)&&(x.done||x.date<today||(x.date===today&&x.e<=min)));
+  const dn=due.filter(x=>x.done);
+  return {p:due.length,d:dn.length,h:+(dn.reduce((a,x)=>a+(x.e-x.s),0)/60).toFixed(1),days:new Set(dn.map(x=>x.date)).size,dn};
+}
+function buildReport(){
+  const {date:today}=nowInfo(),from=addD(today,-6),w=weekStats(from,today),pw=weekStats(addD(today,-13),addD(today,-7));
+  const by={};w.dn.forEach(x=>{const k=isT(x.code)?'งานที่ต้องส่ง':M(x.code).sh;by[k]=(by[k]||0)+(x.e-x.s)});
+  const T=S.tasks||[],open=T.filter(t=>t.status==='open'),sent=T.filter(t=>t.status==='sent');
+  return {v:1,n:(S.nick||'').trim(),d:today,f:from,h:w.h,p:w.p,dn:w.d,ds:w.days,ph:pw.p?pw.h:null,
+    subj:Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k,m])=>[k,+(m/60).toFixed(1)]),
+    od:open.filter(t=>t.due<today).sort((a,b)=>a.due<b.due?-1:1).slice(0,5).map(t=>[t.name,tSubName(t),t.due]),
+    sn:open.filter(t=>t.due>=today&&t.due<=addD(today,7)).sort((a,b)=>a.due<b.due?-1:1).slice(0,5).map(t=>[t.name,tSubName(t),t.due,t.ready?1:0]),
+    ts:sent.length,to:sent.filter(t=>(t.sentDate||t.due)<=t.due).length,
+    ex:active().filter(x=>S.subjects[x.c].exam>=today).map(x=>[x.sh,S.subjects[x.c].exam,hardTopics(x.c).length]).sort((a,b)=>a[1]<b[1]?-1:1).slice(0,6)};
+}
+const repURL=r=>baseURL()+'#r='+b64e(r);
+const repPct=r=>r.p?Math.round(r.dn/r.p*100):null;
+function repText(r){const p=repPct(r);
+  return `💊 รายงานการอ่านหนังสือของ${r.n?' '+r.n:'ลูก'} (7 วันล่าสุด)\nอ่านและทำงาน ${r.h} ชม. · ทำตามแผน ${p==null?'–':p+'%'}${r.od.length?`\nงานค้างส่ง ${r.od.length} ชิ้น`:''}${r.ex[0]?`\nสอบถัดไป ${r.ex[0][0]} ${thDate(r.ex[0][1])}`:''}\nดูรายงานเต็ม: ${repURL(r)}`}
+const repLineHref=()=>'https://line.me/R/share?text='+encodeURIComponent(repText(buildReport()));
+function repPanel(){
+  const r=buildReport(),p=repPct(r);
+  return `<div class="banner info xpanel"><div class="small"><b style="font-size:.95rem">📤 ส่งรายงานให้ผู้ปกครอง</b>
+  <span>ผู้ปกครองจะเห็นสรุป 7 วันล่าสุด: ชั่วโมงที่อ่าน ทำตามแผนกี่ % แยกรายวิชา งานที่ต้องส่ง และวันสอบที่ใกล้ถึง ข้อมูลอื่นในเครื่องจะไม่ถูกส่งไป</span>
+  <label class="repnick">ชื่อที่ให้ผู้ปกครองเห็น <input id="rep-nick" value="${esc(S.nick||'')}" maxlength="30" placeholder="เช่น พี่แซนด์"></label>
+  <span>สรุปตอนนี้: อ่านและทำงาน <b>${r.h} ชม.</b> · ทำตามแผน <b>${p==null?'–':p+'%'}</b> · ได้อ่าน <b>${r.ds}/7</b> วัน${r.od.length?` · งานค้างส่ง <b>${r.od.length}</b> ชิ้น`:''}</span>
+  ${repMsg?`<span style="color:var(--accent);font-weight:600">${esc(repMsg)}</span>`:''}</div>
+  <div class="xbtns"><a class="btn line" id="repLine" href="${esc(repLineHref())}" target="_blank" rel="noopener">ส่งทาง LINE</a>${navigator.share?'<button class="btn" data-act="repshare">แชร์ทางอื่น</button>':''}<button class="btn" data-act="repcopy">คัดลอกลิงก์</button><button class="btn" data-act="repprev">ดูตัวอย่าง</button><button class="btn" data-act="repclose">ปิด</button></div></div>`;
+}
+let pvReport=null,pvPreview=false;
+const pLoad=()=>{try{const j=JSON.parse(localStorage.getItem(PKEY)||'{}');return Array.isArray(j.reports)?j.reports:[]}catch(e){return []}};
+const pSave=list=>{try{localStorage.setItem(PKEY,JSON.stringify({reports:list.slice(-60)}));return true}catch(e){return false}};
+function parentHTML(r,preview){
+  const {date:today}=nowInfo(),p=repPct(r),diff=r.ph==null?null:+(r.h-r.ph).toFixed(1);
+  const hist=pLoad().filter(x=>(x.n||'')===(r.n||'')).sort((a,b)=>a.d<b.d?-1:1);
+  const saved=hist.some(x=>x.d===r.d&&x.h===r.h&&x.dn===r.dn);
+  const mx=Math.max(1,...r.subj.map(x=>x[1])),hmx=Math.max(1,...hist.map(x=>x.h),r.h);
+  const dl=d=>{const n=dIdx(d)-dIdx(today);return n<0?`เลยมา ${-n} วัน`:n===0?'วันนี้':n===1?'พรุ่งนี้':`อีก ${n} วัน`};
+  const logo=(document.querySelector('header .logo')||{}).outerHTML||'';
+  return `<header class="phd">${logo.replace('class="logo"','class="logo plogo"')}<div><div class="small muted">Sand To Pharmacist · รายงานสำหรับผู้ปกครอง</div>
+  <h1>รายงานของ${r.n?' '+esc(r.n):'นักศึกษา'}</h1><div class="small muted">ช่วง ${thDate(r.f)} – ${thDate(r.d)}${preview?' · <b>ตัวอย่างที่ผู้ปกครองจะเห็น</b>':''}</div></div></header>
+  ${r.d<addD(today,-7)?`<div class="banner"><span class="small">รายงานนี้ส่งมาเมื่อ ${thDate(r.d)} ข้อมูลอาจไม่ใช่ล่าสุด ขอให้ลูกกดส่งรายงานใหม่ได้</span></div>`:''}
+  <div class="dash">
+    <div class="tile"><span class="lab">อ่านและทำงาน 7 วัน</span><span class="big">${r.h} <small>ชม.</small></span><span class="sub">${diff==null?'ยังไม่มีข้อมูลสัปดาห์ก่อน':diff>0?`มากกว่าสัปดาห์ก่อน ${diff} ชม.`:diff<0?`น้อยกว่าสัปดาห์ก่อน ${-diff} ชม.`:'เท่ากับสัปดาห์ก่อน'}</span></div>
+    <div class="tile"><span class="lab">ทำตามแผน</span><span class="big">${p==null?'–':p+'%'}</span><div class="pbar"><i style="width:${p||0}%"></i></div><span class="sub">${r.dn} จาก ${r.p} ช่วงที่ถึงเวลาแล้ว</span></div>
+    <div class="tile"><span class="lab">วันที่ได้อ่าน</span><span class="big">${r.ds} <small>/ 7 วัน</small></span><span class="sub">${r.ds>=5?'สม่ำเสมอมาก':r.ds>=3?'กำลังดี':'ยังไม่สม่ำเสมอ'}</span></div>
+  </div>
+  ${r.subj.length?`<div class="section"><h2>แยกตามวิชา (ชั่วโมง)</h2><div class="pbars">${r.subj.map(([k,h])=>`<div class="pbr"><span class="pk">${esc(k)}</span><span class="pt"><i style="width:${Math.round(h/mx*100)}%"></i></span><span class="mono small">${h}</span></div>`).join('')}</div></div>`:''}
+  <div class="section"><h2>งานที่ต้องส่งอาจารย์</h2>
+  ${r.od.length?`<div class="plist od">${r.od.map(t=>`<div><b>${esc(t[0])}</b> <span class="small muted">${esc(t[1])}</span><span class="small pbad">ค้างส่ง · ${dl(t[2])}</span></div>`).join('')}</div>`:'<div class="small">ไม่มีงานค้างส่ง</div>'}
+  ${r.sn.length?`<div class="small muted">ใกล้ส่งใน 7 วัน</div><div class="plist">${r.sn.map(t=>`<div><b>${esc(t[0])}</b> <span class="small muted">${esc(t[1])}</span><span class="small">${t[3]?'ทำเสร็จแล้ว รอส่ง':'ส่ง '+thDate(t[2])+' · '+dl(t[2])}</span></div>`).join('')}</div>`:''}
+  ${r.ts?`<div class="small">ส่งงานตรงเวลา <b>${r.to}/${r.ts}</b> ชิ้น</div>`:''}</div>
+  ${r.ex.length?`<div class="section"><h2>สอบที่ใกล้ถึง</h2><div class="plist">${r.ex.map(e=>`<div><b>${esc(e[0])}</b>${e[2]?` <span class="small muted">บทที่ยังยาก ${e[2]} บท</span>`:''}<span class="small">${thDate(e[1])} · ${dl(e[1])}</span></div>`).join('')}</div></div>`:''}
+  ${hist.length?`<div class="section"><h2>รายงานที่บันทึกไว้ (${hist.length})</h2><div class="pbars">${hist.slice(-8).map(x=>`<div class="pbr"><span class="pk">${thDate(x.d)}</span><span class="pt"><i style="width:${Math.round(x.h/hmx*100)}%"></i></span><span class="mono small">${x.h} ชม.${repPct(x)==null?'':' · '+repPct(x)+'%'}</span></div>`).join('')}</div></div>`:''}
+  <p class="small muted" style="margin:0">ข้อมูลในหน้านี้มาจากลิงก์ที่ลูกส่งมา เป็นข้อมูล ณ วันที่ส่ง ไม่ได้เก็บไว้บนเซิร์ฟเวอร์ใด · คำแนะนำ: ชมความสม่ำเสมอ มากกว่าดูแค่ตัวเลข ช่วงใกล้สอบเด็กเภสัชฯ เครียดมาก กำลังใจช่วยได้เยอะ</p>
+  <div class="xbtns">${preview?'<button class="btn primary" data-act="pclose">ปิดตัวอย่าง</button>':`<button class="btn primary" data-act="psave" ${saved?'disabled':''}>${saved?'✓ บันทึกไว้ในเครื่องแล้ว':'บันทึกรายงานนี้ไว้ดูย้อนหลัง'}</button><button class="btn" data-act="pclose">ปิด</button>`}</div>`;
+}
+function showParent(r,preview){pvReport=r;pvPreview=preview;const pv=$('parentView');pv.innerHTML=parentHTML(r,preview);pv.hidden=false;document.body.classList.add('pmode');window.scrollTo(0,0)}
+function hideParent(){pvReport=null;const pv=$('parentView');pv.hidden=true;pv.innerHTML='';document.body.classList.remove('pmode')}
+const repDue=()=>{const {date:today}=nowInfo();if(!hasData()||S.sample||repOpen)return false;
+  if(S.repAsk&&dIdx(today)-dIdx(S.repAsk)<7)return false;if(S.lastReport&&dIdx(today)-dIdx(S.lastReport)<7)return false;
+  return S.plan.filter(x=>x.done).length>=5&&dIdx(today)-dIdx(S.since||today)>=6};
+
+// ---- 2) เตือนสำรองข้อมูล: ทุก 30 วัน หรือหลังติ๊กครบ 5 ช่วงครั้งแรก ----
+const bkAge=()=>S.lastBackup?dIdx(nowInfo().date)-dIdx(S.lastBackup):null;
+function bkDue(){
+  const {date:today}=nowInfo();if(!hasData()||S.sample)return false;
+  if(S.bkSnooze&&dIdx(today)-dIdx(S.bkSnooze)<7)return false;
+  const age=bkAge();return age==null?S.plan.filter(x=>x.done).length>=5:age>=30;
+}
+const markBackup=()=>{S.lastBackup=nowInfo().date;S.bkSnooze=null;save()};
+
+// ---- 3) แชร์ตารางให้เพื่อนในชั้น (#t=... หรือวางลิงก์) ----
+let shOpen=false,shMsg='',shTasks=true,shIn=null,shInErr='';
+function buildShare(){
+  const {date:today}=nowInfo();
+  const o={v:1,s:S.subjList.map(x=>{const y=S.subjects[x.c]||{};const tn=(y.topicNames||[]).slice(0,y.topics||0);return [x.c,x.th,x.sh,x.cr,y.exam,y.et,y.ee,y.topics,tn.some(Boolean)?tn:0,y.real?1:0]}),
+    k:S.classes.map(k=>[k.d,k.s,k.e,k.c||'',k.c?'':(k.label||'')]),ce:S.settings.classEnd||''};
+  if(shTasks)o.t=(S.tasks||[]).filter(t=>t.status==='open'&&t.due>=today).map(t=>[t.name,t.c||'',t.due,t.dueT||'',t.type,t.size||1,t.where||'',safeUrl(t.url),t.pts||'',t.group?1:0,t.teacher||'']);
+  return o;
+}
+const shURL=()=>baseURL()+'#t='+b64e(buildShare());
+const shText=()=>{const o=buildShare();return `👥 ตารางเรียน วันสอบ${o.t&&o.t.length?' และงานที่ต้องส่ง':''} (${o.s.length} วิชา) สำหรับแอป Sand To Pharmacist\nกดลิงก์แล้วกด “ใช้ตารางนี้” แอปจะจัดเวลาอ่านให้เลย\n${shURL()}`};
+function parseShare(txt){
+  const m=String(txt||'').replace(/\s+/g,'').match(/#t=([A-Za-z0-9_-]+)/);if(!m)throw new Error('ไม่พบลิงก์ตาราง ลองคัดลอกข้อความที่เพื่อนส่งมาให้ครบ');
+  const o=b64d(m[1]);if(!o||o.v!==1||!Array.isArray(o.s)||!o.s.length)throw new Error('ลิงก์ตารางไม่สมบูรณ์');return o;
+}
+function applyShare(o){
+  const {date:today}=nowInfo();
+  try{localStorage.setItem(KEY+'-before-import',JSON.stringify(S))}catch(e){}
+  if(S.sample||!hasData()){const keep={settings:S.settings,since:S.since,skin:S.skin,mode:S.mode,nick:S.nick,lastBackup:S.lastBackup};S=Object.assign(blank(),keep)}
+  const old=Object.fromEntries(S.subjList.map(x=>[x.c,x])),incoming=new Set(o.s.map(a=>a[0]));
+  const used=new Set(S.subjList.filter(x=>!incoming.has(x.c)).map(x=>x.ci));let nci=0;const nextCi=()=>{while(used.has(nci%12)&&nci<24)nci++;const c=nci%12;used.add(c);nci++;return c};
+  const list=o.s.map(a=>{const [c,th,sh,cr]=a;return {c:String(c),th:String(th),sh:String(sh),cr:+cr||3,ci:old[c]?old[c].ci:nextCi()}});
+  list.forEach((x,i)=>{const a=o.s[i],prev=S.subjects[x.c];
+    S.subjects[x.c]={...(prev||{conf:3,on:true}),exam:a[4],et:a[5]||'09:00',ee:a[6]||'12:00',topics:Math.max(1,+a[7]||1),real:!!a[9],...(a[8]?{topicNames:a[8]}:{})}});
+  S.subjList=[...list,...S.subjList.filter(x=>!incoming.has(x.c))];
+  S.classes=(o.k||[]).map(k=>({id:uid(),d:+k[0],s:k[1],e:k[2],c:incoming.has(k[3])?k[3]:'',...(k[3]&&incoming.has(k[3])?{}:{label:k[4]||'คาบเรียน'})}));
+  S.exceptions=S.exceptions.filter(x=>x.type!=='cancel');S.settings.classEnd=o.ce||'';
+  let nt=0;(o.t||[]).forEach(a=>{const [name,c,due,dueT,type,size,where,url,pts,group,teacher]=a;
+    if(!name||!due||due<today||(S.tasks||[]).some(t=>t.name===name&&t.due===due))return;
+    S.tasks.push({id:uid(),c:incoming.has(c)?c:null,name,teacher:teacher||'',due,dueT:dueT||'',type:TTYPE[type]?type:'ex',size:+size||1,where:TWHERE[where]?where:'teams',url:url||'',pts:pts||'',group:!!group,members:'',mine:'',status:'open',ready:false,created:today});nt++});
+  S.sample=false;S.presetCheck=false;S.shareCheck=true;
+  generate();return {s:list.length,k:S.classes.length,t:nt};
+}
+function shPanel(){
+  const o=hasData()?buildShare():null;
+  return `<div class="banner info xpanel"><div class="small"><b style="font-size:.95rem">👥 แชร์ตารางให้เพื่อนในชั้น</b>
+  ${o?`<span>ส่งให้เพื่อนกลุ่มเรียนเดียวกัน เพื่อนกดลิงก์ทีเดียวได้วิชา วันสอบ จำนวนบท ชื่อบท และตารางเรียนครบ ไม่ต้องกรอกเอง <b>ไม่ส่ง</b>การติ๊ก ความมั่นใจ บทที่ยาก และชื่อของคุณ</span>
+  <label class="chk"><input type="checkbox" id="sh-tasks" ${shTasks?'checked':''}> แนบงานที่ต้องส่งที่ยังไม่ถึงกำหนดไปด้วย (${(o.t||(S.tasks||[]).filter(t=>t.status==='open'&&t.due>=nowInfo().date)).length} งาน)</label>
+  <span>จะส่ง ${o.s.length} วิชา · ${o.k.length} คาบเรียน${shTasks&&o.t?` · ${o.t.length} งาน`:''}</span>
+  ${shMsg?`<span style="color:var(--accent);font-weight:600">${esc(shMsg)}</span>`:''}</div>
+  <div class="xbtns"><a class="btn line" id="shLine" href="${esc('https://line.me/R/share?text='+encodeURIComponent(shText()))}" target="_blank" rel="noopener">ส่งทาง LINE</a>${navigator.share?'<button class="btn" data-act="shshare">แชร์ทางอื่น</button>':''}<button class="btn" data-act="shcopy">คัดลอกลิงก์</button></div>
+  <div class="small" style="margin-top:6px"><b>ได้ตารางจากเพื่อน?</b>`:'<span>ยังไม่มีวิชาให้แชร์ ถ้าเพื่อนส่งลิงก์ตารางมา วางลิงก์ด้านล่างได้เลย</span><div>'}
+  <textarea id="sh-in" placeholder="วางลิงก์หรือข้อความที่เพื่อนส่งมา"></textarea>${shInErr?`<span style="color:var(--exam)">${esc(shInErr)}</span>`:''}</div>
+  <div class="xbtns"><button class="btn primary" data-act="shpaste">ดูตารางที่เพื่อนส่งมา</button><button class="btn" data-act="shclose">ปิด</button></div></div>`;
+}
+function shInPanel(){
+  const o=shIn,nt=(o.t||[]).length,rep=hasData()&&!S.sample;
+  return `<div class="banner info xpanel"><div class="small"><b style="font-size:.95rem">👥 เพื่อนแชร์ตารางมาให้</b>
+  <span><b>${o.s.length} วิชา</b> · ${(o.k||[]).length} คาบเรียน${nt?` · ${nt} งานที่ต้องส่ง`:''}</span>
+  <span>${o.s.map(a=>`${esc(a[2])} (สอบ ${a[4]?thDate(a[4]):'-'})`).join(' · ')}</span>
+  ${rep?`<span>ตารางเรียนของคุณจะถูกแทนด้วยของเพื่อน วันสอบและจำนวนบทอัปเดตตามเพื่อน <b>การติ๊ก ความมั่นใจ และงานเดิมของคุณยังอยู่ครบ</b> วิชาที่คุณเพิ่มเองจะยังอยู่ และย้อนกลับได้ที่ปุ่ม “ย้อนกลับ” ในหน้าตั้งค่า</span>`:'<span>กด “ใช้ตารางนี้” แอปจะจัดเวลาอ่านให้ทันที แล้วค่อยตั้งความมั่นใจของแต่ละวิชาให้ตรงกับตัวเอง</span>'}
+  <span class="muted">ถ้าคุณใช้แอปที่ติดตั้งไว้บนหน้าจอโฮม ให้กด “คัดลอกลิงก์” แล้วไปวางในแอป ที่ปุ่ม 👥 แชร์ตารางให้เพื่อน ท้ายแอป</span></div>
+  <div class="xbtns"><button class="btn primary" data-act="shapply">ใช้ตารางนี้</button><button class="btn" data-act="shincopy">คัดลอกลิงก์</button><button class="btn" data-act="shinno">ไม่ใช้</button></div></div>`;
+}
+
+// ---- รวมแบนเนอร์และปุ่ม ----
+function v18Banners(h){
+  const {date:today}=nowInfo();let top='',low='';
+  if(shIn)top+=shInPanel();
+  if(repOpen)top+=repPanel();
+  if(shOpen)top+=shPanel();
+  if(S.shareCheck)low+=`<div class="banner info"><span class="small">ใส่ตารางจากเพื่อนแล้ว ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้ง<b>ความมั่นใจ</b>ของแต่ละวิชาให้ตรงกับตัวเอง</span><span class="xbtns"><button class="btn" data-go="sched">ตรวจตารางเรียน</button><button class="btn" data-go="subj">ตั้งความมั่นใจ</button><button class="btn" data-act="sharecheckok">เรียบร้อยแล้ว</button></span></div>`;
+  if(!top&&bkDue()){const a=bkAge();low+=`<div class="banner"><span class="small"><b>สำรองข้อมูลไว้กันหาย</b> ${a==null?'คุณติ๊กไปหลายช่วงแล้ว แต่ยังไม่เคยสำรองข้อมูล':`สำรองครั้งล่าสุด ${a} วันที่แล้ว`} ข้อมูลอยู่ในเครื่องนี้เท่านั้น ถ้าเปลี่ยนมือถือหรือล้างเบราว์เซอร์ ข้อมูลจะหายทั้งหมด</span><span class="xbtns"><button class="btn primary" data-act="bkgo">สำรองตอนนี้</button><button class="btn" data-act="bklater">ไว้ทีหลัง</button></span></div>`}
+  else if(!top&&repDue())low+=`<div class="banner info"><span class="small">ครบสัปดาห์แล้ว ส่งสรุปการอ่านให้ผู้ปกครองดูไหม? ช่วยให้ที่บ้านสบายใจ และไม่ต้องถามบ่อย</span><span class="xbtns"><button class="btn primary" data-act="repopen">ส่งรายงาน</button><button class="btn" data-act="repskip">ไว้ทีหลัง</button></span></div>`;
+  return top+h+low;
+}
+function v18Click(t){
+  const act=t.dataset.act,{date:today}=nowInfo();if(!act)return false;
+  const toTop=()=>window.scrollTo({top:0,behavior:'smooth'});
+  if(act==='repopen'){repOpen=true;shOpen=false;repMsg='';render();toTop();return true}
+  if(act==='repclose'){repOpen=false;render();return true}
+  if(act==='repskip'){S.repAsk=today;save();render();return true}
+  if(act==='repcopy'){const r=buildReport();S.lastReport=today;save();copyTxt(repText(r),()=>{repMsg='คัดลอกข้อความและลิงก์แล้ว นำไปวางในแชทของผู้ปกครองได้เลย';render()},()=>{repMsg='คัดลอกอัตโนมัติไม่ได้ ลองกด “ส่งทาง LINE” แทน';render()});return true}
+  if(act==='repshare'){const r=buildReport();S.lastReport=today;save();navigator.share({title:'รายงานการอ่านหนังสือ',text:repText(r).replace(/\nดูรายงานเต็ม: .*$/,''),url:repURL(r)}).catch(()=>{});return true}
+  if(act==='repprev'){showParent(buildReport(),true);return true}
+  if(act==='psave'){const l=pLoad();l.push(pvReport);pSave(l);showParent(pvReport,false);return true}
+  if(act==='pclose'){const was=pvPreview;hideParent();if(!was)history.replaceState(null,'',location.pathname+location.search);render();return true}
+  if(act==='bkgo'){tab='sched';render();setTimeout(()=>{const b=$('bksec');if(b)b.scrollIntoView({block:'start',behavior:'smooth'})},30);return true}
+  if(act==='bklater'){S.bkSnooze=today;save();render();return true}
+  if(act==='shopen'){shOpen=true;repOpen=false;shMsg='';shInErr='';render();toTop();return true}
+  if(act==='shclose'){shOpen=false;render();return true}
+  if(act==='shcopy'){copyTxt(shText(),()=>{shMsg='คัดลอกแล้ว นำไปวางในกลุ่ม LINE ของชั้นได้เลย';render()},()=>{shMsg='คัดลอกอัตโนมัติไม่ได้ ลองกด “ส่งทาง LINE” แทน';render()});return true}
+  if(act==='shshare'){navigator.share({title:'ตารางเรียน Sand To Pharmacist',text:shText().replace(/\nhttps?:\S+$/,''),url:shURL()}).catch(()=>{});return true}
+  if(act==='shpaste'){try{shIn=parseShare(($('sh-in')||{}).value);shOpen=false;shInErr=''}catch(e){shInErr=e.message||'อ่านลิงก์ไม่ได้'}render();toTop();return true}
+  if(act==='shincopy'){const u=baseURL()+'#t='+b64e(shIn);copyTxt(u,()=>{t.textContent='คัดลอกแล้ว ✓'},()=>{prompt('คัดลอกลิงก์นี้',u)});return true}
+  if(act==='shinno'){shIn=null;history.replaceState(null,'',location.pathname+location.search);render();return true}
+  if(act==='shapply'){const n=applyShare(shIn);shIn=null;history.replaceState(null,'',location.pathname+location.search);sel=today;tab='day';
+    bkMsg={t:`ใส่ตารางจากเพื่อนแล้ว ${n.s} วิชา ${n.k} คาบเรียน${n.t?` และงาน ${n.t} ชิ้น`:''}`};render();toTop();return true}
+  if(act==='sharecheckok'){S.shareCheck=false;save();render();return true}
+  return false;
+}
+function routeHash(){
+  const h=location.hash;
+  let m=h.match(/^#r=([A-Za-z0-9_-]+)$/);if(m){try{const r=b64d(m[1]);if(r&&r.v===1){showParent(r,false);return}}catch(e){}}
+  m=h.match(/^#t=([A-Za-z0-9_-]+)$/);if(m){try{shIn=parseShare(h)}catch(e){shIn=null}render();return}
+  if(pvReport&&!pvPreview)hideParent();
+}
+window.addEventListener('hashchange',routeHash);
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='rep-nick'){S.nick=t.value.slice(0,30);save();const a=$('repLine');if(a)a.href=repLineHref()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='sh-tasks'){shTasks=t.checked;render()}});
+
 if(S.subjList.length&&!S.plan.length)generate();
 render();
+routeHash();
 </script>
 
 <script>
