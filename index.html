@@ -466,7 +466,7 @@ nav#tabs .ti,nav#tabs .ts{display:none}
   <div id="news" class="news" hidden></div>
   <div id="banner"></div>
   <main id="view"></main>
-  <div class="foot" style="gap:8px;flex-wrap:wrap"><button class="btn" data-act="gotheme">🎨 เปลี่ยนธีม</button><button class="btn" data-act="repopen" id="repFoot" hidden>📤 ส่งรายงานให้ผู้ปกครอง</button><button class="btn" data-act="shopen">👥 แชร์ตารางให้เพื่อน</button><button class="btn" data-tab="grade">🎓 ผลการเรียน</button><button class="btn" data-tab="news">📰 ข่าวและเว็บคณะเภสัช</button><button class="btn" data-tab="fb">💬 ส่งความเห็นเกี่ยวกับแอป</button></div>
+  <div class="foot" style="gap:8px;flex-wrap:wrap"><button class="btn" data-act="gotheme">🎨 เปลี่ยนธีม</button><button class="btn" data-act="repopen" id="repFoot" hidden>📤 ส่งรายงานให้ผู้ปกครอง</button><button class="btn" data-act="shopen">👥 แชร์ตารางให้เพื่อน</button><button class="btn" data-tab="grade">🎓 สมุดเกรด</button><button class="btn" data-tab="news">📰 ข่าวและเว็บคณะเภสัช</button><button class="btn" data-tab="fb">💬 ส่งความเห็นเกี่ยวกับแอป</button></div>
   <footer class="sitefoot">
     <div class="fname">Sand To Pharmacist</div>
     <div>โดย <b>ปรุงยาเภสัช</b></div>
@@ -501,7 +501,7 @@ const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v30',APP_DATE='19 พ.ย. 2569';
+const APP_VER='v32',APP_DATE='22 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -525,6 +525,10 @@ function blank(){
     plan:[],recall:{},classes:[],exceptions:[],dayCap:{},tasks:[],teachers:{},terms:[],since:ds(new Date())
   };
 }
+// v31: ข้อมูลที่ต้องอยู่ข้ามเทอมเสมอ (ห้ามหายตอนสร้างข้อมูลใหม่ทั้งชุด)
+const PKEEP=['terms','gpaTarget','gYear','curTerm','tune','autoDone','autoNote','gateSkip','gradeAskSnooze','nick','skin','mode','fx','ple','newsHidden','lastBackup','bkSnooze','repAsk','lastReport'];
+function carry(n,o){o=o||S;if(o)PKEEP.forEach(k=>{if(o[k]!==undefined&&o[k]!==null)n[k]=Array.isArray(o[k])?o[k].slice():o[k]});return n}
+function snap(tag){try{localStorage.setItem(KEY+'-before-'+tag,JSON.stringify(S))}catch(e){}}
 function sample(){
   const b=blank();
   b.subjList=sampleSubj();
@@ -892,7 +896,7 @@ function header(){
 function welcome(){
   return `<div class="welcome"><div><h2>เริ่มใช้ Sand To Pharmacist</h2><p class="muted small" style="margin:4px 0 0">ใส่ข้อมูลของคุณ 3 ขั้น แล้วแอปจะจัดเวลาอ่านหนังสือให้ทุกวันจนถึงวันสอบ</p></div>
   <ol><li><b>เพิ่มวิชา</b> พร้อมวันและเวลาสอบ จำนวนบทที่ออกสอบ และความมั่นใจ</li><li><b>ใส่ตารางเรียน</b> แอปจะไม่จัดเวลาอ่านทับคาบเรียน</li><li><b>ตั้งจำนวนช่วงอ่านต่อวัน</b> ที่ทำได้จริง</li></ol>
-  <div class="fbq" style="background:var(--accent-soft);border-color:transparent"><b>นักศึกษาเภสัชฯ ปี 1 เทอมนี้?</b><span class="small muted">ใส่ 8 วิชา วันสอบ และตารางเรียนให้ทันที แล้วค่อยปรับให้ตรงกลุ่มเรียนของคุณ</span><div><button class="btn primary" data-act="loadsample">ใช้ตารางเภสัชฯ ปี 1 เทอมนี้</button></div></div>
+  ${(S.terms||[]).length?`<div class="fbq" style="background:var(--accent-soft);border-color:transparent"><b>เริ่มเทอมใหม่</b><span class="small muted">ผลการเรียนเทอมก่อน ๆ ยังอยู่ครบในหน้า 🎓 สมุดเกรด ใส่วิชา วันสอบ และตารางเรียนของเทอมนี้ได้เลย</span><div><button class="btn primary" data-act="startadd">ใส่วิชาเทอมนี้</button></div></div>`:`<div class="fbq" style="background:var(--accent-soft);border-color:transparent"><b>นักศึกษาเภสัชฯ ปี 1 เทอมนี้?</b><span class="small muted">ใส่ 8 วิชา วันสอบ และตารางเรียนให้ทันที แล้วค่อยปรับให้ตรงกลุ่มเรียนของคุณ</span><div><button class="btn primary" data-act="loadsample">ใช้ตารางเภสัชฯ ปี 1 เทอมนี้</button></div></div>`}
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="startadd">เริ่มเองจากหน้าว่าง</button><button class="btn" data-act="shopen">เพื่อนส่งตารางมา? วางลิงก์</button><button class="btn" data-go="sched">มีรหัสสำรอง? นำเข้าข้อมูล</button></div></div>`;
 }
 function riskList(){
@@ -1157,6 +1161,8 @@ document.addEventListener('click',e=>{
   if(v24Click(t))return;
   if(v26Click(t))return;
   if(v29Click(t))return;
+  if(v31Click(t))return;
+  if(v32Click(t))return;
   if(t.dataset.go){tab=t.dataset.go;render();return}
   if(t.dataset.day){sel=t.dataset.day;render();return}
   if(t.dataset.tick){const x=S.plan.find(p=>p.id===t.dataset.tick),{date:today,min}=nowInfo();x.done=!x.done;if(!x.done)x.rating=null;
@@ -1192,8 +1198,8 @@ document.addEventListener('click',e=>{
   if(act==='addk'){S.classes.push({id:uid(),d:1,s:'08:00',e:'09:00',c:S.subjList[0]?.c||''});save();render();return}
   if(act==='startadd'){tab='subj';showAdd=true;render();setTimeout(()=>{const i=$('n-th');if(i)i.focus()},0);return}
   if(act==='presetok'){S.presetCheck=false;save();render();return}
-  if(act==='loadsample'){S=sample();sel=nowInfo().date;generate();render();return}
-  if(act==='clearsample'){S=blank();save();tab='subj';showAdd=true;render();return}
+  if(act==='loadsample'){snap('sample');S=carry(sample());sel=nowInfo().date;generate();render();return}
+  if(act==='clearsample'){S=carry(blank());save();tab='subj';showAdd=true;render();return}
   if(act==='delno'){confirmDel=null;render();return}
   if(act==='addsubj'){
     const th=$('n-th').value.trim(),sh=$('n-sh').value.trim(),exam=$('n-exam').value,et=$('n-et').value||'09:00',ee=$('n-ee').value||'12:00';
@@ -1238,7 +1244,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.confirm){S.subjects[t.dataset.confirm].real=true;save();render();return}
   if(act==='reset'){confirmReset=true;render()}
   if(act==='reset-no'){confirmReset=false;render()}
-  if(act==='reset-yes'){confirmReset=false;S=blank();save();sel=nowInfo().date;tab='day';render()}
+  if(act==='reset-yes'){confirmReset=false;snap('reset');S=blank();save();sel=nowInfo().date;tab='day';render()}
 });
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.td&&draft&&!['due','group','dueT'].includes(t.dataset.td)){draft[t.dataset.td]=t.value;if(t.dataset.td==='teacher')draft.tt=true;return}if(tab==='fb')fbUpdate()});
 document.addEventListener('toggle',e=>{const d=e.target;if(d.dataset&&d.dataset.tnbox){if(d.open)openTN=d.dataset.tnbox;else if(openTN===d.dataset.tnbox)openTN=null}},true);
@@ -1377,7 +1383,7 @@ function parseShare(txt){
 function applyShare(o){
   const {date:today}=nowInfo();
   try{localStorage.setItem(KEY+'-before-import',JSON.stringify(S))}catch(e){}
-  if(S.sample||!hasData()){const keep={settings:S.settings,since:S.since,skin:S.skin,mode:S.mode,nick:S.nick,lastBackup:S.lastBackup};S=Object.assign(blank(),keep)}
+  if(S.sample||!hasData()){const keep={settings:S.settings,since:S.since,tasks:(S.tasks||[]).filter(t=>!S.sample&&t.status==='open')};S=carry(Object.assign(blank(),keep))}
   const old=Object.fromEntries(S.subjList.map(x=>[x.c,x])),incoming=new Set(o.s.map(a=>a[0]));
   const used=new Set(S.subjList.filter(x=>!incoming.has(x.c)).map(x=>x.ci));let nci=0;const nextCi=()=>{while(used.has(nci%12)&&nci<24)nci++;const c=nci%12;used.add(c);nci++;return c};
   const list=o.s.map(a=>{const [c,th,sh,cr]=a;return {c:String(c),th:String(th),sh:String(sh),cr:+cr||3,ci:old[c]?old[c].ci:nextCi()}});
@@ -1422,6 +1428,7 @@ function v18Banners(h){
   if(shOpen)top+=shPanel();
   if(S.shareCheck)low+=`<div class="banner info"><span class="small">ใส่ตารางจากเพื่อนแล้ว ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้ง<b>ความมั่นใจ</b>ของแต่ละวิชาให้ตรงกับตัวเอง</span><span class="xbtns"><button class="btn" data-go="sched">ตรวจตารางเรียน</button><button class="btn" data-go="subj">ตั้งความมั่นใจ</button><button class="btn" data-act="sharecheckok">เรียบร้อยแล้ว</button></span></div>`;
   {const D=!top&&gradeDue();if(D)low+=`<div class="banner info"><span class="small"><b>🎓 สอบครบทุกวิชาของ${esc(termName(D.f))}แล้ว</b> เกรดออกเมื่อไหร่ ใส่ได้เลย (ยังขาด ${D.miss.length} วิชา) แอปจะวิเคราะห์ผล และปรับแผนเทอมหน้าให้เอง</span><span class="xbtns"><button class="btn primary" data-act="gradenow">ใส่เกรด</button><button class="btn" data-act="gradelater">ไว้ทีหลัง</button></span></div>`}
+  if(!top)low=lostBanner()+low;
   if(!top&&S.autoNote&&S.autoNote.items&&S.autoNote.items.length)low+=`<div class="banner info"><span class="small"><b>ปรับแผนจากผล${esc(S.autoNote.from)}ให้แล้ว</b><br>${S.autoNote.items.map(x=>'• '+esc(x)).join('<br>')}</span><span class="xbtns"><button class="btn" data-tab="grade">ดูผลวิเคราะห์</button><button class="btn" data-act="autonoteok">รับทราบ</button></span></div>`;
   if(!top&&bkDue()){const a=bkAge();low+=`<div class="banner"><span class="small"><b>สำรองข้อมูลไว้กันหาย</b> ${a==null?'คุณติ๊กไปหลายช่วงแล้ว แต่ยังไม่เคยสำรองข้อมูล':`สำรองครั้งล่าสุด ${a} วันที่แล้ว`} ข้อมูลอยู่ในเครื่องนี้เท่านั้น ถ้าเปลี่ยนมือถือหรือล้างเบราว์เซอร์ ข้อมูลจะหายทั้งหมด</span><span class="xbtns"><button class="btn primary" data-act="bkgo">สำรองตอนนี้</button><button class="btn" data-act="bklater">ไว้ทีหลัง</button></span></div>`}
   else if(!top&&repDue())low+=`<div class="banner info"><span class="small">ครบสัปดาห์แล้ว ส่งสรุปการอ่านให้ผู้ปกครองดูไหม? ช่วยให้ที่บ้านสบายใจ และไม่ต้องถามบ่อย</span><span class="xbtns"><button class="btn primary" data-act="repopen">ส่งรายงาน</button><button class="btn" data-act="repskip">ไว้ทีหลัง</button></span></div>`;
@@ -1670,7 +1677,7 @@ const termOrder=(a,b)=>a.ay-b.ay||a.sem-b.sem;
 function guessTerm(){const d=new Date(),m=d.getMonth()+1,y=d.getFullYear()+543;const sem=m>=6&&m<=12?1:m<=5?2:1;return {ay:m>=6?y:y-1,sem,yr:S.gYear||1}}
 let gForm=null,gSel=null,gMsg='',gManual=null,gEdit=null,gConfirmNew=false;
 // v25: ฟอร์มเทอมนี้ (เกรดที่เลือก วิชาที่ไม่นับ วิชาที่เพิ่มเอง) และแถวที่กำลังแก้ของเทอมที่บันทึกแล้ว
-let gCurG={},gExcl=new Set(),gExtra=[],gInitFor=null,gEditRows=null;
+let gCurG={},gExcl=new Set(),gExtra=[],gInitFor=null,gEditRows=null,gSelInit=false;
 const gNewRow=()=>({c:'x'+uid().slice(1),th:'',sh:'',cr:3,g:''});
 // สถิติการอ่านของแต่ละวิชาในเทอมปัจจุบัน (ใช้ตอนบันทึกเกรด / ปิดเทอม)
 function subjStats(c){
@@ -1791,9 +1798,9 @@ function confSuggest(all){
 
 function gradeEntryCard(){
   const G=gpax(),n=S.terms.length,pv=S.terms.filter(t=>t.id!==S.curTerm).sort(termOrder).pop(),pm=pv&&active().length?(pv.subjects||[]).filter(x=>!x.g).length:0;
-  return `<div class="section"><div class="gcard"><h3>🎓 ผลการเรียน ${G.gpa!=null?`<span class="gpa">GPAX ${f2(G.gpa)}</span><span class="small muted">${G.cr} หน่วยกิต · ${n} เทอม</span>`:''}</h3>
+  return `<div class="section"><div class="gcard"><h3>🎓 สมุดเกรด ${G.gpa!=null?`<span class="gpa">GPAX ${f2(G.gpa)}</span><span class="small muted">${G.cr} หน่วยกิต · ${n} เทอม</span>`:''}</h3>
   <span class="small">${pm?`<b style="color:var(--exam)">${esc(termName(pv))} ยังไม่ได้ใส่เกรด ${pm} วิชา</b> ใส่เมื่อเกรดออก แอปจะปรับแผนเทอมนี้ให้เอง`:n?'ดูผลวิเคราะห์ แล้วนำไปปรับแผนอ่านเทอมหน้า':'ใส่เกรดแต่ละเทอม แอปจะวิเคราะห์ว่าวิธีอ่านแบบไหนได้ผล และช่วยปรับแผนเทอมหน้า'}</span>
-  <div class="xbtns"><button class="btn primary" data-tab="grade">${n?'ดูผลการเรียนและวิเคราะห์':'ใส่เกรด'}</button></div></div></div>`;
+  <div class="xbtns"><button class="btn primary" data-tab="grade">${n?'เปิดสมุดเกรด':'ใส่เกรด'}</button></div></div></div>`;
 }
 function gradeSel(id,v){return `<select data-gsel="${id}" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(x=>`<option${x===v?' selected':''}>${x}</option>`).join('')}</select>`}
 function termSelHTML(f,pfx){
@@ -1803,58 +1810,67 @@ function termSelHTML(f,pfx){
 }
 function viewGrade(){
   if(!Array.isArray(S.terms))S.terms=[];
-  if(!gForm){const cur=S.terms.find(x=>x.id===S.curTerm);gForm=cur?{ay:cur.ay,sem:cur.sem,yr:cur.yr}:guessTerm()}
+  ensureGForm();
   const G=gpax(),terms=S.terms.slice().sort(termOrder),cur=S.terms.find(x=>x.id===`${gForm.ay}-${gForm.sem}`);
   const fid=`${gForm.ay}-${gForm.sem}`;
   if(gInitFor!==fid){gInitFor=fid;if(cur){gCurG=Object.fromEntries(cur.subjects.map(x=>[x.c,x.g]));gExcl=new Set(cur.ex||[]);
     gExtra=cur.subjects.filter(x=>!x.st&&!hasS(x.c)).map(x=>({c:x.c,th:x.th,sh:x.sh,cr:x.cr,g:x.g}))}}
-  if(!gSel||!S.terms.some(t=>t.id===gSel)){const w=terms.filter(t=>t.subjects.some(x=>GP[x.g]!==undefined));gSel=w.length?w[w.length-1].id:null}
-  const sel=S.terms.find(t=>t.id===gSel),A=sel?analyze(sel):null,cs=confSuggest();
-  const hasSubj=active().length&&!S.sample;
-  let h=`<div class="section"><h2>🎓 ผลการเรียน</h2>
+  if(gSel===null&&!gSelInit&&terms.length){gSel=terms[terms.length-1].id}gSelInit=true;
+  if(gSel&&!S.terms.some(t=>t.id===gSel))gSel=null;
+  const cs=confSuggest(),hasSubj=active().length&&!S.sample;
+  const inp='font:inherit;font-size:.9rem;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)';
+  // ---- ภาพรวม ----
+  let h=`<div class="section"><h2>🎓 สมุดเกรด</h2>
   <div class="dash"><div class="tile"><span class="lab">GPAX สะสม</span><span class="big">${f2(G.gpa)}</span><span class="sub">${G.cr} หน่วยกิตที่คิดเกรด</span></div>
   <div class="tile"><span class="lab">เป้า GPA</span><span class="big"><input type="number" step="0.05" min="1" max="4" data-gtarget value="${S.gpaTarget||3.25}" style="width:84px;font:inherit;font-size:1.3rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);padding:2px 6px"></span><span class="sub">ใช้ตอนแนะนำปรับแผน</span></div>
   <div class="tile"><span class="lab">บันทึกไว้</span><span class="big">${terms.length} <small>เทอม</small></span><span class="sub">${terms.length?termName(terms[terms.length-1]):'ยังไม่มี'}</span></div></div>
   ${terms.length>1?`<div class="gcard"><b class="small">GPA แต่ละเทอม</b>${terms.map(t=>{const v=gpaOf(t.subjects).gpa;return `<div class="gbar"><span>${esc(`ปี${t.yr} ${t.sem===3?'ฤดูร้อน':'ท.'+t.sem}`)}</span><span class="pt"><i style="width:${v==null?0:v/4*100}%"></i></span><span class="mono">${f2(v)}</span></div>`}).join('')}</div>`:''}
-  <p class="small muted" style="margin:0">คิดเกรดแบบ A=4, B+=3.5, B=3, C+=2.5, C=2, D+=1.5, D=1, F=0 (S U W I ไม่นำมาคิด) แสดงทศนิยม 2 ตำแหน่งแบบตัดทิ้ง ถ้าต่างจากระบบทะเบียนของมหาวิทยาลัย ให้ยึดระบบทะเบียน</p></div>`;
-  // บันทึกเกรดเทอมนี้
-  h+=`<div class="section"><h2>ใส่เกรดเทอมนี้ <span class="muted small">จากวิชาในแอป</span></h2>
-  ${hasSubj?`<div class="gform">${termSelHTML(gForm,'')}</div>
+  <p class="small muted" style="margin:0">สมุดเกรดแยกจากตารางเรียนและแผนอ่าน ไม่มีปุ่มไหนในหน้านี้ที่ไปล้างตารางหรือแผน · คิดเกรด A=4, B+=3.5, B=3, C+=2.5, C=2, D+=1.5, D=1, F=0 (S U W I ไม่นำมาคิด) ทศนิยม 2 ตำแหน่งแบบตัดทิ้ง ถ้าต่างจากระบบทะเบียน ให้ยึดระบบทะเบียน</p>
+  ${gMsg?`<span class="small" style="color:var(--accent);font-weight:600">${esc(gMsg)}</span>`:''}</div>`;
+  // ---- เกรดเทอมปัจจุบัน (จากวิชาในแผนอ่าน) ----
+  if(hasSubj){h+=`<div class="section"><h2>ใส่เกรดเทอมปัจจุบัน <span class="muted small">ดึงวิชาจากแผนอ่านให้แล้ว</span></h2>
+  <div class="gform">${termSelHTML(gForm,'')}</div>
   <div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">หน่วยกิต</th><th class="n">อ่านไป</th><th>เกรด</th><th></th></tr></thead><tbody>
   ${active().map(s=>{const st=subjStats(s.c),ex=gExcl.has(s.c);return `<tr${ex?' style="opacity:.5"':''}><td><span class="sw" style="background:${col(s.c)}"></span> ${ex?`<s>${esc(s.sh)}</s>`:esc(s.sh)}</td><td class="n">${s.cr}</td><td class="n">${f1(st.h)} ชม.</td><td>${ex?'<span class="small muted">ไม่นับ</span>':gradeSel('cur:'+s.c,gCurG[s.c]||'')}</td><td>${ex?`<button class="btn sm" data-gincl="${s.c}" title="นับวิชานี้">คืน</button>`:`<button class="btn sm" data-gexcl="${s.c}" aria-label="ไม่นับวิชา ${esc(s.sh)} ในเกรดเทอมนี้" title="ไม่นับวิชานี้">×</button>`}</td></tr>`}).join('')}
-  ${gExtra.map((r,i)=>`<tr><td><input class="gname" data-gx="${i}:sh" value="${esc(r.sh)}" placeholder="ชื่อวิชา" style="width:100%;min-width:110px;font:inherit;font-size:.9rem;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td class="n"><input type="number" min="0" max="12" data-gx="${i}:cr" value="${r.cr}" aria-label="หน่วยกิต" style="width:52px;font:inherit;font-size:.9rem;padding:5px 4px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td class="n small muted">–</td><td><select data-gx="${i}:g" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(x=>`<option${x===r.g?' selected':''}>${x}</option>`).join('')}</select></td><td><button class="btn sm" data-gxdel="${i}" aria-label="ลบวิชานี้">×</button></td></tr>`).join('')}</tbody></table></div>
-  <div class="xbtns"><button class="btn sm" data-act="gxadd">+ เพิ่มวิชาที่ไม่ได้อยู่ในแอป</button><button class="btn primary" data-act="gsave">บันทึกเกรด${cur?' (อัปเดต)':''}</button></div>
-  <span class="small muted">กด × ที่วิชาในแอป = ไม่นับวิชานั้นในเกรดเทอมนี้ (แผนอ่านไม่เปลี่ยน) · วิชาที่เพิ่มเองเช่น พลศึกษา หรือวิชาเลือกที่ไม่ได้วางแผนอ่าน นับใน GPA แต่ไม่มีข้อมูลการอ่าน</span>
-  <span class="small muted">บันทึกได้หลายครั้ง เกรดออกไม่พร้อมกันก็ใส่ทีละวิชาได้ แอปจะเก็บสถิติการอ่านของเทอมนี้ไว้คู่กับเกรด</span>`
-  :`<div class="empty">${S.sample?'ตอนนี้เป็นข้อมูลตัวอย่าง ใส่วิชาจริงก่อน แล้วค่อยบันทึกเกรด':'ยังไม่มีวิชาในแอป'}</div>`}
-  ${gMsg?`<span class="small" style="color:var(--accent);font-weight:600">${esc(gMsg)}</span>`:''}</div>`;
-  // วิเคราะห์
-  if(terms.length){h+=`<div class="section"><h2>วิเคราะห์ผล</h2><div class="gform"><label class="small">เทอม <select data-gpick>${terms.map(t=>`<option value="${t.id}"${t.id===gSel?' selected':''}>${esc(termName(t))} · GPA ${f2(gpaOf(t.subjects).gpa)}</option>`).join('')}</select></label></div>`;
-    if(sel){const S2=sel.subjects;
-      h+=`<div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">นก.</th><th>เกรด</th>${sel.src==='app'?'<th class="n">ชม.</th><th class="n">ชม./นก.</th><th class="n">ตามแผน</th><th class="n">อ่านท้าย</th><th class="n">ทำโจทย์</th>':''}</tr></thead><tbody>
-      ${gEdit===sel.id&&gEditRows?gEditRows.map((x,i)=>`<tr><td><input data-ge="${i}:sh" value="${esc(x.sh)}" placeholder="ชื่อวิชา" style="width:100%;min-width:110px;font:inherit;font-size:.9rem;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td class="n"><input type="number" min="0" max="12" data-ge="${i}:cr" value="${x.cr}" aria-label="หน่วยกิต" style="width:52px;font:inherit;font-size:.9rem;padding:5px 4px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)"></td><td><select data-ge="${i}:g" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(v=>`<option${v===x.g?' selected':''}>${v}</option>`).join('')}</select></td><td colspan="${sel.src==='app'?5:1}"><button class="btn sm" data-gedel="${i}" aria-label="ลบวิชานี้">× ลบ</button></td></tr>`).join('')
-      :S2.map(x=>{const st=x.st||{},g=x.g,gc=GP[g]===undefined?'na':GP[g]<=2.5?'lo':'';return `<tr><td>${esc(x.sh)}</td><td class="n">${x.cr}</td><td><span class="ggrade ${gc}">${esc(g||'–')}</span></td>${sel.src==='app'?(x.st?`<td class="n">${f1(st.h)}</td><td class="n">${f1(st.h/(x.cr||1))}</td><td class="n">${st.p?pct(st.d/st.p):'–'}</td><td class="n">${pct(st.cram)}</td><td class="n">${pct(st.prac)}</td>`:'<td class="n small muted" colspan="5">ไม่มีข้อมูลการอ่าน</td>'):''}</tr>`}).join('')}</tbody></table></div>
-      ${sel.src==='app'?'<span class="small muted">ตามแผน = ช่วงที่ติ๊กเทียบกับช่วงที่ถึงเวลา · อ่านท้าย = สัดส่วนเวลาอ่านใน 3 วันก่อนสอบ · ทำโจทย์ = สัดส่วนช่วงทำโจทย์และข้อสอบเก่า</span>':''}
-      <div class="xbtns">${gEdit===sel.id?`<button class="btn sm" data-act="geadd">+ เพิ่มวิชา</button><button class="btn primary" data-act="geditdone">บันทึกการแก้ไข</button><button class="btn sm" data-act="geditno">ยกเลิก</button>`:`<button class="btn sm" data-act="gedit">แก้ไข / เพิ่ม / ลบวิชา</button>`}<button class="btn sm" data-act="gdel">${gConfirmNew==='del'?'กดอีกครั้งเพื่อลบเทอมนี้':'ลบเทอมนี้'}</button></div>
-      <div class="inslist">${A.out.map(i=>`<div class="ins ${i.k}"><b class="t">${esc(i.t)}</b><ul>${i.b.map(b=>`<li class="small">${esc(b)}</li>`).join('')}</ul></div>`).join('')}</div>`;
-      if(S.autoDone&&S.autoDone.term===sel.id)h+=`<div class="ins good" style="margin-top:12px"><b class="t">✓ แอปนำผลเทอมนี้ไปปรับแผนเทอมถัดไปให้อัตโนมัติแล้ว</b><span class="small">ปรับความมั่นใจเริ่มต้นของวิชากลุ่มเดียวกัน และใช้คำแนะนำด้านล่างที่ทำได้ ถ้าอยากเปลี่ยน แก้ความมั่นใจได้ที่แท็บวิชา/สอบ และจำนวนช่วงอ่านที่แท็บตั้งค่า</span></div>`;
-      else if((A.recs.length||cs.length)&&sel.id===S.curTerm)h+=`<p class="small muted" style="margin:12px 0 0">พอเริ่มเทอมใหม่และใส่วิชาแล้ว แอปจะนำคำแนะนำเหล่านี้ไปปรับแผนให้เอง</p>`;
-      if(A.recs.length||cs.length){h+=`<h3 style="margin:14px 0 6px">นำไปปรับแผนเทอมหน้า</h3><div class="inslist">${A.recs.map(r=>`<div class="ins rec"><b class="t">${esc(r.t)}</b><span class="small">${esc(r.b)}</span>${r.noapply?'':`<button class="btn sm" style="align-self:flex-start" data-grec="${r.id}">ใช้คำแนะนำนี้</button>`}</div>`).join('')}
-      ${cs.length?`<div class="ins rec"><b class="t">ตั้งความมั่นใจเริ่มต้นจากผลวิชากลุ่มเดียวกัน</b><ul>${cs.map(x=>`<li class="small">${esc(x.sh)} (กลุ่ม${esc(x.fam)}): เคยได้ ${esc(x.from)} → แนะนำความมั่นใจ ${x.sug}/5 (ตอนนี้ ${x.cur}/5)</li>`).join('')}</ul><button class="btn sm" style="align-self:flex-start" data-grec="conf">ใช้ความมั่นใจที่แนะนำ</button></div>`:''}</div>`}
-      if(S.tune&&S.tune.practice)h+=`<p class="small muted">ตอนนี้แผนเพิ่มรอบทำโจทย์ +1 ช่วงต่อ 4 บทอยู่ <button class="btn sm" data-grec="practiceoff">ยกเลิก</button></p>`;
-    }
-    h+=`</div>`}
-  // กรอกเทอมก่อนหน้าเอง
+  ${gExtra.map((r,i)=>`<tr><td><input class="gname" data-gx="${i}:sh" value="${esc(r.sh)}" placeholder="ชื่อวิชา" style="width:100%;min-width:110px;${inp}"></td><td class="n"><input type="number" min="0" max="12" data-gx="${i}:cr" value="${r.cr}" aria-label="หน่วยกิต" style="width:52px;${inp}"></td><td class="n small muted">–</td><td><select data-gx="${i}:g" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(x=>`<option${x===r.g?' selected':''}>${x}</option>`).join('')}</select></td><td><button class="btn sm" data-gxdel="${i}" aria-label="ลบวิชานี้">×</button></td></tr>`).join('')}</tbody></table></div>
+  <div class="xbtns"><button class="btn sm" data-act="gxadd">+ เพิ่มวิชาที่ไม่ได้อยู่ในแผนอ่าน</button><button class="btn primary" data-act="gsave">บันทึกเกรด${cur?' (อัปเดต)':''}</button></div>
+  <span class="small muted">บันทึกได้หลายครั้ง เกรดออกไม่พร้อมกันก็ใส่ทีละวิชาได้ · กด × = ไม่นับวิชานั้นในเกรด (แผนอ่านไม่เปลี่ยน) · แอปเก็บสถิติการอ่านของเทอมนี้ไว้คู่กับเกรด</span></div>`}
+  // ---- ทุกเทอม: แตะเพื่อเปิดดู ----
+  h+=`<div class="section"><h2>ทุกเทอม <span class="muted small">แตะเพื่อดู แก้ไข หรือวิเคราะห์</span></h2>`;
+  if(!terms.length)h+=`<div class="empty">ยังไม่มีเกรดที่บันทึกไว้</div>`;
+  terms.slice().reverse().forEach(t=>{
+    const v=gpaOf(t.subjects),miss=(t.subjects||[]).filter(x=>!x.g).length,open=gSel===t.id,hasSt=(t.subjects||[]).some(x=>x.st);
+    h+=`<div class="gcard" style="margin-bottom:8px${open?';border-color:var(--accent)':''}"><button class="btn" data-gopen="${t.id}" aria-expanded="${open}" style="display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;padding:0">
+    <span><b style="font-size:1rem">${esc(termName(t))}</b><br><span class="small muted">${(t.subjects||[]).length} วิชา · ${v.cr} หน่วยกิต${hasSt?' · มีข้อมูลการอ่าน':''}${miss?` · <b style="color:var(--exam)">ขาดเกรด ${miss}</b>`:''}${t.id===S.curTerm&&hasSubj?' · เทอมปัจจุบัน':''}</span></span>
+    <span style="text-align:right"><span class="gpa">${f2(v.gpa)}</span><br><span class="small muted">${open?'ซ่อน ▲':'ดู ▼'}</span></span></button>`;
+    if(open)h+=termDetail(t,cs);
+    h+=`</div>`});
+  h+=`</div>`;
+  // ---- เพิ่มเทอมเอง ----
   if(!gManual)gManual={f:{...guessTerm(),sem:guessTerm().sem===1?2:1,ay:guessTerm().sem===1?guessTerm().ay-1:guessTerm().ay},rows:Array.from({length:6},()=>({n:'',cr:3,g:''}))};
-  h+=`<div class="section"><details${gManual.open?' open':''} data-gmanual><summary style="cursor:pointer;font-weight:600">➕ เพิ่มเกรดเทอมที่ผ่านมา (กรอกเอง)</summary>
+  h+=`<div class="section"><details${gManual.open?' open':''} data-gmanual><summary style="cursor:pointer;font-weight:600">➕ เพิ่มเทอม (กรอกเอง) เช่น เทอมที่เรียนก่อนใช้แอป</summary>
   <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><div class="gform">${termSelHTML(gManual.f,'m')}</div>
   ${gManual.rows.map((r,i)=>`<div class="gform"><input class="gname" data-gm="${i}:n" value="${esc(r.n)}" placeholder="ชื่อวิชา"><input class="gcr" type="number" min="0" max="12" data-gm="${i}:cr" value="${r.cr}" aria-label="หน่วยกิต"><select data-gm="${i}:g" aria-label="เกรด"><option value=""></option>${GRADES.map(x=>`<option${x===r.g?' selected':''}>${x}</option>`).join('')}</select></div>`).join('')}
-  <div class="xbtns"><button class="btn sm" data-act="gmrow">+ เพิ่มแถว</button><button class="btn primary" data-act="gmsave">บันทึกเทอมนี้</button></div></div></details></div>`;
-  // เริ่มเทอมใหม่
-  if(hasSubj)h+=`<div class="section"><h2>เริ่มเทอมใหม่</h2><span class="small">แอปจะเก็บวิชา เกรด และสถิติการอ่านของเทอมนี้ไว้ในผลการเรียน แล้วล้าง <b>วิชา แผนอ่าน ตารางเรียน และงานที่ส่งแล้ว</b> เพื่อใส่วิชาเทอมใหม่ ส่วน<b>ตั้งค่า ธีม งานที่ยังไม่ได้ส่ง และผลการเรียนทุกเทอม</b>ยังอยู่ครบ</span>
-  ${gConfirmNew===true?`<div class="banner"><span class="small">แน่ใจไหม? แนะนำให้<b>สำรองข้อมูล</b>ก่อน (แท็บตั้งค่า) แอปจะเก็บสำเนาก่อนล้างไว้ให้ 1 ชุดด้วย</span><span class="xbtns"><button class="btn primary" data-act="gnewgo">เริ่มเทอมใหม่</button><button class="btn" data-act="gnewno">ยกเลิก</button></span></div>`:`<div class="xbtns"><button class="btn" data-act="gnew">ปิดเทอมนี้ แล้วเริ่มเทอมใหม่</button></div>`}</div>`;
+  <div class="xbtns"><button class="btn sm" data-act="gmrow">+ เพิ่มแถว</button><button class="btn primary" data-act="gmsave">บันทึกเทอมนี้</button></div></div></details>
+  ${hasSubj?`<p class="small muted" style="margin:10px 0 0">จบเทอมแล้ว จะเริ่มวางแผนเทอมใหม่? ไปที่แท็บตั้งค่า หัวข้อ “จบเทอมนี้ → เริ่มเทอมใหม่” <button class="btn sm" data-go="sched">ไปที่ตั้งค่า</button></p>`:''}</div>`;
   return h;
 }
+function termDetail(sel,cs){
+  const A=analyze(sel),S2=sel.subjects,inp='font:inherit;font-size:.9rem;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)';
+  let h=`<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px"><div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">นก.</th><th>เกรด</th>${sel.src==='app'?'<th class="n">ชม.</th><th class="n">ชม./นก.</th><th class="n">ตามแผน</th><th class="n">อ่านท้าย</th><th class="n">ทำโจทย์</th>':''}</tr></thead><tbody>
+  ${gEdit===sel.id&&gEditRows?gEditRows.map((x,i)=>`<tr><td><input data-ge="${i}:sh" value="${esc(x.sh)}" placeholder="ชื่อวิชา" style="width:100%;min-width:110px;${inp}"></td><td class="n"><input type="number" min="0" max="12" data-ge="${i}:cr" value="${x.cr}" aria-label="หน่วยกิต" style="width:52px;${inp}"></td><td><select data-ge="${i}:g" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(v=>`<option${v===x.g?' selected':''}>${v}</option>`).join('')}</select></td><td colspan="${sel.src==='app'?5:1}"><button class="btn sm" data-gedel="${i}" aria-label="ลบวิชานี้">× ลบ</button></td></tr>`).join('')
+  :S2.map(x=>{const st=x.st||{},g=x.g,gc=GP[g]===undefined?'na':GP[g]<=2.5?'lo':'';return `<tr><td>${esc(x.sh)}</td><td class="n">${x.cr}</td><td><span class="ggrade ${gc}">${esc(g||'–')}</span></td>${sel.src==='app'?(x.st?`<td class="n">${f1(st.h)}</td><td class="n">${f1(st.h/(x.cr||1))}</td><td class="n">${st.p?pct(st.d/st.p):'–'}</td><td class="n">${pct(st.cram)}</td><td class="n">${pct(st.prac)}</td>`:'<td class="n small muted" colspan="5">ไม่มีข้อมูลการอ่าน</td>'):''}</tr>`}).join('')}</tbody></table></div>
+  ${sel.src==='app'?'<span class="small muted">ตามแผน = ช่วงที่ติ๊กเทียบกับช่วงที่ถึงเวลา · อ่านท้าย = สัดส่วนเวลาอ่านใน 3 วันก่อนสอบ · ทำโจทย์ = สัดส่วนช่วงทำโจทย์และข้อสอบเก่า</span>':''}
+  <div class="xbtns">${gEdit===sel.id?`<button class="btn sm" data-act="geadd">+ เพิ่มวิชา</button><button class="btn primary" data-act="geditdone">บันทึกการแก้ไข</button><button class="btn sm" data-act="geditno">ยกเลิก</button>`:`<button class="btn sm" data-act="gedit">แก้ไข / เพิ่ม / ลบวิชา</button>`}<button class="btn sm" data-act="gdel">${gConfirmNew==='del'?'กดอีกครั้งเพื่อลบเทอมนี้':'ลบเทอมนี้'}</button></div>
+  <h3 style="margin:8px 0 0;font-size:.95rem">วิเคราะห์ผล</h3>
+  <div class="inslist">${A.out.map(i=>`<div class="ins ${i.k}"><b class="t">${esc(i.t)}</b><ul>${i.b.map(b=>`<li class="small">${esc(b)}</li>`).join('')}</ul></div>`).join('')}</div>`;
+  if(S.autoDone&&S.autoDone.term===sel.id)h+=`<div class="ins good"><b class="t">✓ แอปนำผลเทอมนี้ไปปรับแผนเทอมถัดไปให้อัตโนมัติแล้ว</b><span class="small">ถ้าอยากเปลี่ยน แก้ความมั่นใจได้ที่แท็บวิชา/สอบ และจำนวนช่วงอ่านที่แท็บตั้งค่า</span></div>`;
+  else if(A.recs.length&&sel.src==='app')h+=`<p class="small muted" style="margin:0">พอเริ่มเทอมใหม่และใส่วิชาแล้ว แอปจะนำคำแนะนำของเทอมนี้ไปปรับแผนให้เอง</p>`;
+  if(A.recs.length)h+=`<div class="inslist">${A.recs.map(r=>`<div class="ins rec"><b class="t">${esc(r.t)}</b><span class="small">${esc(r.b)}</span></div>`).join('')}</div>`;
+  if(S.tune&&S.tune.practice)h+=`<p class="small muted" style="margin:0">ตอนนี้แผนเพิ่มรอบทำโจทย์ +1 ช่วงต่อ 4 บทอยู่ <button class="btn sm" data-grec="practiceoff">ยกเลิก</button></p>`;
+  return h+`</div>`;
+}
+function v32Click(t){if(t.dataset.gopen){const id=t.dataset.gopen;gSel=gSel===id?null:id;gEdit=null;gEditRows=null;gConfirmNew=false;render();return true}return false}
 function readGrades(prefix){const o={};document.querySelectorAll(`[data-gsel^="${prefix}"]`).forEach(el=>{o[el.dataset.gsel.slice(prefix.length)]=el.value});return o}
 function v24Click(t){
   const a=t.dataset.act;
@@ -1880,12 +1896,13 @@ function v24Click(t){
   if(a==='gnew'){gConfirmNew=true;render();return true}
   if(a==='gnewno'){gConfirmNew=false;render();return true}
   if(a==='gnewgo'){
-    try{localStorage.setItem(KEY+'-before-newterm',JSON.stringify(S))}catch(e){}
-    Object.assign(gCurG,readGrades('cur:'));const id=saveCurrentTerm(gForm,gCurG);gInitFor=null;gExcl=new Set();gExtra=[];gCurG={};
+    ensureGForm();{const rec=S.terms.find(x=>x.id===`${gForm.ay}-${gForm.sem}`);gCurG=rec?Object.fromEntries(rec.subjects.map(x=>[x.c,x.g])):{};gExcl=new Set(rec&&rec.ex||[]);gExtra=rec?rec.subjects.filter(x=>!x.st&&!hasS(x.c)).map(x=>({c:x.c,th:x.th,sh:x.sh,cr:x.cr,g:x.g})):[]}
+    const id=saveCurrentTerm(gForm,gCurG);
+    try{localStorage.setItem(KEY+'-before-newterm',JSON.stringify(S))}catch(e){}gInitFor=null;gExcl=new Set();gExtra=[];gCurG={};
     S.subjList=[];S.subjects={};S.plan=[];S.recall={};S.classes=[];S.exceptions=[];S.dayCap={};S.settings.classEnd='';
     S.tasks=(S.tasks||[]).filter(x=>x.status==='open');S.tasks.forEach(x=>{x.c=null});S.curTerm=null;S.shareCheck=false;S.presetCheck=false;S.since=nowInfo().date;
     const nx=gForm.sem===1?{ay:gForm.ay,sem:2,yr:gForm.yr}:{ay:+gForm.ay+1,sem:1,yr:Math.min(6,+gForm.yr+1)};gForm=nx;gConfirmNew=false;gSel=id;
-    gMsg=`เก็บ ${termName(S.terms.find(x=>x.id===id))} ไว้แล้ว เริ่มเทอมใหม่ได้เลย: ใส่วิชาที่แท็บวิชา/สอบ หรือรับตารางจากเพื่อน`;save();render();return true}
+    gMsg=`เก็บ ${termName(S.terms.find(x=>x.id===id))} ไว้แล้ว เริ่มเทอมใหม่ได้เลย: ใส่วิชาที่แท็บวิชา/สอบ หรือรับตารางจากเพื่อน`;ttMsg=gMsg;ttSel=id;save();render();return true}
   if(t.dataset.grec){const r=t.dataset.grec;
     if(r==='capdown')S.settings.capDays=S.settings.capDays.map((v,i)=>i>=1&&i<=5?Math.max(1,v-1):v);
     if(r==='capup')S.settings.capDays=S.settings.capDays.map((v,i)=>i>=1&&i<=5?Math.min(14,v+1):v);
@@ -1931,7 +1948,12 @@ function pastTTView(){
     ${t.id!==S.curTerm?(ttConfirm?`<div class="banner"><span class="small">ตารางเรียนตอนนี้จะถูกแทนด้วยตารางของ ${esc(termName(t))} (คาบจะเป็นชื่อวิชาเดิม ไม่ผูกกับวิชาในแผน) แอปเก็บสำเนาก่อนเปลี่ยนไว้ให้</span><span class="xbtns"><button class="btn primary" data-act="ttusego">ใช้ตารางนี้</button><button class="btn" data-act="ttuseno">ยกเลิก</button></span></div>`
       :`<div class="xbtns"><button class="btn sm" data-act="ttuse">คัดลอกตารางนี้มาใช้เทอมนี้</button></div>`):''}`}
   else h+=`<div class="empty">ยังไม่มีตารางเทอมไหนถูกเก็บไว้</div>`;
-  return h+`</div>`;
+  h+=`</div>`;
+  if(hasCls||(active().length&&!S.sample))h+=`<div class="section"><h2>จบเทอมนี้ → เริ่มเทอมใหม่</h2>
+  <span class="small">แอปจะเก็บ<b>ตารางเรียนและสถิติการอ่าน</b>ของเทอมนี้ไว้ (ดูย้อนหลังได้ด้านบน และใช้วิเคราะห์ในสมุดเกรด) แล้วล้าง<b>วิชา แผนอ่าน ตารางเรียน และงานที่ส่งแล้ว</b> เพื่อใส่ของเทอมใหม่ · <b>เกรดในสมุดเกรดไม่ถูกแตะ</b> · งานที่ยังไม่ส่ง ตั้งค่า และธีมยังอยู่ครบ</span>
+  <div class="gform">${termSelHTML(f,'')}</div>
+  ${gConfirmNew===true?`<div class="banner"><span class="small">แน่ใจไหม? แนะนำให้<b>สำรองข้อมูล</b>ก่อน แอปเก็บสำเนาก่อนล้างไว้ให้ 1 ชุดด้วย</span><span class="xbtns"><button class="btn primary" data-act="gnewgo">จบ ${esc(termName(f))} แล้วเริ่มเทอมใหม่</button><button class="btn" data-act="gnewno">ยกเลิก</button></span></div>`:`<div class="xbtns"><button class="btn" data-act="gnew">จบเทอมนี้ → เริ่มเทอมใหม่</button></div>`}</div>`;
+  return h;
 }
 function v26Click(t){
   const a=t.dataset.act;
@@ -1995,7 +2017,7 @@ function gateView(G){
   <span class="small">${esc(termName(G.prev))} ยังขาดเกรด <b>${m} จาก ${n} วิชา</b>: ${G.miss.map(x=>esc(x.sh)).join(', ')}</span>
   <span class="small">แอปใช้เกรดเทอมที่แล้วปรับแผนเทอมนี้ให้เหมาะกับตัวเอง (วิชาที่เคยได้น้อย จะได้รอบทำโจทย์และทบทวนเพิ่ม) จึง<b>ยังสร้างตารางอ่านเทอมนี้ไม่ได้</b></span>
   <div class="xbtns"><button class="btn primary" data-act="gatego">ใส่เกรดตอนนี้</button><button class="btn" data-act="gateskip">เกรดยังไม่ออก ใช้แผนไปก่อน</button></div>
-  <span class="small muted">ถ้ากด “เกรดยังไม่ออก” แอปจะจัดแผนจากตารางเรียนและวันสอบไปก่อน พอเกรดออกแล้วใส่ในหน้า 🎓 ผลการเรียน แอปจะปรับแผนให้เองทันที</span></div></div>`;
+  <span class="small muted">ถ้ากด “เกรดยังไม่ออก” แอปจะจัดแผนจากตารางเรียนและวันสอบไปก่อน พอเกรดออกแล้วใส่ในหน้า 🎓 สมุดเกรด แอปจะปรับแผนให้เองทันที</span></div></div>`;
 }
 function v29Click(t){const a=t.dataset.act;
   if(a==='gradenow'){tab='grade';render();return true}
@@ -2015,6 +2037,22 @@ function gradeDue(){
   const miss=act.filter(x=>!ex.has(x.c)&&!got[x.c]);if(!miss.length)return null;
   return {f,miss};
 }
+
+
+// ===================== v31: กู้ผลการเรียนที่หายไป จากสำเนาที่แอปเก็บไว้ในเครื่อง =====================
+let lostMemo=null;
+function lostTerms(){
+  if(lostMemo&&lostMemo.sig===(S.terms||[]).map(t=>t.id).join('|'))return lostMemo.list;
+  const have=new Set((S.terms||[]).map(t=>t.id)),out=new Map();
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||!k.startsWith(KEY+'-before-'))continue;
+    try{const o=JSON.parse(localStorage.getItem(k));(o&&Array.isArray(o.terms)?o.terms:[]).forEach(t=>{if(t&&t.id&&!have.has(t.id)){const p=out.get(t.id);if(!p||(t.saved||'')>(p.saved||''))out.set(t.id,t)}})}catch(e){}}
+  const list=[...out.values()].sort(termOrder);lostMemo={sig:(S.terms||[]).map(t=>t.id).join('|'),list};return list;
+}
+function lostBanner(){const L=lostTerms();if(!L.length)return '';
+  return `<div class="banner"><span class="small"><b>พบผลการเรียนที่หายไป ${L.length} เทอม</b> แอปเก็บสำเนาไว้ในเครื่องนี้: ${L.map(t=>`${esc(termName(t))} (GPA ${f2(gpaOf(t.subjects||[]).gpa)})`).join(', ')}</span><span class="xbtns"><button class="btn primary" data-act="restoreterms">กู้คืนผลการเรียน</button></span></div>`}
+function v31Click(t){if(t.dataset.act!=='restoreterms')return false;
+  const L=lostTerms();if(!Array.isArray(S.terms))S.terms=[];L.forEach(x=>S.terms.push(x));S.terms.sort(termOrder);lostMemo=null;autoSig=null;gInitFor=null;
+  bkMsg={t:`กู้คืนผลการเรียน ${L.length} เทอมแล้ว`};gMsg=`กู้คืนผลการเรียน ${L.length} เทอมแล้ว: ${L.map(termName).join(', ')}`;save();tab='grade';render();return true}
 
 loadNews();
 
