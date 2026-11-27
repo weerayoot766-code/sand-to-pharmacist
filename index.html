@@ -442,6 +442,18 @@ nav#tabs .ti,nav#tabs .ts{display:none}
 .ttday .tk span{display:inline-flex;gap:6px;align-items:center;font-size:.88rem;padding:3px 9px;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
 .ttday .tk em{font-style:normal;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
 .termtag{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);vertical-align:middle}
+/* v33: หน้าตาใหม่ */
+.termbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.termbar select{font:inherit;font-weight:600;font-size:1rem;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);max-width:100%;min-height:44px}
+.kday{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:12px;border:1px solid color-mix(in srgb,var(--dc) 35%,var(--line));border-left:7px solid var(--dc);background:color-mix(in srgb,var(--dc) 8%,var(--surface))}
+.kday .kdh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.kday .kdh b{font-size:1.02rem}
+.kday .krow{background:var(--surface);border-radius:10px;padding:6px}
+.kday .kadd{align-self:flex-start;color:var(--accent);font-weight:600}
+.kdays{display:flex;flex-direction:column;gap:8px}
+.rpc{gap:8px}.rpc .rpn{font-size:.82rem;color:var(--muted);background:var(--accent-soft);border-radius:8px;padding:6px 10px}
+.ttask{display:flex;flex-direction:column;gap:8px}
+.odpill{font-size:.75rem;font-weight:700;color:#fff;background:var(--exam);border-radius:99px;padding:1px 9px;vertical-align:middle}
+.gpick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -457,16 +469,16 @@ nav#tabs .ti,nav#tabs .ts{display:none}
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><button class="btn primary" id="installBtn" hidden>ติดตั้งแอป</button><div class="count" id="count"></div></div>
   </header>
   <nav role="tablist" id="tabs">
-    <button role="tab" data-tab="day" aria-selected="true"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/></svg></span><span class="tl">แผนรายวัน</span><span class="ts">วันนี้</span></button>
-    <button role="tab" data-tab="plan" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><rect x="5.5" y="11" width="3" height="6.5" rx="1"/><rect x="10.5" y="6" width="3" height="11.5" rx="1"/><rect x="15.5" y="13" width="3" height="4.5" rx="1"/></svg></span><span class="tl">ภาพรวมแผน</span><span class="ts">ภาพรวม</span></button>
-    <button role="tab" data-tab="subj" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(-40 12 12)"><rect x="3" y="8.2" width="18" height="7.6" rx="3.8"/><path d="M12 8.2v7.6"/></g></svg></span><span class="tl">วิชาและวันสอบ</span><span class="ts">วิชา/สอบ</span></button>
-    <button role="tab" data-tab="task" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9 4.5V3.5h6v1"/><path d="M9 11h6M9 15h4"/></svg></span><span class="tl">งานที่ต้องส่ง</span><span class="ts">งานส่ง</span><span class="tbadge" id="tbadge" hidden></span></button>
-    <button role="tab" data-tab="sched" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tl">ตารางเรียนและตั้งค่า</span><span class="ts">ตั้งค่า</span></button>
+    <button role="tab" data-tab="day" aria-selected="true"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4"/></svg></span><span class="tl">วันนี้</span><span class="ts">วันนี้</span><span class="tbadge" id="tbadge" hidden></span></button>
+    <button role="tab" data-tab="plan" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h11.5A2.5 2.5 0 0 1 19 7v13H7.5A2.5 2.5 0 0 1 5 17.5z"/><path d="M5 17.5A2.5 2.5 0 0 1 7.5 15H19"/><path d="M9 8.5h6"/></svg></span><span class="tl">ตารางอ่าน</span><span class="ts">ตารางอ่าน</span></button>
+    <button role="tab" data-tab="cls" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M9.5 9.5v11M15 9.5v11M3.5 15h17"/></svg></span><span class="tl">ตารางเรียน</span><span class="ts">ตารางเรียน</span></button>
+    <button role="tab" data-tab="exam" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 2.5 8.5 12 13l9.5-4.5z"/><path d="M6.5 10.5v4.2c0 1.4 2.5 2.8 5.5 2.8s5.5-1.4 5.5-2.8v-4.2"/><path d="M21.5 8.5v5"/></svg></span><span class="tl">ตารางสอบและเกรด</span><span class="ts">สอบ/เกรด</span></button>
+    <button role="tab" data-tab="sched" aria-selected="false"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tl">ตั้งค่า</span><span class="ts">ตั้งค่า</span></button>
   </nav>
   <div id="news" class="news" hidden></div>
   <div id="banner"></div>
   <main id="view"></main>
-  <div class="foot" style="gap:8px;flex-wrap:wrap"><button class="btn" data-act="gotheme">🎨 เปลี่ยนธีม</button><button class="btn" data-act="repopen" id="repFoot" hidden>📤 ส่งรายงานให้ผู้ปกครอง</button><button class="btn" data-act="shopen">👥 แชร์ตารางให้เพื่อน</button><button class="btn" data-tab="grade">🎓 สมุดเกรด</button><button class="btn" data-tab="news">📰 ข่าวและเว็บคณะเภสัช</button><button class="btn" data-tab="fb">💬 ส่งความเห็นเกี่ยวกับแอป</button></div>
+  <div class="foot" style="gap:8px;flex-wrap:wrap"><button class="btn" data-act="gotheme">🎨 เปลี่ยนธีม</button><button class="btn" data-act="repopen" id="repFoot" hidden>📤 ส่งรายงานให้ผู้ปกครอง</button><button class="btn" data-act="shopen">👥 แชร์ตารางให้เพื่อน</button><button class="btn" data-tab="grade">🎓 เกรดและผลวิเคราะห์</button><button class="btn" data-tab="news">📰 ข่าวและเว็บคณะเภสัช</button><button class="btn" data-tab="fb">💬 ส่งความเห็นเกี่ยวกับแอป</button></div>
   <footer class="sitefoot">
     <div class="fname">Sand To Pharmacist</div>
     <div>โดย <b>ปรุงยาเภสัช</b></div>
@@ -501,7 +513,7 @@ const DCOL=['#e5484d','#e2b008','#e46aa6','#2fa45a','#f0861f','#3b8fe0','#8e5bd6
 const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const KEY='tiw20-v2';
 // เปลี่ยนเลขนี้ทุกครั้งที่อัปเดตแอป (ให้ตรงกับ sand2pharm-vXX ใน sw.js)
-const APP_VER='v32',APP_DATE='22 พ.ย. 2569';
+const APP_VER='v34',APP_DATE='27 พ.ย. 2569';
 
 const pad=n=>String(n).padStart(2,'0');
 const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
@@ -526,7 +538,7 @@ function blank(){
   };
 }
 // v31: ข้อมูลที่ต้องอยู่ข้ามเทอมเสมอ (ห้ามหายตอนสร้างข้อมูลใหม่ทั้งชุด)
-const PKEEP=['terms','gpaTarget','gYear','curTerm','tune','autoDone','autoNote','gateSkip','gradeAskSnooze','nick','skin','mode','fx','ple','newsHidden','lastBackup','bkSnooze','repAsk','lastReport'];
+const PKEEP=['live','lastGen','terms','gpaTarget','gYear','curTerm','tune','autoDone','autoNote','gateSkip','gradeAskSnooze','nick','skin','mode','fx','ple','newsHidden','lastBackup','bkSnooze','repAsk','lastReport'];
 function carry(n,o){o=o||S;if(o)PKEEP.forEach(k=>{if(o[k]!==undefined&&o[k]!==null)n[k]=Array.isArray(o[k])?o[k].slice():o[k]});return n}
 function snap(tag){try{localStorage.setItem(KEY+'-before-'+tag,JSON.stringify(S))}catch(e){}}
 function sample(){
@@ -698,7 +710,7 @@ function generate(dry){
   }
   const out=[...keep,...fresh].sort((p,q)=>p.date<q.date?-1:p.date>q.date?1:p.s-q.s);
   if(dry)return out;
-  S.plan=out;save();
+  S.plan=out;S.lastGen=nowInfo().date;save();
 }
 function recallFor(date){
   const {date:today}=nowInfo(),out=[];
@@ -783,7 +795,7 @@ function viewTask(){
   const grp=(cls,title,list)=>list.length?`<div class="tgroup ${cls}"><h3>${title}</h3>${list.map(taskCard).join('')}</div>`:'';
   const hrows=hist.map(t=>{const late=t.status==='sent'?dIdx(t.sentDate||t.due)-dIdx(t.due):0;
     return `<button class="hrow" data-tman="${t.id}"><span class="sw" style="background:${tCol(t)}"></span><span class="hn">${esc(t.name)}</span>${t.status==='cancel'?'<span class="small muted">ยกเลิก</span>':late>0?`<span class="small" style="color:var(--exam);font-weight:600">ช้า ${late} วัน</span>`:'<span class="small ok" style="font-weight:600">ตรงเวลา</span>'}</button>`}).join('');
-  return `<div class="section"><div class="thd"><div><h2>งานที่ต้องส่ง</h2><p class="small muted" style="margin:0">ใส่งานแล้วแอปจะจัดเวลาทำให้ก่อนวันส่งอัตโนมัติ แทรกในแผนอ่านหนังสือ</p></div><button class="btn primary lg" data-act="tnew">+ เพิ่มงาน</button></div>
+  return `<div><button class="btn sm" data-tab="day">‹ กลับหน้าวันนี้</button></div><div class="section"><div class="thd"><div><h2>งานที่ต้องส่ง</h2><p class="small muted" style="margin:0">ใส่งานแล้วแอปจะจัดเวลาทำให้ก่อนวันส่งอัตโนมัติ แทรกในแผนอ่านหนังสือ</p></div><button class="btn primary lg" data-act="tnew">+ เพิ่มงาน</button></div>
   ${all.length?`<div class="tstats"><div class="tstat od"><span>ค้างส่ง</span><b>${od.length}</b></div><div class="tstat soon"><span>ส่งภายใน 7 วัน</span><b>${soon.length}</b></div><div class="tstat"><span>ส่งแล้ว</span><b>${sent.length}</b></div></div>`:''}
   ${open.length?'':`<div class="empty">${all.length?'ไม่มีงานค้าง เยี่ยมมาก!':'ยังไม่มีงาน อาจารย์สั่งงานเมื่อไร กด “+ เพิ่มงาน” แล้วแอปจะหาเวลาทำให้ก่อนวันส่ง'}</div>`}
   ${grp('od','เลยกำหนดส่ง',od)}${grp('','ใกล้ส่ง (7 วัน)',soon)}${grp('','ถัดไป',later)}
@@ -876,15 +888,15 @@ const $=id=>document.getElementById(id);
 
 function header(){
   const {date:today}=nowInfo();
-  $('subtitle').textContent=S.subjList.length?`ติวเข้มก่อนสอบปลายภาค · ${S.subjList.length} วิชา`:'ติวเข้มก่อนสอบปลายภาค';
+  $('subtitle').textContent=S.sample?`ข้อมูลตัวอย่าง · ${S.subjList.length} วิชา`:`ปี ${S.live.yr} · ${SEMS[S.live.sem]||''}/${S.live.ay}${active().length?` · ${active().length} วิชา`:''}`;
   const up=active().map(s=>({s,d:S.subjects[s.c].exam})).filter(o=>o.d>=today).sort((a,b)=>a.d<b.d?-1:1)[0];
   $('count').innerHTML=up?`<b class="mono">${dIdx(up.d)-dIdx(today)}</b><span class="muted small">วันถึงสอบวิชาแรก<br>${esc(up.s.sh)} · ${thDate(up.d)}</span>`:S.subjList.length?'<span class="muted">สอบครบทุกวิชาแล้ว</span>':'';
   const {min}=nowInfo();
   const missed=S.plan.filter(x=>!x.done&&!x.moved&&(x.date<today||(x.date===today&&x.e<min))&&x.date>=addD(today,-3)).length;
   let h='';
   const ex=active().filter(s=>!S.subjects[s.c].real);
-  if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>esc(s.sh)).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “วิชาและวันสอบ”</span><span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" data-act="allreal">วันสอบถูกต้องแล้วทุกวิชา</button><button class="btn" data-go="subj">แก้วันสอบ</button></span></div>`;
-  if(S.presetCheck)h+=`<div class="banner info"><span class="small">ใส่ตารางเภสัชฯ ปี 1 เทอมนี้ให้แล้ว (8 วิชา) ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้งความมั่นใจของแต่ละวิชาให้ตรงกับตัวเอง</span><span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-go="sched">ตรวจตารางเรียน</button><button class="btn" data-act="presetok">ตรวจแล้ว</button></span></div>`;
+  if(ex.length)h+=`<div class="banner info"><span class="small">ยังไม่มีวันสอบจริงของ <b>${ex.map(s=>esc(s.sh)).join(', ')}</b> ตอนนี้ใช้วันตัวอย่างไปก่อน ใส่วันจริงได้ที่แท็บ “สอบ/เกรด”</span><span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn primary" data-act="allreal">วันสอบถูกต้องแล้วทุกวิชา</button><button class="btn" data-go="subj">แก้วันสอบ</button></span></div>`;
+  if(S.presetCheck)h+=`<div class="banner info"><span class="small">ใส่ตารางเภสัชฯ ปี 1 เทอมนี้ให้แล้ว (8 วิชา) ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้งความมั่นใจของแต่ละวิชาให้ตรงกับตัวเอง</span><span style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" data-go="cls">ตรวจตารางเรียน</button><button class="btn" data-act="presetok">ตรวจแล้ว</button></span></div>`;
   if(S.sample)h+=`<div class="banner info"><span class="small">ตอนนี้เป็น<b>ข้อมูลตัวอย่าง</b> พร้อมใช้จริงเมื่อไรให้ลบตัวอย่างแล้วเริ่มกรอกของตัวเอง</span><button class="btn" data-act="clearsample">ลบตัวอย่าง เริ่มของฉัน</button></div>`;
   const odT=tOverdue();
   if(odT.length&&tab!=='task'){const o=odT[0];h+=`<div class="banner" style="background:var(--exam-soft)"><span class="small"><b style="color:var(--exam)">ค้างส่ง ${odT.length} ชิ้น:</b> ${esc(o.name)} (${esc(tSubName(o))}) ${dueLabel(o)}${odT.length>1?` และอีก ${odT.length-1} ชิ้น`:''}</span><span style="display:flex;gap:6px;flex-wrap:wrap">${odT.length===1?`<button class="btn danger" data-tsent="${o.id}">ส่งแล้ว</button><button class="btn" data-tman="${o.id}">อาจารย์ให้เลื่อน</button>`:'<button class="btn danger" data-tab="task">ดูงานค้าง</button>'}</span></div>`}
@@ -899,15 +911,25 @@ function welcome(){
   ${(S.terms||[]).length?`<div class="fbq" style="background:var(--accent-soft);border-color:transparent"><b>เริ่มเทอมใหม่</b><span class="small muted">ผลการเรียนเทอมก่อน ๆ ยังอยู่ครบในหน้า 🎓 สมุดเกรด ใส่วิชา วันสอบ และตารางเรียนของเทอมนี้ได้เลย</span><div><button class="btn primary" data-act="startadd">ใส่วิชาเทอมนี้</button></div></div>`:`<div class="fbq" style="background:var(--accent-soft);border-color:transparent"><b>นักศึกษาเภสัชฯ ปี 1 เทอมนี้?</b><span class="small muted">ใส่ 8 วิชา วันสอบ และตารางเรียนให้ทันที แล้วค่อยปรับให้ตรงกลุ่มเรียนของคุณ</span><div><button class="btn primary" data-act="loadsample">ใช้ตารางเภสัชฯ ปี 1 เทอมนี้</button></div></div>`}
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="startadd">เริ่มเองจากหน้าว่าง</button><button class="btn" data-act="shopen">เพื่อนส่งตารางมา? วางลิงก์</button><button class="btn" data-go="sched">มีรหัสสำรอง? นำเข้าข้อมูล</button></div></div>`;
 }
+// v34: เกรดเทอมก่อนของวิชากลุ่มเดียวกัน (เช่น เคมีอินทรีย์ ← Gen chem) ไม่นับเทอมที่กำลังเรียน
+function pastGrade(s){
+  if(!Array.isArray(S.terms)||typeof famOf!=='function')return null;
+  const past=S.terms.filter(t=>t.id!==S.curTerm).flatMap(t=>(t.subjects||[]).filter(x=>GP[x.g]!==undefined));if(!past.length)return null;
+  const f=famOf(s);let m=f?past.filter(x=>famOf(x)===f):[];if(!m.length){const b=famBroad(s);m=b?past.filter(x=>famBroad(x)===b):[]}
+  if(!m.length)return null;return {avg:mean(m.map(x=>GP[x.g])),from:m.map(x=>`${x.sh} ได้ ${x.g}`).join(', ')};
+}
 function riskList(){
   const {date:today,min}=nowInfo();
   return active().filter(s=>S.subjects[s.c].exam>=today).map(s=>{
     const x=S.subjects[s.c],r=required(s.c),done=S.plan.filter(p=>p.code===s.c&&p.done).length;
     const fut=S.plan.filter(p=>p.code===s.c&&!p.done&&(p.date>today||(p.date===today&&p.e>=min))).length;
     const rem=Math.max(0,r.total-done),gap=rem-fut,days=Math.max(1,dIdx(x.exam)-dIdx(today)),hard=hardTopics(s.c).length;
-    const score=(gap>0?1000+gap*10:0)+rem*(6-x.conf)/days+hard;
-    let why=gap>0?`แผนยังขาด ${gap} ช่วง ควรเพิ่มเวลาอ่าน`:`เหลือ ${rem} ช่วง · สอบอีก ${days} วัน · มั่นใจ ${Math.round(x.conf)}/5`;
+    const pg=pastGrade(s),gw=!pg?1:pg.avg<=1.5?1.6:pg.avg<=2.5?1.3:pg.avg<=3?1.1:1;   // v34: เทอมก่อนได้ต่ำ = เสี่ยงขึ้น
+    const cr=Math.max(0,+M(s.c).cr||0),w=(cr+1)/4*gw;   // v33: หน่วยกิตมาก กระทบเกรดเฉลี่ยมาก (3 หน่วยกิต = 1 เท่า)
+    const score=(gap>0?1000+gap*10*w:0)+rem*(6-x.conf)/days*w+hard;
+    let why=`${cr} หน่วยกิต · `+(gap>0?`แผนยังขาด ${gap} ช่วง ควรเพิ่มเวลาอ่าน`:`เหลือ ${rem} ช่วง · สอบอีก ${days} วัน · มั่นใจ ${Math.round(x.conf)}/5`);
     if(hard)why+=` · บทที่ยาก ${hard} บท`;
+    if(pg&&pg.avg<=3)why+=` · เทอมก่อน ${pg.from}`;
     return {s,score,why,gap};
   }).sort((a,b)=>b.score-a.score);
 }
@@ -962,7 +984,7 @@ function viewDay(){
   }).join('');
   const rc=recallFor(sel);
   const recall=rc.length?`<div class="section"><h2>ทบทวนความจำ <span class="muted small">${rc.length} ข้อ · ข้อละ 10 นาที</span></h2><p class="small muted" style="margin:0">ปิดชีท แล้วเขียนหรือพูดสรุปบทนั้นจากความจำ จากนั้นเปิดชีทตรวจว่าลืมอะไร</p><div class="recall">${rc.map(r=>`<label><input type="checkbox" data-recall="${r.id}" ${S.recall[r.id]?'checked':''}><span><span class="sw" style="background:${col(r.code)}"></span> ${esc(M(r.code).sh)} บทที่ ${r.topic}${tName(r.code,r.topic)?' · '+esc(tName(r.code,r.topic)):''}${hardTopics(r.code).includes(r.topic)?'<span class="hardtag">ยาก</span>':''} <span class="muted small">(อ่านไปเมื่อ ${r.k} วันก่อน)</span></span></label>`).join('')}</div></div>`:'';
-  return `${summary()}<div class="section"><div class="strip" id="strip">${strip}</div></div>
+  return `${summary()}${todayTasks()}<div class="section"><div class="strip" id="strip">${strip}</div></div>
   <div class="section"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2>วัน${DWL[wd]}ที่ ${dt.getDate()} ${MON[dt.getMonth()]}${sel===today?' · วันนี้':''}</h2><span class="muted small mono">${doneN}/${studyN} ช่วงอ่าน · ${+(studyN*S.settings.slot/60).toFixed(1)} ชม.</span></div>
   <div class="daytools"><div class="step"><span>อ่านวันนี้</span><button data-cap="-1" aria-label="ลดหนึ่งช่วง">−</button><b>${capFor(sel)}</b><button data-cap="1" aria-label="เพิ่มหนึ่งช่วง">+</button><span>ช่วง</span>${S.dayCap[sel]!=null?'<button class="btn sm" data-act="capreset" style="width:auto;height:auto">ใช้ค่าปกติ</button>':''}</div>
   <span class="small muted">${studyN<capFor(sel)&&sel>=today?`วันนี้มีเวลาว่างพอแค่ ${studyN} ช่วง`:`ค่าปกติวัน${DWL[wd]} ${S.settings.capDays[wd]} ช่วง`}</span></div>
@@ -996,7 +1018,7 @@ function viewPlan(){
     days+=`<div class="pday${d===today?' today':''}${!sl.length&&!ex?' rest':''}" style="--dc:${DCOL[wd]}"><div class="pdh"><b>${DWL[wd]}</b><span>${dt.getDate()} ${MON[dt.getMonth()]}</span>${d===today?'<em>วันนี้</em>':''}</div><div class="chips">${ex}${ch||(ex?'':'<span>พัก ไม่มีช่วงอ่าน</span>')}</div>${sl.length?`<div class="pdn">${sl.length} ช่วง · ${hrs} ชม.</div>`:''}</div>`;
   }
   const total=S.plan.filter(x=>x.date>=today).length;
-  return gradeEntryCard()+`<div class="section"><h2>ความครอบคลุมแต่ละวิชา</h2><p class="small muted" style="margin:0">จำนวนช่วง (ช่วงละ ${S.settings.slot} นาที) ที่ควรใช้ คำนวณจากจำนวนบท ความมั่นใจ และหน่วยกิต ถ้าขาด ให้เพิ่มชั่วโมงอ่านต่อวันในแท็บตั้งค่า</p>
+  return replanCard()+gradeEntryCard()+`<div class="section"><h2>ความครอบคลุมแต่ละวิชา</h2><p class="small muted" style="margin:0">จำนวนช่วง (ช่วงละ ${S.settings.slot} นาที) ที่ควรใช้ คำนวณจากจำนวนบท ความมั่นใจ และหน่วยกิต ถ้าขาด ให้เพิ่มชั่วโมงอ่านต่อวันในแท็บตั้งค่า</p>
   <div class="tablebox"><table><thead><tr><th>วิชา</th><th>วันสอบ</th><th>ควรใช้</th><th>จัดไว้</th><th>ทำแล้ว</th><th>สถานะ</th></tr></thead><tbody>${cov}</tbody></table></div></div>
   <div class="section"><h2>รายวัน <span class="muted small">รวม ${total} ช่วง · ${Math.round(total*S.settings.slot/60)} ชม.</span></h2><div class="pdays">${days}</div></div>
   <div class="section small muted"><b style="color:var(--fg)">วิธีจัด:</b> ทุกช่วงว่าง ระบบเลือกวิชาที่ได้คะแนนสูงสุดจาก (หน่วยกิต+1) × (6 − ความมั่นใจ) × งานที่เหลือ ÷ วันที่เหลือก่อนสอบ วิชาที่สอบใกล้ ไม่มั่นใจ และเหลือเยอะจะขึ้นก่อน ไม่ให้วิชาเดียวกันติดกันถ้าเลี่ยงได้ และวันก่อนสอบจะเน้นข้อสอบเก่าของวิชานั้น</div>`;
@@ -1046,16 +1068,11 @@ function viewSched(){
     const ref=x.type==='cancel'?S.classes.find(k=>k.id===x.ref):null;
     return `<div class="krow"><span class="mono small" style="min-width:96px">${thDate(x.date)}</span><span class="grow">${x.type==='cancel'?`งดคาบ ${ref?clsName(ref)+' '+ref.s:''}`:`เพิ่ม ${clsName(x)} ${x.s}–${x.e}`}</span><button class="btn sm" data-delex="${x.id}">ยกเลิก</button></div>`}).join('');
   const st=S.settings,f=(k,l,t,extra='')=>`<label for="st-${k}">${l}<input id="st-${k}" type="${t}" data-s="${k}" value="${st[k]}" ${extra}></label>`;
-  return `${themeView()}<div class="section"><h2>ตารางเรียนประจำสัปดาห์ ${curTermTag()}</h2><p class="small muted" style="margin:0">แก้วัน เวลา หรือวิชาได้เลย แผนอ่านจะจัดใหม่ทันที ระบบเว้นเวลาก่อนและหลังคาบ 15 นาทีไว้เดินทาง ถ้าเปลี่ยนแค่บางวัน (งดคาบ/เรียนชดเชย) ให้ทำที่แท็บแผนรายวันของวันนั้น</p>
-  <div class="klist">${week||'<div class="empty">ยังไม่มีคาบเรียน</div>'}</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-act="addk">เพิ่มคาบเรียน</button></div></div>
-  ${exs?`<div class="section"><h2>เปลี่ยนเฉพาะวัน</h2><div class="klist">${exs}</div></div>`:''}
-  ${pastTTView()}
+  return `${themeView()}
   <div class="section"><h2>เวลาอ่านหนังสือ</h2><div class="settings">
   ${f('wdStart','วันเรียน เริ่มได้','time')}${f('wdEnd','วันเรียน หยุดอ่าน','time')}
   ${f('weStart','เสาร์-อาทิตย์ เริ่มได้','time')}${f('weEnd','เสาร์-อาทิตย์ หยุดอ่าน','time')}
   ${f('slot','ความยาว 1 ช่วง (นาที)','number','min="25" max="90" step="5"')}${f('brk','พักระหว่างช่วง (นาที)','number','min="5" max="30" step="5"')}
-  ${f('classEnd','มีคาบเรียนถึงวันที่ (ว่างไว้ = ทุกสัปดาห์)','date')}
   </div>
   <h3 style="margin-top:6px">จำนวนช่วงอ่านต่อวัน</h3><div class="capgrid">${[1,2,3,4,5,6,0].map(d=>`<label for="cap-${d}">${DWL[d]}<input id="cap-${d}" type="number" min="0" max="14" data-capday="${d}" value="${st.capDays[d]}"></label>`).join('')}</div>
   <p class="small muted" style="margin:0">ช่วงละ ${st.slot} นาที ถ้าอยากเปลี่ยนเฉพาะวันไหน ให้กด − / + ที่หน้าแผนรายวันของวันนั้น เว้นพักกลางวัน 12:00–13:00 และมื้อเย็น 18:00–19:00 ให้เสมอ</p></div>
@@ -1139,14 +1156,17 @@ function viewFb(){
 function render(){
   applySkin();applyFx();autoTune();
   {const v=$('appver');if(v&&!v.textContent)v.textContent=`เวอร์ชัน ${APP_VER} · อัปเดต ${APP_DATE}`}
+  ensureLive();
+  let jump=null;if(tab==='grade'){tab='exam';jump='gradesec'}else if(tab==='subj'){tab='exam';jump='examsec'}
   header();
-  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
+  {const nk={task:'day',news:'day',fb:'sched'}[tab]||tab;document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===nk))}
   {const n=tOverdue().length,b=$('tbadge');b.textContent=n;b.hidden=!n}
   {const b=$('repFoot');if(b)b.hidden=!hasData()||S.sample}
   const GG=(tab==='day'||tab==='plan')?gradeGate():null;
-  $('view').innerHTML=GG?gateView(GG):tab==='day'?viewDay():tab==='plan'?viewPlan():tab==='subj'?viewSubj():tab==='fb'?viewFb():tab==='news'?viewNews():tab==='grade'?viewGrade():tab==='task'?viewTask():viewSched();
+  $('view').innerHTML=GG?gateView(GG):tab==='day'?viewDay():tab==='plan'?viewPlan():tab==='subj'?viewSubj():tab==='fb'?viewFb():tab==='news'?viewNews():tab==='grade'?viewGrade():tab==='task'?viewTask():tab==='cls'?viewCls():tab==='exam'?viewExam():viewSched();
   if(tab==='fb')fbUpdate();
   renderNews();fxEnter();if(tab==='sched')bkPrep();
+  if(jump)setTimeout(()=>{const el=$(jump);if(el)el.scrollIntoView({block:'start'})},0);
   const a=document.querySelector('.day[aria-pressed="true"]');if(a)a.scrollIntoView({block:'nearest',inline:'center'});
 }
 
@@ -1162,6 +1182,7 @@ document.addEventListener('click',e=>{
   if(v26Click(t))return;
   if(v29Click(t))return;
   if(v31Click(t))return;
+  if(v33Click(t))return;
   if(v32Click(t))return;
   if(t.dataset.go){tab=t.dataset.go;render();return}
   if(t.dataset.day){sel=t.dataset.day;render();return}
@@ -1426,7 +1447,7 @@ function v18Banners(h){
   if(shIn)top+=shInPanel();
   if(repOpen)top+=repPanel();
   if(shOpen)top+=shPanel();
-  if(S.shareCheck)low+=`<div class="banner info"><span class="small">ใส่ตารางจากเพื่อนแล้ว ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้ง<b>ความมั่นใจ</b>ของแต่ละวิชาให้ตรงกับตัวเอง</span><span class="xbtns"><button class="btn" data-go="sched">ตรวจตารางเรียน</button><button class="btn" data-go="subj">ตั้งความมั่นใจ</button><button class="btn" data-act="sharecheckok">เรียบร้อยแล้ว</button></span></div>`;
+  if(S.shareCheck)low+=`<div class="banner info"><span class="small">ใส่ตารางจากเพื่อนแล้ว ลองตรวจ<b>ตารางเรียน</b>ว่าตรงกับกลุ่มเรียนของคุณ โดยเฉพาะคาบแล็บ แล้วตั้ง<b>ความมั่นใจ</b>ของแต่ละวิชาให้ตรงกับตัวเอง</span><span class="xbtns"><button class="btn" data-go="cls">ตรวจตารางเรียน</button><button class="btn" data-go="subj">ตั้งความมั่นใจ</button><button class="btn" data-act="sharecheckok">เรียบร้อยแล้ว</button></span></div>`;
   {const D=!top&&gradeDue();if(D)low+=`<div class="banner info"><span class="small"><b>🎓 สอบครบทุกวิชาของ${esc(termName(D.f))}แล้ว</b> เกรดออกเมื่อไหร่ ใส่ได้เลย (ยังขาด ${D.miss.length} วิชา) แอปจะวิเคราะห์ผล และปรับแผนเทอมหน้าให้เอง</span><span class="xbtns"><button class="btn primary" data-act="gradenow">ใส่เกรด</button><button class="btn" data-act="gradelater">ไว้ทีหลัง</button></span></div>`}
   if(!top)low=lostBanner()+low;
   if(!top&&S.autoNote&&S.autoNote.items&&S.autoNote.items.length)low+=`<div class="banner info"><span class="small"><b>ปรับแผนจากผล${esc(S.autoNote.from)}ให้แล้ว</b><br>${S.autoNote.items.map(x=>'• '+esc(x)).join('<br>')}</span><span class="xbtns"><button class="btn" data-tab="grade">ดูผลวิเคราะห์</button><button class="btn" data-act="autonoteok">รับทราบ</button></span></div>`;
@@ -1644,7 +1665,7 @@ function pleAddSubj(i){
   S.subjects[code]={exam:e[0],et,ee,real:true,topics:e[4]==='PLE-CC2'?6:10,conf:3,on:true,
     topicNames:e[4]==='PLE-CC1'?['กฎหมายและจรรยาบรรณ','บริบาลเภสัชกรรม: โรคระบบหัวใจ/ไต','บริบาลเภสัชกรรม: ติดเชื้อ','บริบาลเภสัชกรรม: ระบบประสาท/จิตเวช','บริบาลเภสัชกรรม: ต่อมไร้ท่อ/อื่น ๆ','เทคโนโลยีเภสัชกรรม: รูปแบบยา','เทคโนโลยีเภสัชกรรม: การผลิต/QC','เภสัชเคมี/เภสัชเวท','ทำข้อสอบเก่า ชุด 1','ทำข้อสอบเก่า ชุด 2']:
       e[4]==='PLE-CC2'?['การเตรียมยา (compounding)','การซักประวัติ/ให้คำแนะนำผู้ป่วย','เทคนิคพิเศษ','จับเวลาสถานีละ 4 นาที','ซ้อมกับเพื่อน','ทบทวนจุดที่พลาด']:undefined};
-  S.sample=false;generate();return `ใส่ ${e[4]} (สอบ ${pleRange(e)}) ในแผนอ่านแล้ว ปรับจำนวนบทและความมั่นใจได้ที่แท็บวิชาและวันสอบ`;
+  S.sample=false;generate();return `ใส่ ${e[4]} (สอบ ${pleRange(e)}) ในแผนอ่านแล้ว ปรับจำนวนบทและความมั่นใจได้ที่แท็บสอบ/เกรด`;
 }
 let pleMsg='';
 function pleSection(){
@@ -1674,7 +1695,7 @@ const f1=v=>v==null||isNaN(v)?'–':(Math.round(v*10)/10).toFixed(1);
 const pct=v=>v==null||isNaN(v)?'–':Math.round(v*100)+'%';
 const termName=t=>`ปี ${t.yr} ${SEMS[t.sem]||''}/${t.ay}`;
 const termOrder=(a,b)=>a.ay-b.ay||a.sem-b.sem;
-function guessTerm(){const d=new Date(),m=d.getMonth()+1,y=d.getFullYear()+543;const sem=m>=6&&m<=12?1:m<=5?2:1;return {ay:m>=6?y:y-1,sem,yr:S.gYear||1}}
+function guessTerm(){const d=new Date(),m=d.getMonth()+1,y=d.getFullYear()+543;return m>=6&&m<=10?{ay:y,sem:1,yr:S.gYear||1}:{ay:m>=11?y:y-1,sem:2,yr:S.gYear||1}}
 let gForm=null,gSel=null,gMsg='',gManual=null,gEdit=null,gConfirmNew=false;
 // v25: ฟอร์มเทอมนี้ (เกรดที่เลือก วิชาที่ไม่นับ วิชาที่เพิ่มเอง) และแถวที่กำลังแก้ของเทอมที่บันทึกแล้ว
 let gCurG={},gExcl=new Set(),gExtra=[],gInitFor=null,gEditRows=null,gSelInit=false;
@@ -1721,9 +1742,9 @@ function spearman(a,b){
 const median=v=>{const o=v.filter(x=>x!=null&&!isNaN(x)).sort((a,b)=>a-b);if(!o.length)return null;const m=o.length>>1;return o.length%2?o[m]:(o[m-1]+o[m])/2};
 const mean=v=>{const o=v.filter(x=>x!=null&&!isNaN(x));return o.length?o.reduce((a,b)=>a+b,0)/o.length:null};
 // กลุ่มวิชา ใช้จับคู่วิชาเทอมหน้ากับวิชาที่เคยเรียน (เฉพาะที่ชื่อบอกชัด)
-const FAM=[[/ชีวเคมี|biochem/i,'ชีวเคมี'],[/เภสัชเคมี|medicinal/i,'เภสัชเคมี'],[/เคมีอินทรีย์|organic/i,'เคมีอินทรีย์'],[/เคมีวิเคราะห์|analytic/i,'เคมีวิเคราะห์'],[/เคมี|chem/i,'เคมี'],
- [/จุลชีว|microbio/i,'จุลชีววิทยา'],[/สรีร|physiol/i,'สรีรวิทยา'],[/กายวิภ|anatom/i,'กายวิภาคศาสตร์'],[/เภสัชวิทยา|pharmacol/i,'เภสัชวิทยา'],[/เภสัชเวท|pharmacog/i,'เภสัชเวท'],
- [/บริบาล|pharmacotherap|therapeutic/i,'บริบาลเภสัชกรรม'],[/เทคโนโลยีเภสัช|pharmaceutic/i,'เทคโนโลยีเภสัชกรรม'],[/ชีว|biolog/i,'ชีววิทยา'],[/ฟิสิกส์|physics/i,'ฟิสิกส์'],
+const FAM=[[/ชีวเคมี|biochem/i,'ชีวเคมี'],[/เภสัชเคมี|medicinal/i,'เภสัชเคมี'],[/เคมีอินทรีย์|organic|org\.? ?chem/i,'เคมีอินทรีย์'],[/เคมีวิเคราะห์|analytic/i,'เคมีวิเคราะห์'],[/เคมี|chem/i,'เคมี'],
+ [/จุลชีว|micro/i,'จุลชีววิทยา'],[/สรีร|physio/i,'สรีรวิทยา'],[/กายวิภ|anat/i,'กายวิภาคศาสตร์'],[/เภสัชวิทยา|pharmacol/i,'เภสัชวิทยา'],[/เภสัชเวท|pharmacog/i,'เภสัชเวท'],
+ [/บริบาล|pharmacotherap|therapeutic/i,'บริบาลเภสัชกรรม'],[/เทคโนโลยีเภสัช|pharmaceutic/i,'เทคโนโลยีเภสัชกรรม'],[/ชีว|biolog|\bbio\b/i,'ชีววิทยา'],[/ฟิสิกส์|physics/i,'ฟิสิกส์'],
  [/แคลคูลัส|คณิต|calcul|math/i,'คณิตศาสตร์'],[/สถิติ|statist/i,'สถิติ'],[/อังกฤษ|english/i,'ภาษาอังกฤษ'],[/กฎหมาย|law/i,'กฎหมาย']];
 const famOf=x=>{const n=(x.th||'')+' '+(x.sh||'');const f=FAM.find(([r])=>r.test(n));return f?f[1]:null};
 // กลุ่มใหญ่ ใช้เมื่อไม่มีวิชากลุ่มเดียวกันพอดี เช่น เคมีอินทรีย์ ↔ เคมีทั่วไป
@@ -1806,7 +1827,7 @@ function gradeSel(id,v){return `<select data-gsel="${id}" aria-label="เกร�
 function termSelHTML(f,pfx){
   return `<label class="small">ชั้นปี <select data-gf="${pfx}yr">${[1,2,3,4,5,6].map(y=>`<option value="${y}"${+f.yr===y?' selected':''}>${y}</option>`).join('')}</select></label>
   <label class="small"><select data-gf="${pfx}sem">${[1,2,3].map(x=>`<option value="${x}"${+f.sem===x?' selected':''}>${SEMS[x]}</option>`).join('')}</select></label>
-  <label class="small">ปีการศึกษา <select data-gf="${pfx}ay">${[0,1,2,3,4,5,6].map(k=>{const y=guessTerm().ay-k;return `<option value="${y}"${+f.ay===y?' selected':''}>${y}</option>`}).join('')}</select></label>`;
+  <label class="small">ปีการศึกษา <select data-gf="${pfx}ay">${[...new Set([1,0,-1,-2,-3,-4,-5,-6].map(k=>guessTerm().ay+k).concat(+f.ay))].sort((a,b)=>b-a).map(y=>`<option value="${y}"${+f.ay===y?' selected':''}>${y}</option>`).join('')}</select></label>`;
 }
 function viewGrade(){
   if(!Array.isArray(S.terms))S.terms=[];
@@ -1864,7 +1885,7 @@ function termDetail(sel,cs){
   <div class="xbtns">${gEdit===sel.id?`<button class="btn sm" data-act="geadd">+ เพิ่มวิชา</button><button class="btn primary" data-act="geditdone">บันทึกการแก้ไข</button><button class="btn sm" data-act="geditno">ยกเลิก</button>`:`<button class="btn sm" data-act="gedit">แก้ไข / เพิ่ม / ลบวิชา</button>`}<button class="btn sm" data-act="gdel">${gConfirmNew==='del'?'กดอีกครั้งเพื่อลบเทอมนี้':'ลบเทอมนี้'}</button></div>
   <h3 style="margin:8px 0 0;font-size:.95rem">วิเคราะห์ผล</h3>
   <div class="inslist">${A.out.map(i=>`<div class="ins ${i.k}"><b class="t">${esc(i.t)}</b><ul>${i.b.map(b=>`<li class="small">${esc(b)}</li>`).join('')}</ul></div>`).join('')}</div>`;
-  if(S.autoDone&&S.autoDone.term===sel.id)h+=`<div class="ins good"><b class="t">✓ แอปนำผลเทอมนี้ไปปรับแผนเทอมถัดไปให้อัตโนมัติแล้ว</b><span class="small">ถ้าอยากเปลี่ยน แก้ความมั่นใจได้ที่แท็บวิชา/สอบ และจำนวนช่วงอ่านที่แท็บตั้งค่า</span></div>`;
+  if(S.autoDone&&S.autoDone.term===sel.id)h+=`<div class="ins good"><b class="t">✓ แอปนำผลเทอมนี้ไปปรับแผนเทอมถัดไปให้อัตโนมัติแล้ว</b><span class="small">ถ้าอยากเปลี่ยน แก้ความมั่นใจได้ที่แท็บสอบ/เกรด และจำนวนช่วงอ่านที่แท็บตั้งค่า</span></div>`;
   else if(A.recs.length&&sel.src==='app')h+=`<p class="small muted" style="margin:0">พอเริ่มเทอมใหม่และใส่วิชาแล้ว แอปจะนำคำแนะนำของเทอมนี้ไปปรับแผนให้เอง</p>`;
   if(A.recs.length)h+=`<div class="inslist">${A.recs.map(r=>`<div class="ins rec"><b class="t">${esc(r.t)}</b><span class="small">${esc(r.b)}</span></div>`).join('')}</div>`;
   if(S.tune&&S.tune.practice)h+=`<p class="small muted" style="margin:0">ตอนนี้แผนเพิ่มรอบทำโจทย์ +1 ช่วงต่อ 4 บทอยู่ <button class="btn sm" data-grec="practiceoff">ยกเลิก</button></p>`;
@@ -1927,7 +1948,7 @@ document.addEventListener('toggle',e=>{const t=e.target;if(t.matches&&t.matches(
 
 // ===================== v26: ตารางเรียนแยกตามเทอม =====================
 let ttSel=null,ttMsg='',ttConfirm=false;
-function ensureGForm(){if(!Array.isArray(S.terms))S.terms=[];if(!gForm){const cur=S.terms.find(x=>x.id===S.curTerm);gForm=cur?{ay:cur.ay,sem:cur.sem,yr:cur.yr}:guessTerm()}return gForm}
+function ensureGForm(){if(!Array.isArray(S.terms))S.terms=[];ensureLive();gForm={ay:+S.live.ay,sem:+S.live.sem,yr:+S.live.yr};return gForm}
 function curTermTag(){const t=(S.terms||[]).find(x=>x.id===S.curTerm);const f=t||ensureGForm();return `<span class="termtag">${esc(t?termName(t):termName(f))}</span>`}
 function ttHTML(cls){
   const order=[1,2,3,4,5,6,0];
@@ -2054,12 +2075,197 @@ function v31Click(t){if(t.dataset.act!=='restoreterms')return false;
   const L=lostTerms();if(!Array.isArray(S.terms))S.terms=[];L.forEach(x=>S.terms.push(x));S.terms.sort(termOrder);lostMemo=null;autoSig=null;gInitFor=null;
   bkMsg={t:`กู้คืนผลการเรียน ${L.length} เทอมแล้ว`};gMsg=`กู้คืนผลการเรียน ${L.length} เทอมแล้ว: ${L.map(termName).join(', ')}`;save();tab='grade';render();return true}
 
+// ===================== v33: หน้าตาใหม่ 5 แท็บ + ข้อมูลแยกเทอม =====================
+// S.live = เทอมที่กำลังเรียน {ay,sem,yr} · ข้อมูลเทอมก่อน ๆ อยู่ใน S.terms (เก็บถาวร ไม่ลบเอง)
+const weekStart=d=>addD(d,-((pd(d).getDay()+6)%7));
+const termAfter=t=>+t.sem===1?{ay:+t.ay,sem:2,yr:+t.yr||1}:{ay:+t.ay+1,sem:1,yr:Math.min(6,(+t.yr||1)+1)};
+const tid=t=>`${t.ay}-${t.sem}`;
+function markMissed(){const {date:today,min}=nowInfo();S.plan.forEach(x=>{if(!x.done&&(x.date<today||(x.date===today&&x.e<min)))x.moved=true})}
+let v33Note='';
+// เทอมที่ถูกบันทึกทับ (บั๊กเดิม: เดือน พ.ย. แอปเดาว่าเป็นเทอม 1 แล้วบันทึกวิชาเทอม 2 ทับเกรดเทอม 1) → หาฉบับเดิมจากสำเนาในเครื่อง
+function overwrittenTerms(){
+  const act=new Set(S.subjList.map(x=>x.c)),out=[];if(!act.size)return out;
+  S.terms.forEach(t=>{if(!(t.subjects||[]).some(x=>act.has(x.c)))return;let best=null;
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||!k.startsWith(KEY+'-before-'))continue;
+      try{const o=JSON.parse(localStorage.getItem(k)),ot=o&&Array.isArray(o.terms)&&o.terms.find(x=>x&&x.id===t.id);
+        if(ot&&Array.isArray(ot.subjects)&&!ot.subjects.some(x=>act.has(x.c))&&ot.subjects.some(x=>GP[x.g]!==undefined)&&(!best||(ot.saved||'')>(best.saved||'')))best=ot}catch(e){}}
+    if(best)out.push({cur:t,old:best})});
+  return out;
+}
+function ensureLive(){
+  if(!Array.isArray(S.terms))S.terms=[];
+  if(S.live&&+S.live.ay&&+S.live.sem)return;
+  snap('v33');
+  const act=new Set(S.subjList.map(x=>x.c)),has=t=>(t.subjects||[]).some(x=>act.has(x.c));
+  // ซ่อมเทอมที่ถูกเขียนทับก่อน
+  if(!S.sample)overwrittenTerms().forEach(({cur,old})=>{let nx=termAfter(old);while(S.terms.some(x=>x.id===tid(nx)))nx=termAfter(nx);
+    Object.assign(cur,{id:tid(nx),ay:nx.ay,sem:nx.sem,yr:nx.yr});S.terms.push(JSON.parse(JSON.stringify(old)));
+    v33Note=`คืนผลการเรียน ${termName(old)} ที่เคยถูกบันทึกทับให้แล้ว (จากสำเนาในเครื่อง)`});
+  S.terms.sort(termOrder);
+  let t=act.size&&!S.sample?(S.terms.find(x=>x.id===S.curTerm&&has(x))||S.terms.slice().reverse().find(has)):null;
+  if(t)S.live={ay:+t.ay,sem:+t.sem,yr:+t.yr||1};
+  else{const last=S.terms.slice().pop();let g=guessTerm();
+    if(last){if(termOrder(g,last)<=0)g=termAfter(last);else g.yr=Math.min(6,(+last.yr||1)+(g.ay-last.ay))}
+    while(S.terms.some(x=>x.id===tid(g)&&!has(x)))g=termAfter(g);
+    S.live={ay:+g.ay,sem:+g.sem,yr:+g.yr||1}}
+  S.curTerm=tid(S.live);if(!S.gYear)S.gYear=S.live.yr;autoSig=null;lostMemo=null;save();
+}
+const liveId=()=>{ensureLive();return tid(S.live)};
+// รายการเทอมทั้งหมด (เก่า → ใหม่) รวมเทอมที่กำลังเรียน
+function allTerms(){const L=liveId(),m=new Map();S.terms.forEach(t=>m.set(t.id,t));if(!m.has(L))m.set(L,{id:L,...S.live,live:true});return [...m.values()].sort(termOrder)}
+function freeNext(){let n=termAfter(S.live);while(S.terms.some(x=>x.id===tid(n)))n=termAfter(n);return n}
+let tPick=null,nForm=null,nMsg='',liveEdit=false,lMsg='',planMsg='';
+function pickVal(){const L=liveId();if(tPick==='next')return 'next';if(!tPick||!allTerms().some(t=>t.id===tPick))tPick=L;return tPick}
+function termBar(title){
+  const L=liveId(),v=pickVal(),nx=freeNext();
+  return `<div class="section"><h2>${title}</h2><div class="termbar"><select data-tpick aria-label="เลือกเทอม">${allTerms().slice().reverse().map(t=>`<option value="${t.id}"${t.id===v?' selected':''}>${esc(termName(t))}${t.id===L?' · กำลังเรียน':''}</option>`).join('')}<option value="next"${v==='next'?' selected':''}>＋ เทอมถัดไป (${esc(termName(nx))})</option></select>
+  ${v===L?`<button class="btn sm" data-act="liveedit">${liveEdit?'ปิด':'แก้ชื่อเทอม'}</button>`:''}</div>
+  ${v===L&&liveEdit?`<div class="gcard"><span class="small">เทอมที่กำลังเรียนไม่ใช่ <b>${esc(termName(S.live))}</b>? เลือกให้ถูก ข้อมูลในเทอมนี้ยังอยู่ครบ แค่เปลี่ยนชื่อ</span><div class="gform">${termSelHTML(S.liveF||(S.liveF={...S.live}),'L')}<button class="btn primary sm" data-act="livesave">บันทึกชื่อเทอม</button></div>${lMsg?`<span class="small" style="color:var(--exam)">${esc(lMsg)}</span>`:''}</div>`:''}
+  ${v!==L&&v!=='next'?`<span class="small muted">เทอมที่ผ่านมา ดูย้อนหลังได้ ข้อมูลเก็บไว้ถาวร · ตอนนี้กำลังเรียน ${esc(termName(S.live))} <button class="btn sm" data-act="picklive">กลับเทอมที่กำลังเรียน</button></span>`:''}</div>`;
+}
+function nextPanel(){
+  const L=S.live;if(!nForm)nForm=freeNext();
+  const hasData=(S.subjList.length||S.classes.length)&&!S.sample;
+  return `<div class="section"><div class="gcard" style="gap:10px"><h3>เพิ่มเทอมถัดไป</h3>
+  <div class="gform">${termSelHTML(nForm,'N')}</div>
+  <span class="small">เทอมที่กำลังเรียนจะเปลี่ยนเป็น <b>${esc(termName(nForm))}</b> แล้วใส่วิชา วันสอบ และตารางเรียนของเทอมใหม่ได้เลย</span>
+  ${hasData?`<span class="small">ข้อมูล <b>${esc(termName(L))}</b> ทั้งวิชา วันสอบ ตารางเรียน สถิติการอ่าน และเกรด <b>เก็บไว้ถาวร</b> เลือกดูย้อนหลังได้จากเมนูเทอมด้านบนทุกแท็บ · งานที่ยังไม่ส่ง ตั้งค่า และธีมยังอยู่ครบ</span>`:''}
+  ${nMsg?`<span class="small" style="color:var(--exam);font-weight:600">${esc(nMsg)}</span>`:''}
+  <div class="xbtns"><button class="btn primary" data-act="nextgo">เริ่ม ${esc(termName(nForm))}</button><button class="btn" data-act="picklive">ยกเลิก</button></div>
+  ${hasData?'<span class="small muted">แนะนำให้สำรองข้อมูลก่อน (แท็บตั้งค่า) แอปเก็บสำเนาในเครื่องให้อีก 1 ชุดด้วย</span>':''}</div></div>`;
+}
+function startNext(){
+  const N={ay:+nForm.ay,sem:+nForm.sem,yr:+nForm.yr},nid=tid(N),L=S.live;
+  if(S.terms.some(x=>x.id===nid)){nMsg=`มี ${termName(N)} ในรายการแล้ว เลือกจากเมนูเทอมเพื่อดู หรือเลือกเทอมอื่น`;return false}
+  if(termOrder(N,L)<=0){nMsg=`ต้องเป็นเทอมหลังจาก ${termName(L)}`;return false}
+  snap('newterm');
+  if(!S.sample&&(S.subjList.length||S.classes.length)){const rec=S.terms.find(x=>x.id===tid(L));
+    gExcl=new Set(rec&&rec.ex||[]);gExtra=rec?rec.subjects.filter(x=>!x.st&&!hasS(x.c)).map(x=>({c:x.c,th:x.th,sh:x.sh,cr:x.cr,g:x.g})):[];
+    saveCurrentTerm({ay:L.ay,sem:L.sem,yr:L.yr},rec?Object.fromEntries(rec.subjects.map(x=>[x.c,x.g])):{})}
+  S.subjList=[];S.subjects={};S.plan=[];S.recall={};S.classes=[];S.exceptions=[];S.dayCap={};S.settings.classEnd='';
+  S.tasks=(S.tasks||[]).filter(x=>x.status==='open');S.tasks.forEach(x=>{x.c=null});S.shareCheck=false;S.presetCheck=false;S.sample=false;S.since=nowInfo().date;
+  S.live=N;S.curTerm=nid;S.gYear=N.yr;delete S.liveF;
+  gForm=null;gInitFor=null;gExcl=new Set();gExtra=[];gCurG={};gSel=null;nForm=null;nMsg='';tPick=nid;autoSig=null;
+  ttMsg=`เริ่ม ${termName(N)} แล้ว ใส่คาบเรียนแต่ละวันได้เลย ส่วนวิชาและวันสอบใส่ที่แท็บสอบ/เกรด`;
+  save();return true;
+}
+function liveRename(){
+  const f=S.liveF||S.live,N={ay:+f.ay,sem:+f.sem,yr:+f.yr},oid=liveId(),nid=tid(N);
+  if(nid!==oid&&S.terms.some(x=>x.id===nid)){lMsg=`มี ${termName(N)} ในรายการเทอมแล้ว เลือกชื่ออื่น`;return}
+  snap('rename');const rec=S.terms.find(x=>x.id===oid);if(rec)Object.assign(rec,{id:nid,ay:N.ay,sem:N.sem,yr:N.yr});
+  if(S.gateSkip===oid)S.gateSkip=nid;if(S.autoDone&&S.autoDone.term===oid)S.autoDone.term=nid;
+  S.live=N;S.curTerm=nid;S.gYear=N.yr;delete S.liveF;liveEdit=false;lMsg='';tPick=nid;if(gSel===oid)gSel=nid;gForm=null;gInitFor=null;autoSig=null;S.terms.sort(termOrder);save();
+}
+
+// ---- แท็บตารางเรียน ----
+function viewCls(){
+  const v=pickVal(),L=liveId();let h=termBar('ตารางเรียน');
+  if(ttMsg)h+=`<div class="banner info"><span class="small" style="font-weight:600">${esc(ttMsg)}</span></div>`;
+  if(v==='next')return h+nextPanel();
+  if(v!==L){const t=S.terms.find(x=>x.id===v);if(!t)return h;ttSel=v;
+    return h+`<div class="section">${t.cls&&t.cls.length?ttHTML(t.cls):'<div class="empty">เทอมนี้ไม่ได้เก็บตารางเรียนไว้</div>'}${t.ce?`<span class="small muted">มีคาบเรียนถึง ${thDate(t.ce)}</span>`:''}
+    ${t.cls&&t.cls.length?(ttConfirm?`<div class="banner"><span class="small">ตารางเรียนของ ${esc(termName(S.live))} จะถูกแทนด้วยตารางของ ${esc(termName(t))} แอปเก็บสำเนาก่อนเปลี่ยนไว้ให้</span><span class="xbtns"><button class="btn primary" data-act="ttusego">ใช้ตารางนี้</button><button class="btn" data-act="ttuseno">ยกเลิก</button></span></div>`
+      :`<div class="xbtns"><button class="btn sm" data-act="ttuse">คัดลอกตารางนี้ไปใช้ ${esc(termName(S.live))}</button></div>`):''}</div>`}
+  const {date:today}=nowInfo(),order=[1,2,3,4,5,6,0];
+  const krow=k=>`<div class="krow"><select data-k="${k.id}" data-kf="d" aria-label="วัน">${order.map(d=>`<option value="${d}" ${k.d===d?'selected':''}>${DWL[d]}</option>`).join('')}</select>
+    <input type="time" data-k="${k.id}" data-kf="s" value="${k.s}" aria-label="เริ่ม"><span>–</span><input type="time" data-k="${k.id}" data-kf="e" value="${k.e}" aria-label="จบ">
+    <select class="grow" data-k="${k.id}" data-kf="c" aria-label="วิชา">${subjOpts(k.c)}</select>${k.c?'':`<input class="grow" data-k="${k.id}" data-kf="label" value="${esc(k.label||'')}" placeholder="ชื่อคาบ/กิจกรรม">`}
+    <button class="btn sm" data-delk="${k.id}">ลบ</button></div>`;
+  const days=order.map(d=>{const ks=S.classes.filter(k=>k.d===d).sort((p,q)=>toMin(p.s)-toMin(q.s));
+    return `<div class="kday" style="--dc:${DCOL[d]}"><div class="kdh"><b>${DWL[d]}</b><span class="small muted">${ks.length?ks.length+' คาบ':'ไม่มีคาบ'}</span></div>${ks.map(krow).join('')}<button class="btn sm kadd" data-addkd="${d}">+ เพิ่มคาบวัน${DWL[d]}</button></div>`}).join('');
+  const exs=S.exceptions.filter(x=>x.date>=today).sort((p,q)=>p.date<q.date?-1:1).map(x=>{const ref=x.type==='cancel'?S.classes.find(k=>k.id===x.ref):null;
+    return `<div class="krow"><span class="mono small" style="min-width:96px">${thDate(x.date)}</span><span class="grow">${x.type==='cancel'?`งดคาบ ${ref?clsName(ref)+' '+ref.s:''}`:`เพิ่ม ${clsName(x)} ${x.s}–${x.e}`}</span><button class="btn sm" data-delex="${x.id}">ยกเลิก</button></div>`}).join('');
+  return h+`<div class="section"><p class="small muted" style="margin:0">แก้วัน เวลา หรือวิชาได้เลย แผนอ่านจะจัดใหม่ทันที แอปเว้นเวลาก่อนและหลังคาบ 15 นาทีไว้เดินทาง · งดคาบหรือเรียนชดเชยเฉพาะวัน ทำที่หน้าวันนี้ของวันนั้น</p>
+  <div class="kdays">${days}</div>
+  <div class="settings"><label for="st-classEnd">มีคาบเรียนถึงวันที่ (ว่างไว้ = ทุกสัปดาห์)<input id="st-classEnd" type="date" data-s="classEnd" value="${S.settings.classEnd||''}"></label></div></div>
+  ${exs?`<div class="section"><h2>เปลี่ยนเฉพาะวัน</h2><div class="klist">${exs}</div></div>`:''}`;
+}
+
+// ---- แท็บตารางสอบ/เกรด ----
+function viewExam(){
+  const v=pickVal(),L=liveId();let h=`<div id="examsec"></div>`+termBar('ตารางสอบ');
+  if(v==='next')h+=nextPanel();
+  else if(v===L)h+=viewSubj().replace('<div class="section"><h2>วิชาและวันสอบ</h2>','<div class="section"><h2 style="font-size:1rem">วิชาและวันสอบเทอมนี้</h2>');
+  else{const t=S.terms.find(x=>x.id===v);
+    if(t){const rows=(t.subjects||[]).slice().sort((a,b)=>((a.st&&a.st.exam)||'~')<((b.st&&b.st.exam)||'~')?-1:1).map(x=>`<tr><td>${esc(x.sh)}</td><td class="n">${x.cr}</td><td class="n">${x.st&&x.st.exam?thDate(x.st.exam)+' '+(pd(x.st.exam).getFullYear()+543):'–'}</td></tr>`).join('');
+      h+=`<div class="section"><div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">หน่วยกิต</th><th class="n">วันสอบ</th></tr></thead><tbody>${rows}</tbody></table></div><span class="small muted">${t.src==='app'?'วันสอบที่ใช้วางแผนในเทอมนั้น':'เทอมนี้กรอกเกรดเอง จึงไม่มีวันสอบ'}</span></div>`}}
+  return h+gradeSection();
+}
+function gradeSection(){
+  ensureGForm();
+  const L=liveId(),G=gpax(),terms=S.terms.slice().sort(termOrder),liveRec=S.terms.find(x=>x.id===L),hasSubj=active().length&&!S.sample;
+  const ids=allTerms().map(t=>t.id).filter(id=>id!==L||hasSubj||liveRec);
+  if(!gSel||!ids.includes(gSel))gSel=hasSubj?L:(ids.length?ids[ids.length-1]:null);
+  if(gInitFor!==L){gInitFor=L;if(liveRec){gCurG=Object.fromEntries(liveRec.subjects.map(x=>[x.c,x.g]));gExcl=new Set(liveRec.ex||[]);
+    gExtra=liveRec.subjects.filter(x=>!x.st&&!hasS(x.c)).map(x=>({c:x.c,th:x.th,sh:x.sh,cr:x.cr,g:x.g}))}else{gCurG={};gExcl=new Set();gExtra=[]}}
+  const cs=confSuggest(),inp='font:inherit;font-size:.9rem;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)';
+  let h=`<div class="section" id="gradesec" style="margin-top:14px;border-top:2px dashed var(--line);padding-top:16px"><h2>🎓 บันทึกเกรด</h2>
+  ${v33Note?`<div class="ins good"><b class="t">${esc(v33Note)}</b></div>`:''}${lostBanner()}
+  <div class="dash"><div class="tile"><span class="lab">GPAX สะสม</span><span class="big">${f2(G.gpa)}</span><span class="sub">${G.cr} หน่วยกิตที่คิดเกรด</span></div>
+  <div class="tile"><span class="lab">เป้า GPA</span><span class="big"><input type="number" step="0.05" min="1" max="4" data-gtarget value="${S.gpaTarget||3.25}" aria-label="เป้า GPA" style="width:84px;font:inherit;font-size:1.3rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);padding:2px 6px"></span><span class="sub">ใช้ตอนแนะนำปรับแผน</span></div></div>
+  ${terms.length>1?`<div class="gcard"><b class="small">GPA แต่ละเทอม</b>${terms.map(t=>{const v=gpaOf(t.subjects).gpa;return `<div class="gbar"><span>${esc(`ปี${t.yr} ${t.sem===3?'ฤดูร้อน':'ท.'+t.sem}`)}</span><span class="pt"><i style="width:${v==null?0:v/4*100}%"></i></span><span class="mono">${f2(v)}</span></div>`}).join('')}</div>`:''}
+  ${gMsg?`<span class="small" style="color:var(--accent);font-weight:600">${esc(gMsg)}</span>`:''}
+  ${ids.length?`<div class="gpick"><label class="small" for="gpick">เกรดของเทอม</label><select id="gpick" data-gpick class="tsel" style="font:inherit;font-weight:600;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);min-height:44px">${ids.slice().reverse().map(id=>{const t=S.terms.find(x=>x.id===id)||{...S.live};const g=t.subjects?gpaOf(t.subjects).gpa:null;return `<option value="${id}"${id===gSel?' selected':''}>${esc(termName(t))}${id===L?' · กำลังเรียน':''}${g!=null?' · GPA '+f2(g):''}</option>`}).join('')}</select></div>`:'<div class="empty">ยังไม่มีเกรดที่บันทึกไว้ ใส่เกรดเทอมที่เรียนก่อนใช้แอปได้ที่ “เพิ่มเทอม (กรอกเอง)” ด้านล่าง</div>'}`;
+  if(gSel===L&&hasSubj){
+    h+=`<div class="tablebox"><table class="gtbl"><thead><tr><th>วิชา</th><th class="n">หน่วยกิต</th><th class="n">อ่านไป</th><th>เกรด</th><th></th></tr></thead><tbody>
+    ${active().map(s=>{const st=subjStats(s.c),ex=gExcl.has(s.c);return `<tr${ex?' style="opacity:.5"':''}><td><span class="sw" style="background:${col(s.c)}"></span> ${ex?`<s>${esc(s.sh)}</s>`:esc(s.sh)}</td><td class="n">${s.cr}</td><td class="n">${f1(st.h)} ชม.</td><td>${ex?'<span class="small muted">ไม่นับ</span>':gradeSel('cur:'+s.c,gCurG[s.c]||'')}</td><td>${ex?`<button class="btn sm" data-gincl="${esc(s.c)}" title="นับวิชานี้">คืน</button>`:`<button class="btn sm" data-gexcl="${esc(s.c)}" aria-label="ไม่นับวิชา ${esc(s.sh)} ในเกรดเทอมนี้" title="ไม่นับวิชานี้">×</button>`}</td></tr>`}).join('')}
+    ${gExtra.map((r,i)=>`<tr><td><input class="gname" data-gx="${i}:sh" value="${esc(r.sh)}" placeholder="ชื่อวิชา" style="width:100%;min-width:110px;${inp}"></td><td class="n"><input type="number" min="0" max="12" data-gx="${i}:cr" value="${r.cr}" aria-label="หน่วยกิต" style="width:52px;${inp}"></td><td class="n small muted">–</td><td><select data-gx="${i}:g" aria-label="เกรด"><option value="">ยังไม่ออก</option>${GRADES.map(x=>`<option${x===r.g?' selected':''}>${x}</option>`).join('')}</select></td><td><button class="btn sm" data-gxdel="${i}" aria-label="ลบวิชานี้">×</button></td></tr>`).join('')}</tbody></table></div>
+    <div class="xbtns"><button class="btn sm" data-act="gxadd">+ เพิ่มวิชาที่ไม่ได้อยู่ในแผนอ่าน</button><button class="btn primary" data-act="gsave">บันทึกเกรด ${esc(termName(S.live))}</button></div>
+    <span class="small muted">เกรดออกไม่พร้อมกัน ใส่ทีละวิชาแล้วกดบันทึกได้หลายครั้ง · × = ไม่นับวิชานั้นในเกรด (แผนอ่านไม่เปลี่ยน)</span>`;
+    if(liveRec){const A=analyze(liveRec);h+=`<h3 style="margin:8px 0 0;font-size:.95rem">วิเคราะห์ผล</h3><div class="inslist">${A.out.map(i=>`<div class="ins ${i.k}"><b class="t">${esc(i.t)}</b><ul>${i.b.map(b=>`<li class="small">${esc(b)}</li>`).join('')}</ul></div>`).join('')}</div>`}
+  }else if(gSel){const t=S.terms.find(x=>x.id===gSel);if(t)h+=termDetail(t,cs)}
+  if(!gManual)gManual={f:{...guessTerm(),sem:guessTerm().sem===1?2:1,ay:guessTerm().sem===1?guessTerm().ay-1:guessTerm().ay},rows:Array.from({length:6},()=>({n:'',cr:3,g:''}))};
+  h+=`<details${gManual.open?' open':''} data-gmanual style="margin-top:6px"><summary style="cursor:pointer;font-weight:600">➕ เพิ่มเทอม (กรอกเอง) เช่น เทอมที่เรียนก่อนใช้แอป</summary>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><div class="gform">${termSelHTML(gManual.f,'m')}</div>
+  ${gManual.rows.map((r,i)=>`<div class="gform"><input class="gname" data-gm="${i}:n" value="${esc(r.n)}" placeholder="ชื่อวิชา"><input class="gcr" type="number" min="0" max="12" data-gm="${i}:cr" value="${r.cr}" aria-label="หน่วยกิต"><select data-gm="${i}:g" aria-label="เกรด"><option value=""></option>${GRADES.map(x=>`<option${x===r.g?' selected':''}>${x}</option>`).join('')}</select></div>`).join('')}
+  <div class="xbtns"><button class="btn sm" data-act="gmrow">+ เพิ่มแถว</button><button class="btn primary" data-act="gmsave">บันทึกเทอมนี้</button></div></div></details>
+  <p class="small muted" style="margin:0">คิดเกรด A=4, B+=3.5, B=3, C+=2.5, C=2, D+=1.5, D=1, F=0 (S U W I ไม่นำมาคิด) ทศนิยม 2 ตำแหน่งแบบตัดทิ้ง ถ้าต่างจากระบบทะเบียน ให้ยึดระบบทะเบียน · การบันทึกเกรดไม่ไปแตะตารางเรียนหรือแผนอ่าน</p></div>`;
+  return h;
+}
+
+// ---- วันนี้: งานที่ต้องส่ง ----
+function todayTasks(){
+  const today=nowInfo().date,all=S.tasks||[],open=all.filter(t=>t.status==='open').sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:(a.dueT||'')<(b.dueT||'')?-1:1);
+  const od=open.filter(t=>t.due<today).length;
+  return `<div class="section ttask"><div class="thd"><h2>งานที่ต้องส่ง ${od?`<span class="odpill">${od} ค้าง</span>`:''}</h2><button class="btn primary" data-act="tnew">+ เพิ่มงาน</button></div>
+  ${open.length?open.slice(0,3).map(t=>taskCard(t)).join(''):`<div class="empty">${all.length?'ไม่มีงานค้าง เยี่ยมมาก!':'อาจารย์สั่งงานเมื่อไร กด “+ เพิ่มงาน” แอปจะหาเวลาทำให้ก่อนวันส่ง'}</div>`}
+  ${all.length?`<div><button class="btn sm" data-tab="task">ดูงานทั้งหมด${open.length>3?` (${open.length} ชิ้น)`:''} และประวัติการส่ง ›</button></div>`:''}</div>`;
+}
+
+// ---- ตารางอ่าน: ปุ่มปรับแผนเอง ----
+function replanCard(){
+  const lg=S.lastGen;
+  return `<div class="section"><div class="gcard rpc"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div style="flex:1;min-width:170px"><b>แผนนี้คำนวณจาก</b><div class="small muted">เกรดเทอมก่อน · ตารางเรียน · หน่วยกิต · ตารางสอบ</div></div><button class="btn primary" data-act="replanbtn">↻ ปรับแผนการอ่านใหม่</button></div>
+  ${planMsg?`<span class="small" style="color:var(--accent);font-weight:600">${esc(planMsg)}</span>`:''}
+  <div class="rpn">ปรับให้อัตโนมัติทุกสัปดาห์${lg?` · ล่าสุด ${thDate(lg)}`:''} · ช่วงที่ติ๊กว่าอ่านแล้วหรือตั้งเองจะไม่ถูกเปลี่ยน</div></div></div>`;
+}
+
+function v33Click(t){
+  const a=t.dataset.act;
+  if(t.dataset.addkd!==undefined){const d=+t.dataset.addkd,ks=S.classes.filter(k=>k.d===d).sort((p,q)=>toMin(p.s)-toMin(q.s)),last=ks[ks.length-1];
+    const s0=last?Math.min(toMin(last.e)+10,20*60):9*60;const id=uid();S.classes.push({id,d,s:hm(s0),e:hm(Math.min(s0+60,23*60)),c:S.subjList[0]?.c||''});ttMsg='';generate();render();
+    setTimeout(()=>{const el=document.querySelector(`[data-k="${id}"][data-kf="s"]`);if(el){el.scrollIntoView({block:'center'});el.focus()}},30);return true}
+  if(a==='replanbtn'){autoSig=null;autoTune();markMissed();generate();const n=nowInfo();planMsg=`✓ ปรับแผนใหม่แล้ว (${hm(n.min)} น.) จากเกรด ตารางเรียน หน่วยกิต และตารางสอบล่าสุด`;render();return true}
+  if(a==='liveedit'){liveEdit=!liveEdit;lMsg='';S.liveF={...S.live};render();return true}
+  if(a==='livesave'){liveRename();render();return true}
+  if(a==='picklive'){tPick=liveId();nForm=null;nMsg='';render();return true}
+  if(a==='nextgo'){if(startNext()){render();window.scrollTo(0,0)}else render();return true}
+  return false;
+}
+document.addEventListener('change',e=>{const t=e.target;if(!t.matches)return;
+  if(t.matches('[data-tpick]')){tPick=t.value;ttConfirm=false;ttMsg='';liveEdit=false;if(t.value==='next'){nForm=freeNext();nMsg=''}render();return}
+  if(t.dataset.gf&&t.dataset.gf[0]==='N'){nForm[t.dataset.gf.slice(1)]=+t.value;nMsg='';e.stopImmediatePropagation();render();return}
+  if(t.dataset.gf&&t.dataset.gf[0]==='L'){S.liveF[t.dataset.gf.slice(1)]=+t.value;lMsg='';e.stopImmediatePropagation();render();return}
+},true);
+
+
 loadNews();
 
 // v20: กดแท็บแล้วเลื่อนขึ้นบนสุด (กดแท็บเดิมซ้ำ = เลื่อนขึ้นแบบนุ่ม ๆ)
 document.addEventListener('click',e=>{const b=e.target.closest('#tabs button');if(!b)return;const same=b.dataset.tab===tab;requestAnimationFrame(()=>window.scrollTo({top:0,behavior:same&&fxOn()?'smooth':'auto'}))},true);
 
-if(S.subjList.length&&!S.plan.length)generate();
+ensureLive();
+if(S.subjList.length&&(!S.plan.length||!S.lastGen||S.lastGen<weekStart(nowInfo().date))){markMissed();generate()}   // v33: ปรับแผนให้เองทุกสัปดาห์
 render();
 routeHash();
 </script>
